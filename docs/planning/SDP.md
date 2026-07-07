@@ -47,6 +47,8 @@ SaaG is developed **iteratively and incrementally**: each increment carries a su
 | 2 | MSD component implementation and relevant sections in VAE | MSD is an independent data producer with no dependency on other CSCs; VAE sections included are those that drive the MSD production pipeline and consume its output. |
 | 3 | SCG component implementation and relevant sections in VAE | SCG is an independent data producer; VAE sections included are those that drive the SCG production pipeline and consume its output. |
 | 4 | FRD component implementation and relevant sections in VAE | FRD is an independent data producer; VAE sections included are those that drive the FRD production pipeline and consume its output. |
+| 5 | Testing | End-to-end integration and qualification testing of the assembled CSCI, covering the full `../test/STP.md`/`../test/STD.md` test suite. |
+| 6 | Packaging | Final assembly, packaging, and preparation of the qualified CSCI for transition into the target environment. |
 
 Each increment repeats the activity cycle in Section 4.3 for its CSC(s) only.
 
@@ -82,7 +84,7 @@ For each increment (Section 3.2), the following activities are performed for tha
 2. **Software Design** — confirm/finalize the `../design/SDD.md` §5.x CSC/CSU design, the `../design/IDD.md` interfaces it uses, and the `../design/DBDD.md` stores it reads/writes.
 3. **Software Coding** — implement the CSUs identified in `../design/SDD.md` §5.x for the increment's CSC(s), including the adaptor layer for external interfaces and mock implementations where real systems are unavailable.
 4. **Unit and Integration Testing** — execute the `../test/STD.md` test cases traced to the increment's CSUs (per `../test/STP.md` §4).
-5. **CSCI Qualification Testing** — once all 4 increments are complete, execute the full `../test/STP.md`/`../test/STD.md` test suite (all 31 test cases) against the assembled CSCI.
+5. **CSCI Qualification Testing** — once Increments 1–4 are complete, execute the full `../test/STP.md`/`../test/STD.md` test suite (all 31 test cases) against the assembled CSCI. Increment 5 (Testing) covers this activity in full, including any additional qualification tests needed beyond unit and integration testing.
 
 ---
 
@@ -94,7 +96,7 @@ Transition of the qualified CSCI into its target environment is performed throug
 
 ## 6. Project Schedule and Activity Network
 
-Calendar dates are outside the scope of this document and depend on the project's overall schedule. The activity network follows the increment sequence in Section 3.2: Increment 1 (tech stack and project structure) → Increment 2 (MSD + relevant VAE sections) → Increment 3 (SCG + relevant VAE sections) → Increment 4 (FRD + relevant VAE sections) → CSCI Qualification Testing. An increment may not begin coding until the `../reviews/CDR.md` items affecting its CSC(s) are `Resolved`.
+Calendar dates are outside the scope of this document and depend on the project's overall schedule. The activity network follows the increment sequence in Section 3.2: Increment 1 (tech stack and project structure) → Increment 2 (MSD + relevant VAE sections) → Increment 3 (SCG + relevant VAE sections) → Increment 4 (FRD + relevant VAE sections) → Increment 5 (Testing) → Increment 6 (Packaging). An increment may not begin coding until the `../reviews/CDR.md` items affecting its CSC(s) are `Resolved`.
 
 ---
 
