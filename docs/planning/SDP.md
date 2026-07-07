@@ -20,14 +20,14 @@ Section 3 states the development approach. Section 4 plans general and detailed 
 
 ### 1.4 Relationship to Other Plans
 
-This SDP governs the process that produces and consumes the rest of the SaaG document set: `../requirements/SRS.md` (requirements analysis), `../design/SDD.md`/`../design/IDD.md` (design), `../test/STP.md`/`../test/STD.md` (test planning), and `../reviews/CDR.md` (the open-items gate that must clear before design can be finalized and coding can proceed on the items it lists).
+This SDP governs the process that produces and consumes the rest of the SaaG document set: `../requirements/SRS.md` (requirements analysis), `../design/SDD.md`/`../design/IDD.md` (design), `../test/STP.md`/`../test/STD.md` (test planning), and `../design/CDR.md` (the open-items gate that must clear before design can be finalized and coding can proceed on the items it lists).
 
 ---
 
 ## 2. Referenced Documents
 
 - MIL-STD-498, *Software Development and Documentation*, Data Item Description DI-IPSC-81427 (Software Development Plan).
-- `../requirements/SRS.md`, `../design/SDD.md`, `../design/IDD.md`, `../test/STP.md`, `../test/STD.md`, `../reviews/CDR.md` — the SaaG MIL-STD-498 document set.
+- `../requirements/SRS.md`, `../design/SDD.md`, `../design/IDD.md`, `../test/STP.md`, `../test/STD.md`, `../design/CDR.md` — the SaaG MIL-STD-498 document set.
 
 ---
 
@@ -60,13 +60,13 @@ Each increment repeats the activity cycle in Section 4.3 for its CSC(s) only.
 
 ### 4.1 Software Development Process
 
-Within each increment: (a) confirm the applicable `../requirements/SRS.md` §3.2.x requirements for the CSC(s) in scope; (b) confirm/refine the applicable `../design/SDD.md` §5.x design (and `../design/IDD.md` sections it references); (c) implement the CSUs; (d) execute the applicable `../test/STP.md`/`../test/STD.md` test cases; (e) hold an increment review before the next increment begins. `../reviews/CDR.md` items relevant to an increment's CSC(s) must be `Resolved` (not `Open`) before that increment's coding activity begins.
+Within each increment: (a) confirm the applicable `../requirements/SRS.md` §3.2.x requirements for the CSC(s) in scope; (b) confirm/refine the applicable `../design/SDD.md` §5.x design (and `../design/IDD.md` sections it references); (c) implement the CSUs; (d) execute the applicable `../test/STP.md`/`../test/STD.md` test cases; (e) hold an increment review before the next increment begins. `../design/CDR.md` items relevant to an increment's CSC(s) must be `Resolved` (not `Open`) before that increment's coding activity begins.
 
 ### 4.2 General Plans for Software Development
 
-**4.2.1 Software Development Methods**: structured decomposition following `../design/SDD.md`'s CSC/CSU breakdown; specific methodology tooling (e.g. modeling notation, code generation) is open per `../reviews/CDR.md`.
+**4.2.1 Software Development Methods**: structured decomposition following `../design/SDD.md`'s CSC/CSU breakdown; specific methodology tooling (e.g. modeling notation, code generation) is open per `../design/CDR.md`.
 
-**4.2.2 Standards for Software Products**: coding standards, programming language(s), and build/version-control/CI tooling are open per `../reviews/CDR.md`. `../requirements/SRS.md` cites Jenkins (3.2.6.50) and JVM (3.2.5.8) as illustrative examples of a build-automation client and a runtime environment respectively — these are examples in the requirements text, not committed tooling decisions, and should be confirmed or replaced during design finalization.
+**4.2.2 Standards for Software Products**: coding standards, programming language(s), and build/version-control/CI tooling are open per `../design/CDR.md`. `../requirements/SRS.md` cites Jenkins (3.2.6.50) and JVM (3.2.5.8) as illustrative examples of a build-automation client and a runtime environment respectively — these are examples in the requirements text, not committed tooling decisions, and should be confirmed or replaced during design finalization.
 
 **4.2.3 Reusable Software Products**: none identified in the current document set; to be assessed per increment.
 
@@ -74,7 +74,7 @@ Within each increment: (a) confirm the applicable `../requirements/SRS.md` §3.2
 
 **4.2.5 Recording Rationale**: design rationale is recorded at the point of decision — CSC-wide and CSCI-wide design decisions in `../design/SDD.md` §3/§5.x.1, database-wide decisions in `../design/SDD.md` §4.4 — rather than duplicated in this plan.
 
-**4.2.6 Access for Review**: acquirer/reviewer access arrangements to the document set and increment reviews are open per `../reviews/CDR.md`.
+**4.2.6 Access for Review**: acquirer/reviewer access arrangements to the document set and increment reviews are open per `../design/CDR.md`.
 
 ### 4.3 Plans for Performing Detailed Software Development Activities
 
@@ -90,13 +90,13 @@ For each increment (Section 3.2), the following activities are performed for tha
 
 ## 5. Plans for Software Transition
 
-Transition of the qualified CSCI into its target environment is performed through the production deployment pipeline described in `../requirements/SRS.md` 3.2.6.50/53/54 (Build Automation Tools/CLI, installation suitability evaluation, pipeline-blocking decisions). Specific transition logistics (installation procedures, user training materials, operational handover) are open per `../reviews/CDR.md` and are not yet defined in the current document set.
+Transition of the qualified CSCI into its target environment is performed through the production deployment pipeline described in `../requirements/SRS.md` 3.2.6.50/53/54 (Build Automation Tools/CLI, installation suitability evaluation, pipeline-blocking decisions). Specific transition logistics (installation procedures, user training materials, operational handover) are open per `../design/CDR.md` and are not yet defined in the current document set.
 
 ---
 
 ## 6. Project Schedule and Activity Network
 
-Calendar dates are outside the scope of this document and depend on the project's overall schedule. The activity network follows the increment sequence in Section 3.2: Increment 1 (tech stack and project structure) → Increment 2 (MSD + relevant VAE sections) → Increment 3 (SCG + relevant VAE sections) → Increment 4 (FRD + relevant VAE sections) → Increment 5 (Testing) → Increment 6 (Packaging). An increment may not begin coding until the `../reviews/CDR.md` items affecting its CSC(s) are `Resolved`.
+Calendar dates are outside the scope of this document and depend on the project's overall schedule. The activity network follows the increment sequence in Section 3.2: Increment 1 (tech stack and project structure) → Increment 2 (MSD + relevant VAE sections) → Increment 3 (SCG + relevant VAE sections) → Increment 4 (FRD + relevant VAE sections) → Increment 5 (Testing) → Increment 6 (Packaging). An increment may not begin coding until the `../design/CDR.md` items affecting its CSC(s) are `Resolved`.
 
 ---
 
@@ -115,8 +115,8 @@ The following roles are needed; specific individuals, headcounts, and organizati
 
 ### 7.2 Project Resources
 
-**7.2.1 Personnel**: role-based only (Section 7.1); staffing levels open per `../reviews/CDR.md`.
-**7.2.2 Facilities**: the test environment in `../test/STP.md` §3 (interface stand-ins, sample data) and its hardware (`CDR-15`, `CDR-16`) are required; specific facility/hardware provisioning is open per `../reviews/CDR.md`.
+**7.2.1 Personnel**: role-based only (Section 7.1); staffing levels open per `../design/CDR.md`.
+**7.2.2 Facilities**: the test environment in `../test/STP.md` §3 (interface stand-ins, sample data) and its hardware (`CDR-15`, `CDR-16`) are required; specific facility/hardware provisioning is open per `../design/CDR.md`.
 **7.2.3 Acquirer-Furnished Equipment, Software, Services, Documentation, and Facilities**: none identified in the current document set.
 **7.2.4 Other Resources**: none identified.
 

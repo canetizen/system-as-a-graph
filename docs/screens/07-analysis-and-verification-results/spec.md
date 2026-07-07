@@ -23,7 +23,7 @@ This is one document covering **three** CSUs that share a result-presentation pa
 | **B. Simulation Analysis** | `../../design/SDD.md` §5.6.3.7 | 3.2.6.31–36 |
 | **C. Field Data Analysis** | `../../design/SDD.md` §5.6.3.8 | 3.2.6.37–41 |
 
-**Important honesty note on Engine A**: SRS 3.2.6.20–27 and 30 each verify conformance "to rules to be determined during the critical design phase" — every one of these rule sets is an open item (`../../reviews/CDR.md` CDR-01–07), and the conforming/non-conforming classification method itself (SRS 3.2.6.42) is *also* open (CDR-08). This screen is designed to present results generically (a status + a detected-incompatibility list) without assuming what any specific rule's content is — see §7.
+**Important honesty note on Engine A**: SRS 3.2.6.20–27 and 30 each verify conformance "to rules to be determined during the critical design phase" — every one of these rule sets is an open item (`../../design/CDR.md` CDR-01–07), and the conforming/non-conforming classification method itself (SRS 3.2.6.42) is *also* open (CDR-08). This screen is designed to present results generically (a status + a detected-incompatibility list) without assuming what any specific rule's content is — see §7.
 
 Circular-dependency and broken-relationship detection (SRS 3.2.6.28–29) are **not** part of this screen — those are traced to the Structural & Dependency Analysis Engine and covered in `04-core-model-creation-and-structural-analysis.md`.
 

@@ -245,7 +245,7 @@ By default, any Interactive User viewing an operation may cancel it, including o
 
 ### 6.8 Concurrent Session / Model-Freshness Indicator
 
-`../../requirements/SRS.md` 3.2.5.18 requires the backend to support concurrent read/write on the same Core System Model across sessions "without compromising model integrity or the consistency of query results"; 3.2.5.19 (and `../../reviews/CDR.md` CDR-16) covers concurrent operation execution more broadly. No screen document previously gave either paragraph a UI expression. Two additions close that:
+`../../requirements/SRS.md` 3.2.5.18 requires the backend to support concurrent read/write on the same Core System Model across sessions "without compromising model integrity or the consistency of query results"; 3.2.5.19 (and `../../design/CDR.md` CDR-16) covers concurrent operation execution more broadly. No screen document previously gave either paragraph a UI expression. Two additions close that:
 
 - **Status Feed Indicator, extended** (`§4.2`): each in-progress or recently-completed operation row now also shows its initiator (session/user, or "Automation Client" for CLI-triggered runs) — the visible expression of 3.2.5.19/CDR-16's "concurrently and independently" guarantee, and of the shared (not per-browser-tab) in-progress state a second session needs to see before starting a conflicting run (see `02`, `03`, `04`, `07`, `09`'s "second run in progress" edge cases).
 - **Model-Updated banner**: shown in `04` and `05` when the Core System Model currently loaded in the view is older than the latest one for the same project/platform/system-version (compares the loaded `creation_time` against the current latest, `../../design/SDD.md` §4.1 `CoreSystemModel` — no new backend field required). Offers a "Reload" action; never force-refreshes out from under the user's current selection/camera position. This is the concrete UI expression of 3.2.5.18's "consistency of query results": the user is always told when what they're looking at is stale, rather than silently served an inconsistent view.
@@ -301,7 +301,7 @@ Copied verbatim from `../../requirements/SRS.md` Appendix A so every screen docu
 | §6.2 Model-Mode Indicator | SDD §5.6.1, §5.6.3.4; SRS 3.2.6.17 |
 | §6.3 Error Banner | SDD §3 decision 5; SDD §4.4 `validation_status` attribute |
 | §6.4 Provenance Tag | SRS 3.2.5.12; SDD §4.4 decision 3 |
-| §6.8 Concurrent Session / Model-Freshness Indicator | SRS 3.2.5.18–19; `../../reviews/CDR.md` CDR-16 |
+| §6.8 Concurrent Session / Model-Freshness Indicator | SRS 3.2.5.18–19; `../../design/CDR.md` CDR-16 |
 | §7 Glossary | SRS Appendix A |
 
 ---

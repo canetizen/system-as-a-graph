@@ -25,7 +25,7 @@ This is the mandatory entry gate for every VAE session: authenticate the user, t
 | Session & Authentication Manager CSU | `../../design/SDD.md` §5.6.3.1 |
 | LDAP Directory Service interface | `../../design/IDD.md` EXT-IF-06 |
 | Configuration Management Database interface (feeds project/platform/version lists via MSD) | `../../design/IDD.md` EXT-IF-01 |
-| LDAP communication method/protocol — open item | `../../reviews/CDR.md` CDR-21 |
+| LDAP communication method/protocol — open item | `../../design/CDR.md` CDR-21 |
 
 ---
 
@@ -120,7 +120,7 @@ Keyboard navigation for this screen's forms and cascading dropdowns follows the 
 | Condition | Treatment |
 |---|---|
 | Invalid credentials | Generic "Sign-in failed — check your username and password" message; never confirms whether the username itself exists, per `../../requirements/SRS.md` 3.2.6.3 ("only users who successfully authenticate"). |
-| LDAP directory service unreachable | Shared Error Banner (foundations §6.3), source = LDAP Directory Service. Specific timeout/retry behavior is left open pending `../../reviews/CDR.md` CDR-21 (LDAP communication method/protocol undetermined) — this doc does not assume a value. |
+| LDAP directory service unreachable | Shared Error Banner (foundations §6.3), source = LDAP Directory Service. Specific timeout/retry behavior is left open pending `../../design/CDR.md` CDR-21 (LDAP communication method/protocol undetermined) — this doc does not assume a value. |
 | Configuration Management Database deficiency, access error, or format incompatibility while loading Project/Platform/Version lists | Shared Error Banner, source = Configuration Management Database, per `../../requirements/SRS.md` 3.2.1.12. |
 | No projects, platforms, or versions available | Empty state per foundations §6.6, with explanatory text (e.g. "No projects available for your account") — no next action offered, since data acquisition is out of the Interactive User's control from this screen. |
-| Authorization scope insufficient for a chosen project | `../../requirements/SRS.md` 3.2.6.3 scopes access to "their authorizations" but neither SRS nor SDD define per-project authorization granularity. **Open question**, flagged here in the same posture as `../../reviews/CDR.md`'s open items rather than an invented authorization model — to be resolved when/if a CDR item for this is added. |
+| Authorization scope insufficient for a chosen project | `../../requirements/SRS.md` 3.2.6.3 scopes access to "their authorizations" but neither SRS nor SDD define per-project authorization granularity. **Open question**, flagged here in the same posture as `../../design/CDR.md`'s open items rather than an invented authorization model — to be resolved when/if a CDR item for this is added. |

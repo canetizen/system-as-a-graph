@@ -5,11 +5,11 @@
 
 ## 1. Purpose
 
-This is not a MIL-STD-498 data item — Critical Design Review is a review milestone, not a deliverable format. This register exists to consolidate, in one place, every design point that `../requirements/SRS.md`, `../design/SDD.md`, `../design/IDD.md`, and `../test/STP.md` deliberately left as "to be determined during the critical design phase" rather than inventing a value. Its purpose is to give the CDR board a single checklist of decisions that must be closed before those documents (and the tests in `../test/STD.md` that depend on them) can be considered final.
+This is not a MIL-STD-498 data item — Critical Design Review is a review milestone, not a deliverable format. This register exists to consolidate, in one place, every design point that `../requirements/SRS.md`, `SDD.md`, `IDD.md`, and `../test/STP.md` deliberately left as "to be determined during the critical design phase" rather than inventing a value. Its purpose is to give the CDR board a single checklist of decisions that must be closed before those documents (and the tests in `../test/STD.md` that depend on them) can be considered final.
 
 ## 2. Referenced Documents
 
-- `../requirements/SRS.md`, `../design/SDD.md`, `../design/IDD.md`, `../test/STP.md`, `../test/STD.md` — the SaaG MIL-STD-498 document set.
+- `../requirements/SRS.md`, `SDD.md`, `IDD.md`, `../test/STP.md`, `../test/STD.md` — the SaaG MIL-STD-498 document set.
 
 ## 3. How to Use This Register
 
@@ -74,8 +74,8 @@ Each item has a **Status**: `Open` (default, no decision yet), `Resolved` (decis
 
 - **CDR-01–08, 12** block `TC-VAE-06/07/08` (`../test/STD.md`) from being fully executable — those test cases explicitly note this dependency.
 - **CDR-09–11, 13–16** block full closure of the MSD, SCG, FRD, and VAE test cases they're cited in.
-- **CDR-17–27** block finalizing `../design/IDD.md` and any integration testing across the 12 interfaces.
-- **CDR-28** blocks finalizing `../design/SDD.md` §4.4's physical schema and any performance/capacity testing.
+- **CDR-17–27** block finalizing `IDD.md` and any integration testing across the 12 interfaces.
+- **CDR-28** blocks finalizing `SDD.md` §4.4's physical schema and any performance/capacity testing.
 
 ## 6. Notes
 
