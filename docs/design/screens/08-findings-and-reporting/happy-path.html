@@ -43,6 +43,7 @@
   .related{border-top:1px solid var(--border); margin-top:12px; padding-top:12px;}
   .related a{display:flex; justify-content:space-between; font-size:var(--text-body); color:var(--ink); text-decoration:none; padding:6px 0; border-bottom:1px solid var(--border);}
   .related a:last-child{border-bottom:none;}
+  .prov{display:inline-flex; align-items:center; gap:6px; padding:3px 10px; border-radius:var(--radius-pill); background:var(--surface-2); border:1px solid var(--border); font-size:var(--text-meta); color:var(--ink-2);}
   .theme-toggle{background:transparent; border:1px solid var(--border); border-radius:var(--radius-chip); padding:6px 10px; cursor:pointer; display:flex; align-items:center; gap:6px; color:var(--ink-2); font-size:var(--text-body); transition:all 0.2s;}
   .theme-toggle:hover{background:var(--surface); border-color:var(--accent); color:var(--ink);}
   .theme-icon{font-size:14px; line-height:1;}
@@ -51,7 +52,7 @@
 <div class="topbar">
   <div class="brand">SaaG</div>
   <div class="ctx">ORION / Frigate-Class Hull 4 / <b>v4.2.1</b></div>
-  <nav><a href="../02-model-setup-data-workflow/happy-path.html">Model Setup Data</a><a href="../03-analytical-data-workflow/happy-path.html">Analytical Data</a><a href="../05-model-visualization-and-navigation/happy-path.html">Explorer</a><a class="active" href="../08-findings-and-reporting/happy-path.html">Findings</a><a href="../09-installation-suitability-and-pipeline-gate/happy-path.html">Installation Suitability</a></nav>
+  <nav><a href="../02-model-setup-data-workflow/happy-path.html">Model Setup Data</a><a href="../03-analytical-data-workflow/happy-path.html">Analytical Data</a><a href="../05-model-visualization-and-navigation/happy-path.html">Explorer</a><a class="active" href="../08-findings-and-reporting/happy-path.html">Findings &amp; Reporting</a><a href="../09-installation-suitability-and-pipeline-gate/happy-path.html">Installation Suitability</a></nav>
   <div class="spacer"></div>
   <div class="status-feed"><span class="pulse"></span>op-9928 running</div>
   <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle dark/light mode"><span class="theme-icon">🌓</span></button>
@@ -72,6 +73,7 @@
     <span class="chip">Result: Non-Conforming</span>
     <span class="chip">Severity: High + Critical</span>
     <span class="chip">Affected: WeaponsCSCI</span>
+    <span class="prov">● System Field Records bound</span>
   </div>
 
   <div class="layout">
@@ -95,6 +97,7 @@
       <div class="attr-field"><div class="k">Rule / Criterion</div><div class="v" style="font-weight:400;">Publisher/Consumer Matching — SRS 3.2.6.21</div></div>
       <div class="attr-field"><div class="k">Evidence</div><div class="v" style="font-weight:400;">No Consumes relationship found targeting this topic in csm-8841.</div></div>
       <div class="attr-field"><div class="k">Severity</div><div class="v"><span class="badge critical"><span class="dot"></span>Critical</span></div></div>
+      <div class="attr-field"><div class="k">Provenance</div><div class="v"><span class="prov">● System Field Records bound</span></div></div>
       <div class="related">
         <div class="attr-field" style="margin-bottom:6px;"><div class="k">Related Findings</div></div>
         <a href="../05-model-visualization-and-navigation/happy-path.html"><span>F-2218 — Downstream WeaponsCSCI starved of track data</span><span>→</span></a>

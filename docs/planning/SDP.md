@@ -45,10 +45,12 @@ SaaG is developed **iteratively and incrementally**: each increment carries a su
 |---|---|---|
 | 1 | Determine tech stack and project structure | Establishes the foundation (language, frameworks, build tooling, repository layout) on which all subsequent increments build. |
 | 2 | MSD component implementation and relevant sections in VAE | MSD is an independent data producer with no dependency on other CSCs; VAE sections included are those that drive the MSD production pipeline and consume its output. |
-| 3 | SCG component implementation and relevant sections in VAE | SCG is an independent data producer; VAE sections included are those that drive the SCG production pipeline and consume its output. |
-| 4 | FRD component implementation and relevant sections in VAE | FRD is an independent data producer; VAE sections included are those that drive the FRD production pipeline and consume its output. |
-| 5 | Testing | End-to-end integration and qualification testing of the assembled CSCI, covering the full `../test/STD.md` test suite. |
-| 6 | Packaging | Final assembly, packaging, and preparation of the qualified CSCI for transition into the target environment. |
+| 3 | CSM component implementation and relevant sections in VAE | CSM ingests MSD's output to construct the Core System Model; sequenced immediately after MSD per SDD §4.2 steps 1–2. |
+| 4 | SCG component implementation and relevant sections in VAE | SCG is an independent data producer; VAE sections included are those that drive the SCG production pipeline and consume its output. |
+| 5 | FRD component implementation and relevant sections in VAE | FRD is an independent data producer; VAE sections included are those that drive the FRD production pipeline and consume its output. |
+| 6 | ADP component implementation and relevant sections in VAE | ADP consumes SCG's synthetic data or FRD's field records to produce Analytical Evaluation Data, which CSM then binds to the model; sequenced after its upstream producers per SDD §4.2 steps 3–6. |
+| 7 | Testing | End-to-end integration and qualification testing of the assembled CSCI, covering the full `../test/STD.md` test suite. |
+| 8 | Packaging | Final assembly, packaging, and preparation of the qualified CSCI for transition into the target environment. |
 
 Each increment repeats the activity cycle in Section 4.3 for its CSC(s) only.
 
@@ -84,7 +86,7 @@ For each increment (Section 3.2), the following activities are performed for tha
 2. **Software Design** — confirm/finalize the `../design/SDD.md` §5.x CSC/CSU design, the `../design/SDD.md` §4.3 interfaces it uses, and the `../design/SDD.md` §4.4 stores it reads/writes.
 3. **Software Coding** — implement the CSUs identified in `../design/SDD.md` §5.x for the increment's CSC(s), including the adaptor layer for external interfaces and mock implementations where real systems are unavailable.
 4. **Unit and Integration Testing** — execute the `../test/STD.md` §4 test cases traced to the increment's CSUs.
-5. **CSCI Qualification Testing** — once Increments 1–4 are complete, execute the full `../test/STD.md` test suite (all 31 test cases) against the assembled CSCI. Increment 5 (Testing) covers this activity in full, including any additional qualification tests needed beyond unit and integration testing.
+5. **CSCI Qualification Testing** — once Increments 1–6 are complete, execute the full `../test/STD.md` test suite (all 31 test cases) against the assembled CSCI. Increment 7 (Testing) covers this activity in full, including any additional qualification tests needed beyond unit and integration testing.
 
 ---
 
@@ -96,7 +98,7 @@ Transition of the qualified CSCI into its target environment is performed throug
 
 ## 6. Project Schedule and Activity Network
 
-Calendar dates are outside the scope of this document and depend on the project's overall schedule. The activity network follows the increment sequence in Section 3.2: Increment 1 (tech stack and project structure) → Increment 2 (MSD + relevant VAE sections) → Increment 3 (SCG + relevant VAE sections) → Increment 4 (FRD + relevant VAE sections) → Increment 5 (Testing) → Increment 6 (Packaging). An increment may not begin coding until the `../design/CDR.md` items affecting its CSC(s) are `Resolved`.
+Calendar dates are outside the scope of this document and depend on the project's overall schedule. The activity network follows the increment sequence in Section 3.2: Increment 1 (tech stack and project structure) → Increment 2 (MSD + relevant VAE sections) → Increment 3 (CSM + relevant VAE sections) → Increment 4 (SCG + relevant VAE sections) → Increment 5 (FRD + relevant VAE sections) → Increment 6 (ADP + relevant VAE sections) → Increment 7 (Testing) → Increment 8 (Packaging). An increment may not begin coding until the `../design/CDR.md` items affecting its CSC(s) are `Resolved`.
 
 ---
 

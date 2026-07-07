@@ -103,6 +103,7 @@ Keyboard navigation for this screen's findings table, filter row, detail panel, 
 | Data | Source |
 |---|---|
 | Finding: identifier, type, description, affected entity/relationship, related rule/acceptance criterion, evidence, severity | `../../../requirements/SRS.md` 3.2.6.44 |
+| Finding/Report Provenance Tag: origin of the underlying Analytical Evaluation Data — **System Field Records** or **Scenario Generator** — shown per foundations §6.4's shared Provenance Tag component, mandatory on every finding and report display on this screen | `../00-foundations/spec.md` §6.4; `../../../requirements/SRS.md` 3.2.5.12 |
 | Cause-and-effect links between findings from the same operation | `../../../requirements/SRS.md` 3.2.6.45 |
 | Triage Status: New / Acknowledged / Waived / False Positive / Resolved, plus actor, justification, and time per change | This doc's own addition (§1) — not sourced from SRS/SDD |
 | Interrupted-operation record: error cause, interruption stage, error time | `../../../requirements/SRS.md` 3.2.6.47 |

@@ -63,19 +63,29 @@ Each item has a **Status**: `Open` (default, no decision yet), `Resolved` (decis
 | CDR-25 | INT-IF-03 FRD → ADP handoff — communication method/protocol | SDD §4.3 | Open |
 | CDR-26 | INT-IF-04 ADP → CSM handoff — communication method/protocol | SDD §4.3 | Open |
 | CDR-27 | INT-IF-05 CSM → VAE access — communication method/protocol | SDD §4.3 | Open |
+| CDR-28 | EXT-IF-04 Network Topology Data Source — communication method/protocol (distinct from CDR-09's automatic-vs-manual acquisition-method choice) | SDD §4.3 | Open |
 
 ### 4.5 Physical Storage Technology
 
 | ID | Item | Source | Status |
 |---|---|---|---|
-| CDR-28 | Physical storage technology for each of the 5 data stores (e.g. property-graph DB vs. relational vs. document store for the Core System Model) | SDD §4.4 | Open |
+| CDR-29 | Physical storage technology for each of the 5 data stores (e.g. property-graph DB vs. relational vs. document store for the Core System Model) | SDD §4.4 | Open |
+
+### 4.6 Database Design Completeness
+
+| ID | Item | Source | Status |
+|---|---|---|---|
+| CDR-30 | Working Model persistence — SDD §4.4's list of 5 data stores has no entity for the working model created/edited by the Working Model Editor | SDD §4.4; SDD §5.6.3.4; SRS 3.2.6.17 | Open |
+| CDR-31 | Findings/Operations/Reports persistence — SDD §4.4's list of 5 data stores has no entity for the findings, operations, or reports produced/displayed by the Findings & Reporting Manager | SDD §4.4; SDD §5.6.3.10; SRS 3.2.6.44–49 | Open |
+| CDR-32 | Entity schemas and detailed attribute definitions for all persisted data stores | SDD §4.4 | Open |
 
 ## 5. Impact if Left Unresolved
 
-- **CDR-01–08, 12** block `TC-VAE-06/07/08` (`../test/STD.md`) from being fully executable — those test cases explicitly note this dependency.
-- **CDR-09–11, 13–16** block full closure of the MSD, SCG, FRD, and VAE test cases they're cited in.
-- **CDR-17–27** block finalizing `SDD.md` §4.3 and any integration testing across the 12 interfaces.
-- **CDR-28** blocks finalizing `SDD.md` §4.4's physical schema and any performance/capacity testing.
+- **CDR-01–08** block `TC-VAE-06` (`../test/STD.md`) from being fully executable — that test case explicitly notes this dependency.
+- **CDR-09–16** block full closure of the MSD, SCG, FRD, ADP, and VAE test cases they're cited in.
+- **CDR-17–28** block finalizing `SDD.md` §4.3 and any integration testing across the 12 interfaces.
+- **CDR-29, 32** block finalizing `SDD.md` §4.4's physical schema, entity schemas, and attribute definitions, and any performance/capacity testing.
+- **CDR-30–31** block finalizing `SDD.md` §4.4's data-store inventory and any testing that depends on persisted Working Model, Finding, Operation, or Report data.
 
 ## 6. Notes
 

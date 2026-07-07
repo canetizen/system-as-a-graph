@@ -25,6 +25,7 @@
   .tab-labels label.current{color:var(--ink); border-bottom-color:var(--accent);}
   .badge{display:inline-flex; align-items:center; gap:5px; padding:2px 9px 2px 7px; border-radius:var(--radius-pill); font-size:var(--text-meta); font-weight:650;}
   .badge .dot{width:6px; height:6px; border-radius:50%; background:currentColor;}
+  .badge.info{background:color-mix(in srgb, var(--info) 16%, transparent); color:var(--info);}
   .badge.good{background:color-mix(in srgb, var(--good) 16%, transparent); color:var(--good);}
   .metric-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:12px;}
   .metric{border:1px solid var(--border); border-radius:var(--radius-chip); padding:12px; display:flex; flex-direction:column; gap:4px;}
@@ -43,7 +44,7 @@
 <div class="topbar">
   <div class="brand">SaaG</div>
   <div class="ctx">ORION / Frigate-Class Hull 4 / <b>v4.2.1</b></div>
-  <nav><a href="../02-model-setup-data-workflow/happy-path.html">Model Setup Data</a><a href="../03-analytical-data-workflow/happy-path.html">Analytical Data</a><a class="active" href="../05-model-visualization-and-navigation/happy-path.html">Explorer</a><a href="../08-findings-and-reporting/happy-path.html">Findings</a><a href="../09-installation-suitability-and-pipeline-gate/happy-path.html">Installation Suitability</a></nav>
+  <nav><a href="../02-model-setup-data-workflow/happy-path.html">Model Setup Data</a><a href="../03-analytical-data-workflow/happy-path.html">Analytical Data</a><a class="active" href="../05-model-visualization-and-navigation/happy-path.html">Explorer</a><a href="../08-findings-and-reporting/happy-path.html">Findings &amp; Reporting</a><a href="../09-installation-suitability-and-pipeline-gate/happy-path.html">Installation Suitability</a></nav>
   <div class="spacer"></div>
   <div class="status-feed"><span class="pulse"></span>op-9928 running</div>
   <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle dark/light mode"><span class="theme-icon">🌓</span></button>
@@ -55,8 +56,8 @@
   <div class="page-title">Analysis</div>
 
   <div class="ctx-banner">
-    <span class="badge good"><span class="dot"></span>Core System Model — Read Only</span>
-    <span class="prov">● Field Records bound</span>
+    <span class="badge info"><span class="dot"></span>Core System Model — Read Only</span>
+    <span class="prov">● System Field Records bound</span>
     <span style="color:var(--ink-muted); font-size:var(--text-meta);">csm-8841 · dataset-2298</span>
   </div>
 

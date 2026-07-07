@@ -415,6 +415,7 @@ The following data hand-offs occur between SaaG's internal capability areas; the
 | Digital System Model | The overall node-relationship model produced and analyzed by SaaG. |
 | Model Setup Data | The verified, controlled data set used to construct the Core System Model. |
 | Core System Model | The node-relationship representation of the system's structure, built from Model Setup Data. |
+| Working Model | A user-editable derivative of the Core System Model, scoped to the selected project/platform/system version, on which structural "what-if" changes — adding/removing nodes and relationships, updating attributes — can be made for hypothetical/candidate analysis without altering the bound Core System Model itself (SRS 3.2.6.17; SDD §5.6.3.4). |
 | Analytical Evaluation Data | Behavioral data — derived from System Field Records or Scenario Generator synthetic data — overlaid on the Core System Model for analysis. |
 | System Field Records | Telemetry and system data records collected from installed platforms in the field. |
 | Architectural Drift | A deviation between the architecture envisioned in the design and the runtime structure observed in field data. |

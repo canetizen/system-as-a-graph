@@ -21,4 +21,4 @@ Each screen has two layers, co-located in that screen's own folder: a `.md` spec
 
 Sequencing follows the user's actual journey through VAE: login → set up data → build model → explore/edit → analyze → review findings → gate a release.
 
-All 10 documents (00–09), and all 10 wireframes, are now drafted.
+All 10 screens (00–09) are drafted: each ships a `spec.md` plus its full set of wireframe variants (`00` has the style guide; `01`–`09` each have 4 state variants).

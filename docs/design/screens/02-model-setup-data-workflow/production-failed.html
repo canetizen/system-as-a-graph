@@ -70,6 +70,7 @@
   .badge.good{background:color-mix(in srgb, var(--good) 16%, transparent); color:var(--good);}
   .badge.critical{background:color-mix(in srgb, var(--critical) 18%, transparent); color:var(--critical);}
   .badge.neutral{background:var(--surface-2); color:var(--ink-2);}
+  .caption{font-size:var(--text-meta); color:var(--ink-muted); font-weight:600;}
 
   .dtable{width:100%; font-size:var(--text-body); border-collapse:collapse;}
   .dtable th{text-align:left; font-size:var(--text-meta); text-transform:uppercase; letter-spacing:.04em; color:var(--ink-muted); font-weight:600; padding:8px 12px; border-bottom:1px solid var(--border);}
@@ -99,10 +100,11 @@
     <a class="active" href="../02-model-setup-data-workflow/happy-path.html">Model Setup Data</a>
     <a href="../03-analytical-data-workflow/happy-path.html">Analytical Data</a>
     <a href="../05-model-visualization-and-navigation/happy-path.html">Explorer</a>
-    <a href="../08-findings-and-reporting/happy-path.html">Findings</a>
+    <a href="../08-findings-and-reporting/happy-path.html">Findings &amp; Reporting</a>
     <a href="../09-installation-suitability-and-pipeline-gate/happy-path.html">Installation Suitability</a>
   </nav>
   <div class="spacer"></div>
+  <div class="status-feed"><span class="pulse"></span>0 operations running</div>
   <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle dark/light mode"><span class="theme-icon">🌓</span></button>
   <div class="user"><div class="avatar">JD</div>jrdoe</div>
 </div>
@@ -114,7 +116,7 @@
   </div>
 
   <div class="panel">
-    <div class="panel-header"><h3>Data Source Accessibility</h3><span class="badge info"><span class="dot"></span>Continuously monitored</span></div>
+    <div class="panel-header"><h3>Data Source Accessibility</h3><span class="caption">Continuously monitored</span></div>
     <div class="panel-body" style="padding-top:4px;">
       <div class="src-row">
         <div class="name"><b>Configuration Management Database</b><span>EXT-IF-01</span></div>
@@ -160,7 +162,7 @@
   </div>
 
   <div class="panel">
-    <div class="panel-header"><h3>Create Core System Model</h3><span class="badge info"><span class="dot"></span>SRS 3.2.6.9</span></div>
+    <div class="panel-header"><h3>Create Core System Model</h3><span class="caption">SRS 3.2.6.9</span></div>
     <div class="action-row">
       <div class="desc">Uses the selected file above (<b class="tabular">msd-2026-07-04-1130</b>) to build the Core System Model.</div>
       <a href="../04-core-model-creation-and-structural-analysis/happy-path.html" class="btn primary" style="text-decoration:none;">Create Core System Model →</a>

@@ -12,7 +12,7 @@
   .topbar nav{display:flex; gap:2px; margin-left:8px;} .topbar nav a{padding:6px 10px; border-radius:var(--radius-chip); color:var(--ink-2); text-decoration:none; font-size:var(--text-body);}
   .topbar nav a.active{background:var(--surface); color:var(--ink); font-weight:600;} .spacer{flex:1;}
   .status-feed{display:flex; align-items:center; gap:6px; font-size:var(--text-meta); color:var(--ink-2);}
-  .pulse{width:7px; height:7px; border-radius:50%; background:var(--good); box-shadow:0 0 0 3px color-mix(in srgb, var(--good) 25%, transparent);}
+  .pulse{width:7px; height:7px; border-radius:50%; background:var(--info); box-shadow:0 0 0 3px color-mix(in srgb, var(--info) 25%, transparent);}
   .user{display:flex; align-items:center; gap:8px; color:var(--ink-2); font-size:var(--text-meta);}
   .avatar{width:22px; height:22px; border-radius:50%; background:var(--accent); color:var(--accent-ink); display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;}
   .wrap{max-width:1040px; margin:0 auto; padding:22px 24px 60px;}
@@ -45,10 +45,10 @@
 
 <div class="topbar">
   <div class="brand">SaaG</div>
-  <div class="ctx">ORION / Frigate-Class Hull 4 / <b>v4.2.1</b></div>
-  <nav><a href="../02-model-setup-data-workflow/happy-path.html">Model Setup Data</a><a href="../03-analytical-data-workflow/happy-path.html">Analytical Data</a><a class="active" href="../05-model-visualization-and-navigation/happy-path.html">Explorer</a><a href="../08-findings-and-reporting/happy-path.html">Findings</a><a href="../09-installation-suitability-and-pipeline-gate/happy-path.html">Installation Suitability</a></nav>
+  <div class="ctx">ORION / Frigate-Class Hull 4 / <b>v4.2.1</b> <span class="badge good" style="padding:0 6px;">Effective</span></div>
+  <nav><a class="active" href="../02-model-setup-data-workflow/happy-path.html">Model Setup Data</a><a href="../03-analytical-data-workflow/happy-path.html">Analytical Data</a><a href="../05-model-visualization-and-navigation/happy-path.html">Explorer</a><a href="../08-findings-and-reporting/happy-path.html">Findings &amp; Reporting</a><a href="../09-installation-suitability-and-pipeline-gate/happy-path.html">Installation Suitability</a></nav>
   <div class="spacer"></div>
-  <div class="status-feed"><span class="pulse"></span>Model ready</div>
+  <div class="status-feed"><span class="pulse"></span>0 operations running</div>
   <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle dark/light mode"><span class="theme-icon">🌓</span></button>
   <div class="user"><div class="avatar">JD</div>jrdoe</div>
 </div>
@@ -77,7 +77,7 @@
     <div class="count-grid">
       <div class="count-card zero"><div class="n">0</div><div class="label">Circular dependencies</div><a href="../08-findings-and-reporting/happy-path.html">View in Findings →</a></div>
       <div class="count-card"><div class="n" style="color:var(--serious)">3</div><div class="label">Disconnected / unmatched relationships</div><a href="../08-findings-and-reporting/happy-path.html">View in Findings →</a></div>
-      <div class="count-card zero"><div class="n">✓</div><div class="label">Runtime-env relationships analyzed</div><a href="../08-findings-and-reporting/happy-path.html">View in Findings →</a></div>
+      <div class="count-card"><div class="n">58</div><div class="label">Runtime-env relationships analyzed</div><a href="../08-findings-and-reporting/happy-path.html">View in Findings →</a></div>
     </div>
   </div>
 

@@ -25,7 +25,7 @@ This screen lets the user produce or select a Model Setup Data file for the curr
 | Display missing-data / access / authorization / format / integrity errors from production | `../../../requirements/SRS.md` 3.2.6.8 |
 | Start Core System Model creation from the selected file; monitor result (successful / failed) | `../../../requirements/SRS.md` 3.2.6.9 |
 | Model Setup Data Workflow Manager CSU | `../../SDD.md` §5.6.3.2 |
-| The four external sources MSD acquires from | `../../SDD.md` §4.3 EXT-IF-01 (Configuration Mgmt DB), EXT-IF-02 (Source Code Repo), EXT-IF-03 (Package Repo), EXT-IF-04 (Network Topology) |
+| The four external sources MSD acquires from | `../../SDD.md` §4.3 EXT-IF-01 (Configuration Mgmt DB), EXT-IF-02 (Source Code Repo), EXT-IF-03 (Software Units Package Repository), EXT-IF-04 (Network Topology) |
 | Model Setup Data handoff to CSM (triggered by this screen's "Create Core System Model" action) | `../../SDD.md` §4.3 INT-IF-01 |
 
 **A note on where the "create Core System Model" trigger lives**: `../../SDD.md` §5.6.3.5's purpose prose also mentions "start the Core System Model creation process and monitor its result," but the SDD's own authoritative traceability table (§6) assigns that action to **this** CSU (3.2.6.9 → §5.6.3.2), while §5.6.3.5 is formally traced only to 3.2.6.15–16, 18–19, 28–29 — the *read-only analysis views* of an already-built model, not the trigger itself. This doc follows the traceability table: the "Create Core System Model" action and its success/failed result live here; `04-core-model-creation-and-structural-analysis.md` picks up from an existing model and covers binding/matching status and dependency analysis.
@@ -46,7 +46,7 @@ The user wants to get from "no Model Setup Data yet" to "a Core System Model exi
 | Region | Contents |
 |---|---|
 | Global header/nav | Persistent (foundations §4.2). |
-| **Data Source Accessibility panel** | Always-visible (not on-demand), one row per external source: Configuration Management DB, Source Code Repository, Package Repository, Network Topology Data Source — each with a Reachable/Unreachable indicator (§4). |
+| **Data Source Accessibility panel** | Always-visible (not on-demand), one row per external source: Configuration Management DB, Source Code Repository, Software Units Package Repository, Network Topology Data Source — each with a Reachable/Unreachable indicator (§4). |
 | **Model Setup Data file list** | Table of existing files for the current project/platform/system-version (foundations §6.5 conventions): file reference, generation time, validation status. Row selection marks the "active" file for the Create action below. |
 | **Production action row** | "Start New Production Run" button + its status badge; expands to show per-error detail (Error Banner, foundations §6.3) if the run fails. |
 | **Create Core System Model action row** | Enabled once a file is selected (existing or freshly produced); its own status badge; on success, offers a "View in Explorer" link into `05`. |

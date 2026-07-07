@@ -121,11 +121,11 @@ SRS 3.2.6.44 defines exactly five severity levels for findings: **informational,
 |---|---|---|---|---|---|
 | Informational | neutral info (categorical slot 1 / blue) | `#3987e5` | `#2a78d6` | — (paired with icon+label per §6.1, not relied on alone) | — |
 | Low | status: good | `#0ca30c` | `#0ca30c` | 5.19 | 3.27 |
-| Medium | status: warning | `#fab219` | `#fab219` | 9.49 | 1.79 (sub-3:1 — icon+label required) |
-| High | status: serious | `#ec835a` | `#ec835a` | 6.60 | 2.57 (sub-3:1 — icon+label required) |
-| Critical | status: critical | `#d03b3b` | `#d03b3b` | 3.62 | 4.68 |
+| Medium | status: warning | `#fab219` | `#c98500` | 9.49 | 2.99 (sub-3:1 — icon+label required) |
+| High | status: serious | `#ec835a` | `#c85a36` | 6.60 | 4.11 |
+| Critical | status: critical | `#d03b3b` | `#c22f2f` | 3.62 | 5.47 |
 
-Every severity badge ships with an icon and the text label, never color alone — status colors are never reused for series and are always paired with icon + label — which also covers the two light-mode sub-3:1 cases.
+Every severity badge ships with an icon and the text label, never color alone — status colors are never reused for series and are always paired with icon + label — which also covers the remaining light-mode sub-3:1 case (Medium).
 
 ### 5.3 Color System — Process Status Scale (fixed, SRS 3.2.6.6 / parallel MSD/ADP/CSM paragraphs)
 
@@ -135,7 +135,7 @@ Production and analysis processes are reported as one of exactly three states: *
 |---|---|---|---|
 | In progress | neutral info (same slot as "informational" — a transient, non-evaluative state) | `#3987e5` | `#2a78d6` |
 | Successful | status: good | `#0ca30c` | `#0ca30c` |
-| Failed | status: critical | `#d03b3b` | `#d03b3b` |
+| Failed | status: critical | `#d03b3b` | `#c22f2f` |
 
 Reusing "good"/"critical" for successful/failed and the neutral info token for in-progress keeps exactly two reserved meanings ("good," "critical") consistent across both the severity scale and the status scale, instead of inventing a second unrelated set of colors for the same underlying good/bad axis.
 
@@ -184,9 +184,18 @@ Sized for dense tabular/graph UI, per the "dense enterprise dashboard" tone deci
 | Type — body | 13px / 1.4 line-height | Table cells, list rows, form fields. |
 | Type — small/meta | 11px / 1.3 | Timestamps, IDs, provenance tags. |
 | Type — heading | 15–18px, semibold | Panel/section headers. |
+| Type — title | 20px, semibold (650) | Page-level title only (e.g. each screen's top-of-page heading). |
 | Typeface | `system-ui, -apple-system, "Segoe UI", sans-serif` | All text, including headings — no display/serif face, per standard dense-UI typography practice. |
 | Figures | Tabular figures (`font-variant-numeric: tabular-nums`) | Any column of numbers that must align (scores, counts, timestamps). |
 | Spacing unit | 4px base | Row height 32px (8×4), panel padding 12–16px, section gaps 24px. |
+
+**Corner radius**: three fixed radius tokens, reused everywhere rather than picked per component:
+
+| Token | Value | Use |
+|---|---|---|
+| Radius — panel | 8px | Panels, cards, the app-shell container. |
+| Radius — chip | 6px | Buttons, form inputs, nav links, small controls. |
+| Radius — pill | 999px (fully rounded) | Badges, chips, avatars — anything pill/circle-shaped. |
 
 ### 5.6 Responsive Layout
 
@@ -213,6 +222,8 @@ A pill combining icon + label + the color from §5.2/§5.3. Label text is always
 ### 6.2 Model-Mode Indicator
 
 A persistent, unmissable indicator (not just a subtle label) of whether the current view is the **read-only Core System Model** or an **editable Working Model** (SDD §5.6.1, §5.6.3.4). Required wherever the Explorer or Editor is shown (`05`, `06`). This is the direct UI expression of Principle §2.1.
+
+A third `.mode-banner` variant, **Candidate Model** (`.mode-banner.candidate`), covers a hypothetical/candidate model under evaluation — not yet the bound Working Model (used where the Explorer previews a candidate before binding it, e.g. `05`'s candidate-evaluation view). It reuses the neutral **info** token (§5.1/§5.2 — same slot as "Informational" severity and "In progress" status, representing a transient, non-evaluative state) rather than a node-type categorical color, since being a "candidate" is a transient evaluation state, not an entity identity.
 
 ### 6.3 Error / Validation Banner
 

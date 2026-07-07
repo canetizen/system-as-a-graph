@@ -36,6 +36,7 @@
   .badge .dot{width:6px; height:6px; border-radius:50%; background:currentColor;}
   .badge.info{background:color-mix(in srgb, var(--info) 16%, transparent); color:var(--info);}
   .badge.good{background:color-mix(in srgb, var(--good) 16%, transparent); color:var(--good);}
+  .caption{font-size:var(--text-meta); color:var(--ink-muted); font-weight:600;}
   .field{display:flex; flex-direction:column; gap:5px;} .field label{font-size:var(--text-meta); color:var(--ink-2); font-weight:600;}
   .field input, .field select{font-family:var(--font-ui); font-size:var(--text-body); padding:7px 9px; border-radius:var(--radius-chip); border:1px solid var(--border); background:var(--surface); color:var(--ink);}
   .btn{display:inline-flex; align-items:center; gap:6px; border:1px solid var(--border); background:var(--surface-2); color:var(--ink); font-family:var(--font-ui); font-size:var(--text-body); font-weight:600; padding:7px 13px; border-radius:var(--radius-chip); cursor:pointer;}
@@ -52,9 +53,10 @@
 
 <div class="topbar">
   <div class="brand">SaaG</div>
-  <div class="ctx">ORION / Frigate-Class Hull 4 / <b>v4.2.1</b></div>
-  <nav><a href="../02-model-setup-data-workflow/happy-path.html">Model Setup Data</a><a class="active" href="../03-analytical-data-workflow/happy-path.html">Analytical Data</a><a href="../05-model-visualization-and-navigation/happy-path.html">Explorer</a><a href="../08-findings-and-reporting/happy-path.html">Findings</a><a href="../09-installation-suitability-and-pipeline-gate/happy-path.html">Installation Suitability</a></nav>
+  <div class="ctx">ORION / Frigate-Class Hull 4 / <b>v4.2.1</b> <span class="badge good" style="padding:0 6px;">Effective</span></div>
+  <nav><a href="../02-model-setup-data-workflow/happy-path.html">Model Setup Data</a><a class="active" href="../03-analytical-data-workflow/happy-path.html">Analytical Data</a><a href="../05-model-visualization-and-navigation/happy-path.html">Explorer</a><a href="../08-findings-and-reporting/happy-path.html">Findings &amp; Reporting</a><a href="../09-installation-suitability-and-pipeline-gate/happy-path.html">Installation Suitability</a></nav>
   <div class="spacer"></div>
+  <div class="status-feed"><span class="pulse"></span>0 operations running</div>
   <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle dark/light mode"><span class="theme-icon">🌓</span></button>
   <div class="user"><div class="avatar">JD</div>jrdoe</div>
 </div>
@@ -69,8 +71,11 @@
   </div>
 
   <div class="panel">
-    <div class="panel-header"><h3>Field Records Catalog</h3><span class="badge info"><span class="dot"></span>SRS 3.2.6.11</span></div>
+    <div class="panel-header"><h3>Field Records Catalog</h3><span class="caption">SRS 3.2.6.11</span></div>
     <div class="filter-row">
+      <span class="chip active">Project: ORION</span>
+      <span class="chip active">Platform: Frigate-Class Hull 4</span>
+      <span class="chip active">Version: v4.2.1</span>
       <span class="chip active">Source: sensor-bus-9</span>
       <span class="chip active">Upload: last 24 hours</span>
     </div>

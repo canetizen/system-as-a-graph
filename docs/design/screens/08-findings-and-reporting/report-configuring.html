@@ -34,6 +34,7 @@
   .field select{font-family:var(--font-ui); font-size:var(--text-body); padding:7px 9px; border-radius:var(--radius-chip); border:1px solid var(--border); background:var(--surface); color:var(--ink); width:100%;}
   .dialog-note{font-size:var(--text-meta); color:var(--ink-muted); margin-bottom:16px;}
   .dialog-actions{display:flex; justify-content:flex-end; gap:8px;}
+  .prov{display:inline-flex; align-items:center; gap:6px; padding:3px 10px; border-radius:var(--radius-pill); background:var(--surface-2); border:1px solid var(--border); font-size:var(--text-meta); color:var(--ink-2);}
   .theme-toggle{background:transparent; border:1px solid var(--border); border-radius:var(--radius-chip); padding:6px 10px; cursor:pointer; display:flex; align-items:center; gap:6px; color:var(--ink-2); font-size:var(--text-body); transition:all 0.2s;}
   .theme-toggle:hover{background:var(--surface); border-color:var(--accent); color:var(--ink);}
   .theme-icon{font-size:14px; line-height:1;}
@@ -42,7 +43,7 @@
 <div class="topbar">
   <div class="brand">SaaG</div>
   <div class="ctx">ORION / Frigate-Class Hull 4 / <b>v4.2.1</b></div>
-  <nav><a href="../02-model-setup-data-workflow/happy-path.html">Model Setup Data</a><a href="../03-analytical-data-workflow/happy-path.html">Analytical Data</a><a href="../05-model-visualization-and-navigation/happy-path.html">Explorer</a><a class="active" href="../08-findings-and-reporting/happy-path.html">Findings</a><a href="../09-installation-suitability-and-pipeline-gate/happy-path.html">Installation Suitability</a></nav>
+  <nav><a href="../02-model-setup-data-workflow/happy-path.html">Model Setup Data</a><a href="../03-analytical-data-workflow/happy-path.html">Analytical Data</a><a href="../05-model-visualization-and-navigation/happy-path.html">Explorer</a><a class="active" href="../08-findings-and-reporting/happy-path.html">Findings &amp; Reporting</a><a href="../09-installation-suitability-and-pipeline-gate/happy-path.html">Installation Suitability</a></nav>
   <div class="spacer"></div>
   <div class="status-feed"><span class="pulse"></span>op-9928 running</div>
   <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle dark/light mode"><span class="theme-icon">🌓</span></button>
@@ -61,6 +62,7 @@
   <div class="filter-row">
     <span class="chip">All operations</span>
     <span class="chip">Result: Non-Conforming</span>
+    <span class="prov">● System Field Records bound</span>
   </div>
 
   <div class="overlay">
@@ -71,6 +73,7 @@
         <button>Detailed</button>
       </div>
       <div class="field"><label>Scope</label><select><option>Current filters (2 findings)</option><option>All findings for this context</option></select></div>
+      <div class="field"><label>Provenance</label><span class="prov">● System Field Records bound</span></div>
       <div class="dialog-note">Includes project/platform/version, model and dataset used, operation identifiers/types/times, evaluation result, findings, affected entities, and severity levels — SRS 3.2.6.49. Export file format is undetermined (CDR-13).</div>
       <div class="dialog-actions">
         <button class="btn">Cancel</button>
