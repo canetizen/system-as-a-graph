@@ -1,6 +1,6 @@
 # SaaG Screens Spec
 
-A modern, lightweight screen-by-screen UX/UI design specification for the SaaG (System as a Graph) Digital System Model's user-facing component, **VAE**. Unlike the rest of `docs/` (SRS, SDD, STP/STD, CDR), this document set does not follow a MIL-STD-498 Data Item Description — none exists for UI/UX design.
+A modern, lightweight screen-by-screen UX/UI design specification for the SaaG (System as a Graph) Digital System Model's user-facing component, **VAE**. Unlike the rest of `docs/` (SRS, SDD, STD, CDR), this document set does not follow a MIL-STD-498 Data Item Description — none exists for UI/UX design.
 
 Each screen has two layers, co-located in that screen's own folder: a `.md` spec (text + Mermaid diagrams, every claim traced back to SRS/SDD/CDR — the authoritative source) and its `*.html` wireframe variants (rendered visuals, built on one shared token system — see foundations §5 / [`style-guide.html`](00-foundations/style-guide.html)). The `.md` is what to cite; the wireframes are what to look at.
 

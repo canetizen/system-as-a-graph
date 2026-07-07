@@ -5,11 +5,11 @@
 
 ## 1. Purpose
 
-This is not a MIL-STD-498 data item — Critical Design Review is a review milestone, not a deliverable format. This register exists to consolidate, in one place, every design point that `../requirements/SRS.md`, `SDD.md`, and `../test/STP.md` deliberately left as "to be determined during the critical design phase" rather than inventing a value. Its purpose is to give the CDR board a single checklist of decisions that must be closed before those documents (and the tests in `../test/STD.md` that depend on them) can be considered final.
+This is not a MIL-STD-498 data item — Critical Design Review is a review milestone, not a deliverable format. This register exists to consolidate, in one place, every design point that `../requirements/SRS.md`, `SDD.md`, and `../test/STD.md` deliberately left as "to be determined during the critical design phase" rather than inventing a value. Its purpose is to give the CDR board a single checklist of decisions that must be closed before those documents (and the tests in `../test/STD.md` that depend on them) can be considered final.
 
 ## 2. Referenced Documents
 
-- `../requirements/SRS.md`, `SDD.md`, `../test/STP.md`, `../test/STD.md` — the SaaG MIL-STD-498 document set.
+- `../requirements/SRS.md`, `SDD.md`, `../test/STD.md` — the SaaG MIL-STD-498 document set.
 
 ## 3. How to Use This Register
 
@@ -45,8 +45,8 @@ Each item has a **Status**: `Open` (default, no decision yet), `Resolved` (decis
 
 | ID | Item | Source | Status |
 |---|---|---|---|
-| CDR-15 | Field Records Database storage hardware disk capacity | SRS 3.2.3.6; STP §3.2 | Open |
-| CDR-16 | Concurrent user count for production-pipeline and analysis/simulation operations | SRS 3.2.5.19; STP §3.2 | Open |
+| CDR-15 | Field Records Database storage hardware disk capacity | SRS 3.2.3.6; STD §3.2 | Open |
+| CDR-16 | Concurrent user count for production-pipeline and analysis/simulation operations | SRS 3.2.5.19; STD §3.2 | Open |
 
 ### 4.4 Interface Protocols
 
