@@ -12,7 +12,7 @@ This document is the Software Development Plan (SDP) for the **System as a Graph
 
 ### 1.2 System Overview
 
-See `../requirements/SRS.md` §1.2 and `../design/SDD.md` §1.2 for the SaaG system overview. SaaG is decomposed into 6 CSCs (MSD, SCG, FRD, ADP, CSM, VAE — `../design/SDD.md` §4.1), 12 interfaces (`../design/IDD.md`), 5 data stores (`../design/SDD.md` §4.4), and 31 SDD-CSU-aligned tests (`../test/STP.md`/`../test/STD.md`).
+See `../requirements/SRS.md` §1.2 and `../design/SDD.md` §1.2 for the SaaG system overview. SaaG is decomposed into 6 CSCs (MSD, SCG, FRD, ADP, CSM, VAE — `../design/SDD.md` §4.1), 12 interfaces (`../design/SDD.md` §4.3), 5 data stores (`../design/SDD.md` §4.4), and 31 SDD-CSU-aligned tests (`../test/STP.md`/`../test/STD.md`).
 
 ### 1.3 Document Overview
 
@@ -20,14 +20,14 @@ Section 3 states the development approach. Section 4 plans general and detailed 
 
 ### 1.4 Relationship to Other Plans
 
-This SDP governs the process that produces and consumes the rest of the SaaG document set: `../requirements/SRS.md` (requirements analysis), `../design/SDD.md`/`../design/IDD.md` (design), `../test/STP.md`/`../test/STD.md` (test planning), and `../design/CDR.md` (the open-items gate that must clear before design can be finalized and coding can proceed on the items it lists).
+This SDP governs the process that produces and consumes the rest of the SaaG document set: `../requirements/SRS.md` (requirements analysis), `../design/SDD.md` (design), `../test/STP.md`/`../test/STD.md` (test planning), and `../design/CDR.md` (the open-items gate that must clear before design can be finalized and coding can proceed on the items it lists).
 
 ---
 
 ## 2. Referenced Documents
 
 - MIL-STD-498, *Software Development and Documentation*, Data Item Description DI-IPSC-81427 (Software Development Plan).
-- `../requirements/SRS.md`, `../design/SDD.md`, `../design/IDD.md`, `../test/STP.md`, `../test/STD.md`, `../design/CDR.md` — the SaaG MIL-STD-498 document set.
+- `../requirements/SRS.md`, `../design/SDD.md`, `../test/STP.md`, `../test/STD.md`, `../design/CDR.md` — the SaaG MIL-STD-498 document set.
 
 ---
 
@@ -35,7 +35,7 @@ This SDP governs the process that produces and consumes the rest of the SaaG doc
 
 ### 3.1 Project Objectives
 
-Design, build, and qualify the SaaG CSCI so that it satisfies every requirement in `../requirements/SRS.md`, consistent with the design in `../design/SDD.md`/`../design/IDD.md` and verified against `../test/STP.md`/`../test/STD.md`.
+Design, build, and qualify the SaaG CSCI so that it satisfies every requirement in `../requirements/SRS.md`, consistent with the design in `../design/SDD.md` and verified against `../test/STP.md`/`../test/STD.md`.
 
 ### 3.2 Development Approach
 
@@ -52,7 +52,7 @@ SaaG is developed **iteratively and incrementally**: each increment carries a su
 
 Each increment repeats the activity cycle in Section 4.3 for its CSC(s) only.
 
-**External interface mocking and adaptor layer**: All external interfaces (EXT-IF-01 through EXT-IF-07, `../design/IDD.md` §3.1) must be mocked during development because the real external systems are not available. An adaptor layer must be implemented to isolate the CSCI's internal logic from the specifics of each external interface, so that real interfaces can be integrated later by replacing only the adaptor implementations without modifying the CSC internals.
+**External interface mocking and adaptor layer**: All external interfaces (EXT-IF-01 through EXT-IF-07, `../design/SDD.md` §4.3) must be mocked during development because the real external systems are not available. An adaptor layer must be implemented to isolate the CSCI's internal logic from the specifics of each external interface, so that real interfaces can be integrated later by replacing only the adaptor implementations without modifying the CSC internals.
 
 ---
 
@@ -60,7 +60,7 @@ Each increment repeats the activity cycle in Section 4.3 for its CSC(s) only.
 
 ### 4.1 Software Development Process
 
-Within each increment: (a) confirm the applicable `../requirements/SRS.md` §3.2.x requirements for the CSC(s) in scope; (b) confirm/refine the applicable `../design/SDD.md` §5.x design (and `../design/IDD.md` sections it references); (c) implement the CSUs; (d) execute the applicable `../test/STP.md`/`../test/STD.md` test cases; (e) hold an increment review before the next increment begins. `../design/CDR.md` items relevant to an increment's CSC(s) must be `Resolved` (not `Open`) before that increment's coding activity begins.
+Within each increment: (a) confirm the applicable `../requirements/SRS.md` §3.2.x requirements for the CSC(s) in scope; (b) confirm/refine the applicable `../design/SDD.md` §5.x design (and the §4.3 interface sections it references); (c) implement the CSUs; (d) execute the applicable `../test/STP.md`/`../test/STD.md` test cases; (e) hold an increment review before the next increment begins. `../design/CDR.md` items relevant to an increment's CSC(s) must be `Resolved` (not `Open`) before that increment's coding activity begins.
 
 ### 4.2 General Plans for Software Development
 
@@ -70,7 +70,7 @@ Within each increment: (a) confirm the applicable `../requirements/SRS.md` §3.2
 
 **4.2.3 Reusable Software Products**: none identified in the current document set; to be assessed per increment.
 
-**4.2.4 Handling of Critical Requirements**: the CSCI's security-critical requirement (LDAP-based authentication/authorization, `../requirements/SRS.md` 3.2.6.3, `../design/IDD.md` EXT-IF-06) is tracked with the same rigor as any other CDR.md item (CDR-21) and must be resolved before the VAE increment's coding activity begins.
+**4.2.4 Handling of Critical Requirements**: the CSCI's security-critical requirement (LDAP-based authentication/authorization, `../requirements/SRS.md` 3.2.6.3, `../design/SDD.md` §4.3 EXT-IF-06) is tracked with the same rigor as any other CDR.md item (CDR-21) and must be resolved before the VAE increment's coding activity begins.
 
 **4.2.5 Recording Rationale**: design rationale is recorded at the point of decision — CSC-wide and CSCI-wide design decisions in `../design/SDD.md` §3/§5.x.1, database-wide decisions in `../design/SDD.md` §4.4 — rather than duplicated in this plan.
 
@@ -81,7 +81,7 @@ Within each increment: (a) confirm the applicable `../requirements/SRS.md` §3.2
 For each increment (Section 3.2), the following activities are performed for that increment's CSC(s):
 
 1. **Software Requirements Analysis** — confirm the `../requirements/SRS.md` §3.2.x requirements in scope for the increment.
-2. **Software Design** — confirm/finalize the `../design/SDD.md` §5.x CSC/CSU design, the `../design/IDD.md` interfaces it uses, and the `../design/SDD.md` §4.4 stores it reads/writes.
+2. **Software Design** — confirm/finalize the `../design/SDD.md` §5.x CSC/CSU design, the `../design/SDD.md` §4.3 interfaces it uses, and the `../design/SDD.md` §4.4 stores it reads/writes.
 3. **Software Coding** — implement the CSUs identified in `../design/SDD.md` §5.x for the increment's CSC(s), including the adaptor layer for external interfaces and mock implementations where real systems are unavailable.
 4. **Unit and Integration Testing** — execute the `../test/STD.md` test cases traced to the increment's CSUs (per `../test/STP.md` §4).
 5. **CSCI Qualification Testing** — once Increments 1–4 are complete, execute the full `../test/STP.md`/`../test/STD.md` test suite (all 31 test cases) against the assembled CSCI. Increment 5 (Testing) covers this activity in full, including any additional qualification tests needed beyond unit and integration testing.
@@ -107,7 +107,7 @@ Calendar dates are outside the scope of this document and depend on the project'
 The following roles are needed; specific individuals, headcounts, and organizational/contractual structure are not defined in the current document set:
 
 - Software/Project Lead — overall responsibility for this plan and increment reviews.
-- Systems Engineer — maintains `../requirements/SRS.md`/`../design/SDD.md`/`../design/IDD.md` consistency across increments.
+- Systems Engineer — maintains `../requirements/SRS.md`/`../design/SDD.md` consistency across increments.
 - CSC Development Team(s) — one per CSC (or grouped as needed per increment), implementing the CSUs in `../design/SDD.md` §5.x.
 - Test Team — independent of the CSC development teams, executes `../test/STP.md`/`../test/STD.md` (per `../test/STP.md` §3.3).
 - Configuration Management — manages versions of the document set and source code.

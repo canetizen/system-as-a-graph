@@ -12,7 +12,7 @@ This document is the Software Test Plan (STP) for the **System as a Graph (SaaG)
 
 ### 1.2 System Overview
 
-SaaG is a static digital system model built using an architectural digital twin approach, decomposed in `../design/SDD.md` into 6 CSCs (MSD, SCG, FRD, ADP, CSM, VAE) and 31 CSUs. Its external and internal interfaces are specified in `../design/IDD.md`; its persistent data stores in `../design/SDD.md` §4.4.
+SaaG is a static digital system model built using an architectural digital twin approach, decomposed in `../design/SDD.md` into 6 CSCs (MSD, SCG, FRD, ADP, CSM, VAE) and 31 CSUs. Its external and internal interfaces are specified in `../design/SDD.md` §4.3; its persistent data stores in `../design/SDD.md` §4.4.
 
 ### 1.3 Document Overview
 
@@ -25,7 +25,6 @@ Section 3 describes the test environment. Section 4 identifies the 31 tests plan
 - MIL-STD-498, *Software Development and Documentation*, Data Item Description DI-IPSC-81438 (Software Test Plan).
 - `../requirements/SRS.md` — Software Requirements Specification for the SaaG CSCI.
 - `../design/SDD.md` — Software Design Description for the SaaG CSCI.
-- `../design/IDD.md` — Interface Design Description for the SaaG CSCI.
 
 ---
 
@@ -35,7 +34,7 @@ Section 3 describes the test environment. Section 4 identifies the 31 tests plan
 
 ### 3.1 Software Items
 
-The test environment requires a stand-in or harness for each external interface identified in `../design/IDD.md` §3, plus representative test data for each capability area:
+The test environment requires a stand-in or harness for each external interface identified in `../design/SDD.md` §4.3, plus representative test data for each capability area:
 
 - A test/mock Configuration Management Database (EXT-IF-01)
 - A test/mock Source Code Repository (EXT-IF-02)

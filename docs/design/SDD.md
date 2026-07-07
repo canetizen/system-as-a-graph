@@ -16,7 +16,7 @@ SaaG is a static digital system model built using an architectural digital twin 
 
 ### 1.3 Document Overview
 
-This SDD specifies the CSCI-wide design decisions (Section 3), the CSCI's architectural decomposition into Computer Software Components (CSCs) and its concept of execution (Section 4), the detailed design of each CSC down to Computer Software Unit (CSU) level (Section 5), and the traceability of every SRS requirement to the design element that satisfies it (Section 6). Interface characteristics are specified in the Interface Design Description (IDD) and are only referenced here, not duplicated.
+This SDD specifies the CSCI-wide design decisions (Section 3), the CSCI's architectural decomposition into Computer Software Components (CSCs), its concept of execution, interface characteristics, and database design (Section 4), the detailed design of each CSC down to Computer Software Unit (CSU) level (Section 5), and the traceability of every SRS requirement to the design element that satisfies it (Section 6).
 
 ---
 
@@ -24,7 +24,6 @@ This SDD specifies the CSCI-wide design decisions (Section 3), the CSCI's archit
 
 - MIL-STD-498, *Software Development and Documentation*, Data Item Description DI-IPSC-81435 (Software Design Description).
 - `../requirements/SRS.md` — Software Requirements Specification for the SaaG CSCI (parent requirements document for this SDD).
-- `IDD.md` — Interface Design Description for the SaaG CSCI.
 
 ---
 
@@ -64,7 +63,7 @@ The SaaG CSCI is decomposed into 6 Computer Software Components (CSCs), mapped 1
 
 ### 4.3 Interface Design
 
-Interface characteristics for all external interfaces (configuration management DB, source code repository, package repository, network topology source, field-data recording mechanism, LDAP directory service, CLI/build automation) and internal interfaces (MSD→CSM, SCG→ADP, FRD→ADP, ADP→CSM, CSM→VAE) are specified in `IDD.md` §3.3 and §3.4 respectively. This SDD does not restate them.
+SaaG has 12 interfaces: 7 external interfaces connecting the CSCI to systems outside its boundary, and 5 internal interfaces connecting its 6 CSCs to one another. External: **EXT-IF-01** Configuration Management Database (bidirectional query/response with MSD — project, platform, and system version information, including the effective version); **EXT-IF-02** Source Code Repository (inbound to MSD — source code, installation scripts, and configuration files per software unit); **EXT-IF-03** Software Units Package Repository (inbound to MSD — package/version artifacts); **EXT-IF-04** Network Topology Data Source (inbound to MSD, automatic or manual entry — network topology parameters); **EXT-IF-05** System Field Data Recording Mechanism (inbound upload to FRD — telemetry and system data records from field platforms); **EXT-IF-06** LDAP Directory Service (bidirectional with VAE — authentication request/response); **EXT-IF-07** Build Automation Tools / CLI (bidirectional with VAE — analysis and installation-suitability requests, ongoing-operation status, and conformance results). Internal: **INT-IF-01** Model Setup Data Handoff (MSD → CSM); **INT-IF-02** Synthetic Data Handoff (SCG → ADP); **INT-IF-03** Field Records Handoff (FRD → ADP); **INT-IF-04** Analytical Evaluation Data Handoff (ADP → CSM); **INT-IF-05** Core Model Access (CSM → VAE, read-only). Every data-acquisition interface reports its own deficiency/access/format/integrity errors back through itself, consistent with the CSCI-wide validation pattern (§3 decision 5). Communication method and protocol for every interface, and the choice between automatic and manual acquisition for EXT-IF-04, are to be determined during the critical design phase.
 
 ### 4.4 Database Design
 
@@ -85,7 +84,7 @@ MSD is composed of 5 CSUs: Data Source Connector & Configuration Manager, Config
 #### 5.1.3 CSU detailed design
 
 **5.1.3.1 Data Source Connector & Configuration Manager**
-Purpose: manage controlled, traceable access to the four external data sources (configuration management database, source code repository, package repository, network topology data source), including user-definable per-source configuration (source type, name, access method, connection address, credentials) and the two supported methods of network topology acquisition (automatic or manual entry). Traces to SRS 3.2.1.2–4. Interface characteristics: see IDD. Data: see §4.4.
+Purpose: manage controlled, traceable access to the four external data sources (configuration management database, source code repository, package repository, network topology data source), including user-definable per-source configuration (source type, name, access method, connection address, credentials) and the two supported methods of network topology acquisition (automatic or manual entry). Traces to SRS 3.2.1.2–4. Interface characteristics: see §4.3. Data: see §4.4.
 
 **5.1.3.2 Configuration Data Acquisition**
 Purpose: retrieve current project, platform, and system version information from the configuration management database; mark the effective version; mark the acquisition process with an error status on deficiency, access error, or format incompatibility. Traces to SRS 3.2.1.5–9, 12.

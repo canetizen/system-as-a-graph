@@ -25,14 +25,14 @@ Lets the **Interactive User** (foundations §3) see installation-suitability / p
 | A critical-severity finding or a blocking-rule violation forces "non-conforming" regardless of overall score; the blocking decision is transmitted to the automation client | `../../requirements/SRS.md` 3.2.6.53 |
 | Evaluate one or more software units under independent operation identifiers; report per-unit score/class/blocking-findings/decision plus an aggregate result, in machine-processable format | `../../requirements/SRS.md` 3.2.6.54 |
 | Automation Interface CSU / Installation Suitability Evaluator CSU | `../../design/SDD.md` §5.6.3.11 / §5.6.3.12 |
-| Build Automation Tools / CLI interface | `../../design/IDD.md` EXT-IF-07 |
+| Build Automation Tools / CLI interface | `../../design/SDD.md` §4.3 EXT-IF-07 |
 | Underlying candidate model construct | `../../design/SDD.md` §5.5.3.6 Candidate Evaluation Model Builder, SRS 3.2.5.20; `../../design/SDD.md` §4.1 `CoreSystemModel.is_candidate_evaluation` / `candidate_software_unit_ref` |
 | Scoring/classification method — open item | `../../design/CDR.md` CDR-14 |
 | CLI/build-automation protocol and machine-processable result format — open item | `../../design/CDR.md` CDR-22 |
 
 **Another gap in the same family as `06`/`08`**: beyond the two `CoreSystemModel` fields above, there is **no database entity for the control-rule catalog, per-unit score/class/decision, or aggregate result**. This screen's data shapes (§6) are transcribed from SRS 3.2.6.52–54, not read from a designed schema.
 
-**This screen's one inferred extension, flagged explicitly**: SRS ties 3.2.6.51/54 to "the production deployment pipeline," which every other reference in the doc set (`../../design/SDP.md`, IDD EXT-IF-07) treats as CLI/automation-initiated. Nothing in SRS/SDD forbids an Interactive User from also triggering an ad-hoc evaluation directly, and it's a natural, low-risk UI affordance — so this doc includes a manual "Evaluate Candidate Software Unit" trigger (§4), clearly marked here as this document's own addition, not a cited requirement.
+**This screen's one inferred extension, flagged explicitly**: SRS ties 3.2.6.51/54 to "the production deployment pipeline," which every other reference in the doc set (`../../design/SDP.md`, SDD §4.3 EXT-IF-07) treats as CLI/automation-initiated. Nothing in SRS/SDD forbids an Interactive User from also triggering an ad-hoc evaluation directly, and it's a natural, low-risk UI affordance — so this doc includes a manual "Evaluate Candidate Software Unit" trigger (§4), clearly marked here as this document's own addition, not a cited requirement.
 
 **A second inferred extension, same posture**: this doc also allows any Interactive User viewing an evaluation operation to cancel it while in progress (foundations §6.7) — including one initiated by the Automation Client via CLI — since SRS 3.2.6.50 already requires ongoing-operation status to be shared/visible across both actor types; making a visible operation actionable is a small extension of that, not a new capability class. Cancelling records Failed with reason "Cancelled by user," not a new status value, and does not affect any other concurrently-running operation (3.2.6.50/54's "independently of one another" guarantee).
 

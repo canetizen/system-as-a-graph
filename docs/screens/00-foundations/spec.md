@@ -9,7 +9,7 @@ This document is the shared design reference for the SaaG screen spec set (`docs
 
 This is **not** a MIL-STD-498 Data Item Description — no DID for UI/UX design exists in that standard. It governs the UI of **VAE (Design Verification, Analysis and Evaluation)**, the only user-facing Computer Software Component (CSC) in the SaaG CSCI (`../../design/SDD.md` §4.2, §5.6.1); the other five CSCs (MSD, SCG, FRD, ADP, CSM) are backend data producers with no direct UI.
 
-The `.md` documents (this one and `01`–`09`) remain the authoritative, traceable spec — text and Mermaid diagrams, each claim cited back to SRS/SDD/IDD/CDR. Alongside each screen's `.md`, that screen's own folder holds a companion visual layer: rendered HTML wireframes for every moment of that screen, all built on the token system in §5 below. Start with [`style-guide.html`](style-guide.html) — it's the visual rendering of §5's colors, badges, and iconography, and the exact reference the other nine wireframes were copied from.
+The `.md` documents (this one and `01`–`09`) remain the authoritative, traceable spec — text and Mermaid diagrams, each claim cited back to SRS/SDD/CDR. Alongside each screen's `.md`, that screen's own folder holds a companion visual layer: rendered HTML wireframes for every moment of that screen, all built on the token system in §5 below. Start with [`style-guide.html`](style-guide.html) — it's the visual rendering of §5's colors, badges, and iconography, and the exact reference the other nine wireframes were copied from.
 
 Screen documents 01–09 must:
 - Use the exact severity and status vocabulary fixed in §5 and §6 of this document — never re-label or introduce synonyms.
@@ -40,8 +40,8 @@ Per user decision, this spec stays strictly within the two actors SRS/SDD actual
 
 | Persona | Definition | Access | Cannot |
 |---|---|---|---|
-| **Interactive User** | A human authenticated against the LDAP directory service; access is restricted to "their authorizations" (SRS 3.2.6.3). SRS/SDD do not define distinct sub-roles (e.g. no separate "admin" vs. "analyst" role is specified), so this spec treats all interactive users as one persona with an unspecified authorization scope. | Everything in screens 01–09: data-production workflows, model visualization/navigation, working-model editing, all analysis engines, findings/reporting, installation-suitability review. | Whatever falls outside their (unspecified) authorization scope — authorization-scope gating is out of scope for this document set and left to the LDAP-driven access-control mechanism (`../../design/IDD.md` EXT-IF-06). |
-| **Automation Client** | A non-human actor (build automation tooling / CLI, e.g. Jenkins) that submits requests via EXT-IF-07 (`../../design/IDD.md` §4.7). | Submitting analysis requests and installation-suitability evaluation requests; reading back operation status and results in machine-processable form (SRS 3.2.6.50, 54). | Visualization, working-model editing, or any screen-based interaction — SRS defines no UI surface for this actor; it interacts only through the CLI/API, never through the screens this spec describes. |
+| **Interactive User** | A human authenticated against the LDAP directory service; access is restricted to "their authorizations" (SRS 3.2.6.3). SRS/SDD do not define distinct sub-roles (e.g. no separate "admin" vs. "analyst" role is specified), so this spec treats all interactive users as one persona with an unspecified authorization scope. | Everything in screens 01–09: data-production workflows, model visualization/navigation, working-model editing, all analysis engines, findings/reporting, installation-suitability review. | Whatever falls outside their (unspecified) authorization scope — authorization-scope gating is out of scope for this document set and left to the LDAP-driven access-control mechanism (`../../design/SDD.md` §4.3 EXT-IF-06). |
+| **Automation Client** | A non-human actor (build automation tooling / CLI, e.g. Jenkins) that submits requests via EXT-IF-07 (`../../design/SDD.md` §4.3). | Submitting analysis requests and installation-suitability evaluation requests; reading back operation status and results in machine-processable form (SRS 3.2.6.50, 54). | Visualization, working-model editing, or any screen-based interaction — SRS defines no UI surface for this actor; it interacts only through the CLI/API, never through the screens this spec describes. |
 
 Screens 01–09 are written for the **Interactive User** persona only. The Automation Client is mentioned only where its activity becomes visible to the Interactive User (e.g. a CLI-triggered installation-suitability run showing up in a shared status feed — see `09-installation-suitability-and-pipeline-gate/spec.md`).
 
@@ -291,7 +291,7 @@ Copied verbatim from `../../requirements/SRS.md` Appendix A so every screen docu
 | Section | Primary SRS/SDD Basis |
 |---|---|
 | §2 Design Principles | SDD §5.6.1; SRS 3.2.6.15, 17–18; SDD §4.4 decisions 3, 4; SDD §3 decision 5 |
-| §3 Personas | SRS 3.2.6.3, 50; IDD §4.7 (EXT-IF-07) |
+| §3 Personas | SRS 3.2.6.3, 50; SDD §4.3 (EXT-IF-07) |
 | §4 Information Architecture | SRS 3.2.6.3–4, 50; SDD §5.6.2 CSU list |
 | §5.2 Severity Scale | SRS 3.2.6.44 |
 | §5.3 Status Scale | SRS 3.2.6.6 (and parallel MSD/ADP/CSM production-status paragraphs) |
@@ -321,6 +321,6 @@ Not addressed anywhere in SRS/SDD; this section is this document's own addition,
 
 ## 10. Notes
 
-Color values, iconography assignments, typography/spacing scale, and component patterns in §5–6 are new UX value-add — they do not exist in the SRS/SDD/IDD source documents and are not attributed to them beyond the *vocabulary* (severity levels, status values, node/relationship type lists) those documents fix. All such vocabulary is reproduced verbatim; the visual system built on top of it is this document's own design decision, built with a validated, accessibility-checked palette method rather than picked ad hoc.
+Color values, iconography assignments, typography/spacing scale, and component patterns in §5–6 are new UX value-add — they do not exist in the SRS/SDD source documents and are not attributed to them beyond the *vocabulary* (severity levels, status values, node/relationship type lists) those documents fix. All such vocabulary is reproduced verbatim; the visual system built on top of it is this document's own design decision, built with a validated, accessibility-checked palette method rather than picked ad hoc.
 
 The Cancelable Operation Pattern (§6.7), the Concurrent Session / Model-Freshness Indicator (§6.8), the Accessibility patterns (§9), the finding Triage Status (`08`), and Undo/Redo (`06`) are, likewise, this document set's own additions — none is derived from or required by SRS/SDD. Responsive layout (§5.6), Error Banner lifecycle (§6.3), and theme mode handling (§5.1 — switching, default, persistence) are also UX decisions not cited in the source documents. Each is flagged at its point of introduction rather than presented as a cited requirement.

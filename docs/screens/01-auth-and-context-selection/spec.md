@@ -23,8 +23,8 @@ This is the mandatory entry gate for every VAE session: authenticate the user, t
 | Enable project/platform/system-version selection; distinctly display the effective version | `../../requirements/SRS.md` 3.2.6.4 |
 | Project/platform/version/effective-version data sourced from the configuration management database | `../../requirements/SRS.md` 3.2.1.6–9 |
 | Session & Authentication Manager CSU | `../../design/SDD.md` §5.6.3.1 |
-| LDAP Directory Service interface | `../../design/IDD.md` EXT-IF-06 |
-| Configuration Management Database interface (feeds project/platform/version lists via MSD) | `../../design/IDD.md` EXT-IF-01 |
+| LDAP Directory Service interface | `../../design/SDD.md` §4.3 EXT-IF-06 |
+| Configuration Management Database interface (feeds project/platform/version lists via MSD) | `../../design/SDD.md` §4.3 EXT-IF-01 |
 | LDAP communication method/protocol — open item | `../../design/CDR.md` CDR-21 |
 
 ---
@@ -109,7 +109,7 @@ Keyboard navigation for this screen's forms and cascading dropdowns follows the 
 | Data | Source |
 |---|---|
 | Username (shown in the global header post-login) | LDAP authentication result, EXT-IF-06 |
-| Project list | MSD's Configuration Data Acquisition CSU (`../../design/SDD.md` §5.1.3.2), via the Configuration Management Database (`../../design/IDD.md` EXT-IF-01), per `../../requirements/SRS.md` 3.2.1.6 |
+| Project list | MSD's Configuration Data Acquisition CSU (`../../design/SDD.md` §5.1.3.2), via the Configuration Management Database (`../../design/SDD.md` §4.3 EXT-IF-01), per `../../requirements/SRS.md` 3.2.1.6 |
 | Platform list (scoped to selected Project) | Same source, `../../requirements/SRS.md` 3.2.1.7 |
 | System Version list + effective-version flag (scoped to selected Project+Platform) | Same source, `../../requirements/SRS.md` 3.2.1.8–9 |
 

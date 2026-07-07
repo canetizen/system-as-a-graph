@@ -5,11 +5,11 @@
 
 ## 1. Purpose
 
-This is not a MIL-STD-498 data item — Critical Design Review is a review milestone, not a deliverable format. This register exists to consolidate, in one place, every design point that `../requirements/SRS.md`, `SDD.md`, `IDD.md`, and `../test/STP.md` deliberately left as "to be determined during the critical design phase" rather than inventing a value. Its purpose is to give the CDR board a single checklist of decisions that must be closed before those documents (and the tests in `../test/STD.md` that depend on them) can be considered final.
+This is not a MIL-STD-498 data item — Critical Design Review is a review milestone, not a deliverable format. This register exists to consolidate, in one place, every design point that `../requirements/SRS.md`, `SDD.md`, and `../test/STP.md` deliberately left as "to be determined during the critical design phase" rather than inventing a value. Its purpose is to give the CDR board a single checklist of decisions that must be closed before those documents (and the tests in `../test/STD.md` that depend on them) can be considered final.
 
 ## 2. Referenced Documents
 
-- `../requirements/SRS.md`, `SDD.md`, `IDD.md`, `../test/STP.md`, `../test/STD.md` — the SaaG MIL-STD-498 document set.
+- `../requirements/SRS.md`, `SDD.md`, `../test/STP.md`, `../test/STD.md` — the SaaG MIL-STD-498 document set.
 
 ## 3. How to Use This Register
 
@@ -34,7 +34,7 @@ Each item has a **Status**: `Open` (default, no decision yet), `Resolved` (decis
 
 | ID | Item | Source | Status |
 |---|---|---|---|
-| CDR-09 | Automatic network topology acquisition source and method | SRS 3.2.1.3; IDD §4.4.4 | Open |
+| CDR-09 | Automatic network topology acquisition source and method | SRS 3.2.1.3; SDD §4.3 | Open |
 | CDR-10 | Mandatory source-code-repository file list | SRS 3.2.1.15 | Open |
 | CDR-11 | Definition of the system-wide simulation processes SCG's synthetic data feeds | SRS 3.2.2.2 | Open |
 | CDR-12 | Analytical Evaluation Data format/content details | SRS 3.2.4.4 | Open |
@@ -52,17 +52,17 @@ Each item has a **Status**: `Open` (default, no decision yet), `Resolved` (decis
 
 | ID | Item | Source | Status |
 |---|---|---|---|
-| CDR-17 | EXT-IF-01 Configuration Management Database — communication method/protocol | IDD §4.1.4 | Open |
-| CDR-18 | EXT-IF-02 Source Code Repository — communication method/protocol | IDD §4.2.4 | Open |
-| CDR-19 | EXT-IF-03 Package Repository — communication method/protocol | IDD §4.3.4 | Open |
-| CDR-20 | EXT-IF-05 System Field Data Recording Mechanism — communication method/protocol | IDD §4.5.4 | Open |
-| CDR-21 | EXT-IF-06 LDAP Directory Service — communication method/protocol | IDD §4.6.4 | Open |
-| CDR-22 | EXT-IF-07 Build Automation/CLI — communication method/protocol, and the machine-processable result format | IDD §4.7.4; SRS 3.2.6.54 | Open |
-| CDR-23 | INT-IF-01 MSD → CSM handoff — communication method/protocol | IDD §4.8.4 | Open |
-| CDR-24 | INT-IF-02 SCG → ADP handoff — communication method/protocol | IDD §4.9.4 | Open |
-| CDR-25 | INT-IF-03 FRD → ADP handoff — communication method/protocol | IDD §4.10.4 | Open |
-| CDR-26 | INT-IF-04 ADP → CSM handoff — communication method/protocol | IDD §4.11.4 | Open |
-| CDR-27 | INT-IF-05 CSM → VAE access — communication method/protocol | IDD §4.12.4 | Open |
+| CDR-17 | EXT-IF-01 Configuration Management Database — communication method/protocol | SDD §4.3 | Open |
+| CDR-18 | EXT-IF-02 Source Code Repository — communication method/protocol | SDD §4.3 | Open |
+| CDR-19 | EXT-IF-03 Package Repository — communication method/protocol | SDD §4.3 | Open |
+| CDR-20 | EXT-IF-05 System Field Data Recording Mechanism — communication method/protocol | SDD §4.3 | Open |
+| CDR-21 | EXT-IF-06 LDAP Directory Service — communication method/protocol | SDD §4.3 | Open |
+| CDR-22 | EXT-IF-07 Build Automation/CLI — communication method/protocol, and the machine-processable result format | SDD §4.3; SRS 3.2.6.54 | Open |
+| CDR-23 | INT-IF-01 MSD → CSM handoff — communication method/protocol | SDD §4.3 | Open |
+| CDR-24 | INT-IF-02 SCG → ADP handoff — communication method/protocol | SDD §4.3 | Open |
+| CDR-25 | INT-IF-03 FRD → ADP handoff — communication method/protocol | SDD §4.3 | Open |
+| CDR-26 | INT-IF-04 ADP → CSM handoff — communication method/protocol | SDD §4.3 | Open |
+| CDR-27 | INT-IF-05 CSM → VAE access — communication method/protocol | SDD §4.3 | Open |
 
 ### 4.5 Physical Storage Technology
 
@@ -74,7 +74,7 @@ Each item has a **Status**: `Open` (default, no decision yet), `Resolved` (decis
 
 - **CDR-01–08, 12** block `TC-VAE-06/07/08` (`../test/STD.md`) from being fully executable — those test cases explicitly note this dependency.
 - **CDR-09–11, 13–16** block full closure of the MSD, SCG, FRD, and VAE test cases they're cited in.
-- **CDR-17–27** block finalizing `IDD.md` and any integration testing across the 12 interfaces.
+- **CDR-17–27** block finalizing `SDD.md` §4.3 and any integration testing across the 12 interfaces.
 - **CDR-28** blocks finalizing `SDD.md` §4.4's physical schema and any performance/capacity testing.
 
 ## 6. Notes

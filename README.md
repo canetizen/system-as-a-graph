@@ -36,8 +36,7 @@ This repository currently contains the **MIL-STD-498 documentation set and VAE U
 | Document | Purpose |
 |---|---|
 | [`docs/requirements/SRS.md`](docs/requirements/SRS.md) | Software Requirements Specification — the 112 CSCI requirements. |
-| [`docs/design/SDD.md`](docs/design/SDD.md) | Software Design Description — CSC/CSU decomposition and database design. |
-| [`docs/design/IDD.md`](docs/design/IDD.md) | Interface Design Description — external and internal interfaces. |
+| [`docs/design/SDD.md`](docs/design/SDD.md) | Software Design Description — CSC/CSU decomposition, interface, and database design. |
 | [`docs/planning/SDP.md`](docs/planning/SDP.md) | Software Development Plan. |
 | [`docs/design/CDR.md`](docs/design/CDR.md) | Critical Design Review — open items register. |
 | [`docs/test/STP.md`](docs/test/STP.md) | Software Test Plan. |
@@ -51,7 +50,7 @@ The document set follows MIL-STD-498 (Data Item Descriptions DI-IPSC-81427/81433
 ```
 docs/
   requirements/  # SRS
-  design/        # SDD, IDD, CDR
+  design/        # SDD, CDR
   planning/      # SDP
   test/          # STP, STD
   screens/       # VAE UX/UI screen specs + HTML wireframes (00-09)

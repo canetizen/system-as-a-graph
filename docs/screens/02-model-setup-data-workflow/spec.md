@@ -25,8 +25,8 @@ This screen lets the user produce or select a Model Setup Data file for the curr
 | Display missing-data / access / authorization / format / integrity errors from production | `../../requirements/SRS.md` 3.2.6.8 |
 | Start Core System Model creation from the selected file; monitor result (successful / failed) | `../../requirements/SRS.md` 3.2.6.9 |
 | Model Setup Data Workflow Manager CSU | `../../design/SDD.md` §5.6.3.2 |
-| The four external sources MSD acquires from | `../../design/IDD.md` EXT-IF-01 (Configuration Mgmt DB), EXT-IF-02 (Source Code Repo), EXT-IF-03 (Package Repo), EXT-IF-04 (Network Topology) |
-| Model Setup Data handoff to CSM (triggered by this screen's "Create Core System Model" action) | `../../design/IDD.md` INT-IF-01 |
+| The four external sources MSD acquires from | `../../design/SDD.md` §4.3 EXT-IF-01 (Configuration Mgmt DB), EXT-IF-02 (Source Code Repo), EXT-IF-03 (Package Repo), EXT-IF-04 (Network Topology) |
+| Model Setup Data handoff to CSM (triggered by this screen's "Create Core System Model" action) | `../../design/SDD.md` §4.3 INT-IF-01 |
 
 **A note on where the "create Core System Model" trigger lives**: `../../design/SDD.md` §5.6.3.5's purpose prose also mentions "start the Core System Model creation process and monitor its result," but the SDD's own authoritative traceability table (§6) assigns that action to **this** CSU (3.2.6.9 → §5.6.3.2), while §5.6.3.5 is formally traced only to 3.2.6.15–16, 18–19, 28–29 — the *read-only analysis views* of an already-built model, not the trigger itself. This doc follows the traceability table: the "Create Core System Model" action and its success/failed result live here; `04-core-model-creation-and-structural-analysis.md` picks up from an existing model and covers binding/matching status and dependency analysis.
 
@@ -95,7 +95,7 @@ Keyboard navigation for this screen's table, action buttons, and source accessib
 
 | Data | Source |
 |---|---|
-| Source accessibility (Reachable/Unreachable) for each of the 4 sources | `../../design/IDD.md` EXT-IF-01–04, per `../../requirements/SRS.md` 3.2.6.7 |
+| Source accessibility (Reachable/Unreachable) for each of the 4 sources | `../../design/SDD.md` §4.3 EXT-IF-01–04, per `../../requirements/SRS.md` 3.2.6.7 |
 | Model Setup Data file: `file_id`, `project_id`, `platform_id`, `system_version_id`, `generation_time`, `validation_status` | `../../design/SDD.md` §4.5 `ModelSetupDataFile` entity |
 | Production/creation error detail: source, reason, time | Shared Error Banner fields (foundations §6.3), backed by the `validation_status` attribute pattern (`../../design/SDD.md` §3 decision 4) |
 | Core System Model result: `model_id`, `model_setup_data_file_ref`, `creation_time`, `model_status` | `../../design/SDD.md` §4.1 `CoreSystemModel` entity |

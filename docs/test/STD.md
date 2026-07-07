@@ -25,7 +25,6 @@ Section 3 states preparations common to all test cases. Section 4 gives, for eac
 - MIL-STD-498, *Software Development and Documentation*, Data Item Description DI-IPSC-81439 (Software Test Description).
 - `../requirements/SRS.md` — Software Requirements Specification for the SaaG CSCI.
 - `../design/SDD.md` — Software Design Description for the SaaG CSCI.
-- `../design/IDD.md` — Interface Design Description for the SaaG CSCI.
 - `STP.md` — Software Test Plan for the SaaG CSCI.
 
 ---

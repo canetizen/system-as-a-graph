@@ -29,7 +29,7 @@ This screen lets the user choose where the model's *behavioral* overlay (Analyti
 | Field Records selection is scoped by FRD's catalog (project/platform/version/source/upload time) | `../../requirements/SRS.md` 3.2.3.3–4; `../../design/SDD.md` §5.3.3.2 Record Catalog Manager |
 | Scenario input capture and synthetic data production | `../../requirements/SRS.md` 3.2.2.2–7; `../../design/SDD.md` §5.2.3.1–3 |
 | Analytical Evaluation Data assembly from either source | `../../requirements/SRS.md` 3.2.4.1–6; `../../design/SDD.md` §5.4.3.1–3 |
-| Internal handoffs | `../../design/IDD.md` INT-IF-02 (SCG → ADP), INT-IF-03 (FRD → ADP), INT-IF-04 (ADP → CSM) |
+| Internal handoffs | `../../design/SDD.md` §4.3 INT-IF-02 (SCG → ADP), INT-IF-03 (FRD → ADP), INT-IF-04 (ADP → CSM) |
 
 **Out of scope**: uploading *new* System Field Records into FRD (`../../requirements/SRS.md` 3.2.3.2, FRD's Record Upload Manager, `../../design/SDD.md` §5.3.3.1) is an FRD-owned capability, not one of VAE's 12 CSUs, and per this document set's stated boundary (`docs/screens/README.md`) is out of scope here. This screen assumes records already exist in FRD and only covers **selecting** from them (SRS 3.2.6.11) — record upload is not designed in this UX spec.
 
