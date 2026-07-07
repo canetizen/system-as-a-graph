@@ -1,0 +1,156 @@
+<title>SaaG — 07 Analysis &amp; Verification Results</title>
+<style>
+  :root{ --page:#f9f9f7; --surface:#fcfcfb; --surface-2:#f3f2ee; --ink:#0b0b0b; --ink-2:#52514e; --ink-muted:#898781; --border:rgba(11,11,11,.12); --grid:#e1e0d9; --accent:#2a78d6; --accent-ink:#ffffff; --info:#2a78d6; --good:#0ca30c; --warning:#c98500; --serious:#c85a36; --critical:#c22f2f; --cat-1:#2a78d6; --cat-2:#1baf7a; --cat-3:#b5860a; --cat-4:#1f7a1f; --cat-5:#5a49b8; --cat-6:#c9433f; --cat-7:#c15a83; --cat-8:#c05a26; --radius-panel:8px; --radius-chip:6px; --radius-pill:999px; --font-ui: system-ui, -apple-system, "Segoe UI", sans-serif; --text-meta:11px; --text-body:13px; --text-heading:16px; --text-title:20px; }
+  @media (prefers-color-scheme: dark){ :root{ --page:#0d0d0d; --surface:#1a1a19; --surface-2:#232322; --ink:#ffffff; --ink-2:#c3c2b7; --ink-muted:#898781; --border:rgba(255,255,255,.12); --grid:#2c2c2a; --accent:#3987e5; --accent-ink:#ffffff; --info:#3987e5; --good:#0ca30c; --warning:#fab219; --serious:#ec835a; --critical:#d03b3b; --cat-1:#3987e5; --cat-2:#199e70; --cat-3:#c98500; --cat-4:#2fa32f; --cat-5:#9085e9; --cat-6:#e66767; --cat-7:#d55181; --cat-8:#d95926; } }
+  :root[data-theme="dark"]{ --page:#0d0d0d; --surface:#1a1a19; --surface-2:#232322; --ink:#ffffff; --ink-2:#c3c2b7; --ink-muted:#898781; --border:rgba(255,255,255,.12); --grid:#2c2c2a; --accent:#3987e5; --accent-ink:#ffffff; --info:#3987e5; --good:#0ca30c; --warning:#fab219; --serious:#ec835a; --critical:#d03b3b; --cat-1:#3987e5; --cat-2:#199e70; --cat-3:#c98500; --cat-4:#2fa32f; --cat-5:#9085e9; --cat-6:#e66767; --cat-7:#d55181; --cat-8:#d95926; }
+  :root[data-theme="light"]{ --page:#f9f9f7; --surface:#fcfcfb; --surface-2:#f3f2ee; --ink:#0b0b0b; --ink-2:#52514e; --ink-muted:#898781; --border:rgba(11,11,11,.12); --grid:#e1e0d9; --accent:#2a78d6; --accent-ink:#ffffff; --info:#2a78d6; --good:#0ca30c; --warning:#c98500; --serious:#c85a36; --critical:#c22f2f; --cat-1:#2a78d6; --cat-2:#1baf7a; --cat-3:#b5860a; --cat-4:#1f7a1f; --cat-5:#5a49b8; --cat-6:#c9433f; --cat-7:#c15a83; --cat-8:#c05a26; }
+  *{box-sizing:border-box;} html,body{margin:0;padding:0;}
+  body{background:var(--page); color:var(--ink); font-family:var(--font-ui); font-size:var(--text-body); line-height:1.5;}
+  :focus-visible{outline:2px solid var(--accent); outline-offset:2px;} h1,h2,h3{text-wrap:balance; margin:0;} .tabular{font-variant-numeric:tabular-nums;}
+  .topbar{display:flex; align-items:center; gap:16px; padding:0 20px; height:48px; background:var(--surface-2); border-bottom:1px solid var(--border);}
+  .topbar .brand{font-weight:700;} .topbar .ctx{display:flex; align-items:center; gap:8px; color:var(--ink-2);} .topbar .ctx b{color:var(--ink); font-weight:600;}
+  .topbar nav{display:flex; gap:2px; margin-left:8px;} .topbar nav a{padding:6px 10px; border-radius:var(--radius-chip); color:var(--ink-2); text-decoration:none; font-size:var(--text-body);}
+.topbar nav a.active{background:var(--surface); color:var(--ink); font-weight:600;} .spacer{flex:1;}
+.status-feed{display:flex; align-items:center; gap:6px; font-size:var(--text-meta); color:var(--ink-2);}
+.pulse{width:7px; height:7px; border-radius:50%; background:var(--info); box-shadow:0 0 0 3px color-mix(in srgb, var(--info) 25%, transparent);}
+.user{display:flex; align-items:center; gap:8px; color:var(--ink-2); font-size:var(--text-meta);}
+  .avatar{width:22px; height:22px; border-radius:50%; background:var(--accent); color:var(--accent-ink); display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;}
+  .wrap{max-width:1100px; margin:0 auto; padding:22px 24px 60px;}
+  .eyebrow{font-size:var(--text-meta); text-transform:uppercase; letter-spacing:.08em; color:var(--ink-muted); font-weight:600;}
+  .page-title{font-size:var(--text-title); font-weight:650; margin-top:2px;}
+  .prov{display:inline-flex; align-items:center; gap:6px; padding:3px 10px; border-radius:var(--radius-pill); background:var(--surface-2); border:1px solid var(--border); font-size:var(--text-meta); color:var(--ink-2);}
+  .ctx-banner{display:flex; align-items:center; gap:12px; margin:16px 0; padding:10px 14px; border:1px solid var(--border); border-radius:var(--radius-panel); background:var(--surface); font-size:var(--text-body);}
+
+  .tabs input{position:absolute; opacity:0; pointer-events:none;}
+  .tab-labels{display:flex; gap:2px; border-bottom:1px solid var(--border); margin-bottom:18px;}
+  .tab-labels label{padding:10px 16px; font-size:var(--text-body); font-weight:600; color:var(--ink-2); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px;}
+  .panels > div{display:none;}
+  #t1:checked ~ .tab-labels label[for=t1], #t2:checked ~ .tab-labels label[for=t2], #t3:checked ~ .tab-labels label[for=t3]{color:var(--ink); border-bottom-color:var(--accent);}
+  #t1:checked ~ .panels #p1, #t2:checked ~ .panels #p2, #t3:checked ~ .panels #p3{display:block;}
+
+  .badge{display:inline-flex; align-items:center; gap:5px; padding:2px 9px 2px 7px; border-radius:var(--radius-pill); font-size:var(--text-meta); font-weight:650;}
+  .badge .dot{width:6px; height:6px; border-radius:50%; background:currentColor;}
+  .badge.info{background:color-mix(in srgb, var(--info) 16%, transparent); color:var(--info);}
+  .badge.good{background:color-mix(in srgb, var(--good) 16%, transparent); color:var(--good);}
+  .badge.critical{background:color-mix(in srgb, var(--critical) 18%, transparent); color:var(--critical);}
+  .badge.neutral{background:var(--surface-2); color:var(--ink-2);}
+
+  .rule-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:12px;}
+  .rule-card{border:1px solid var(--border); border-radius:var(--radius-panel); padding:13px; display:flex; flex-direction:column; gap:8px; background:var(--surface);}
+  .rule-card.pending{opacity:.65; border-style:dashed;}
+  .rule-card h4{font-size:var(--text-body); font-weight:650;}
+  .rule-card .items{font-size:var(--text-meta); color:var(--ink-2);}
+
+  .panel{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-panel); margin-bottom:16px;}
+  .panel-header{display:flex; align-items:center; justify-content:space-between; gap:8px; padding:11px 14px; border-bottom:1px solid var(--border);}
+  .panel-header h3{font-size:var(--text-body); font-weight:650;}
+  .panel-body{padding:14px;}
+  .metric-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; padding:14px;}
+  .metric{border:1px solid var(--border); border-radius:var(--radius-chip); padding:12px; display:flex; flex-direction:column; gap:4px;}
+  .metric .n{font-size:20px; font-weight:700;} .metric .label{font-size:var(--text-meta); color:var(--ink-muted);}
+  .drift-row{display:flex; justify-content:space-between; padding:9px 14px; border-bottom:1px solid var(--border); font-size:var(--text-body);}
+  .drift-row:last-child{border-bottom:none;}
+  .theme-toggle{display:inline-flex; align-items:center; gap:6px; border:1px solid var(--border); background:transparent; border-radius:var(--radius-chip); padding:7px 13px; color:var(--ink-2); font-family:var(--font-ui); font-size:var(--text-body); cursor:pointer; transition:all 0.2s;}
+  .theme-toggle:hover{background:var(--surface); border-color:var(--accent); color:var(--ink);}
+  .theme-icon{font-size:14px; line-height:1;}
+</style>
+
+<div class="topbar">
+  <div class="brand">SaaG</div>
+  <div class="ctx">SKYLINE / TRACON Facility 4 / <b>v4.2.1</b></div>
+  <nav><a href="../02-model-setup-data-workflow/happy-path.html">Model Setup Data</a><a href="../03-analytical-data-workflow/happy-path.html">Analytical Data</a><a class="active" href="../05-model-visualization-and-navigation/happy-path.html">Explorer</a><a href="../08-findings-and-reporting/happy-path.html">Findings &amp; Reporting</a><a href="../09-installation-suitability-and-pipeline-gate/happy-path.html">Installation Suitability</a></nav>
+  <div class="spacer"></div>
+  <div class="status-feed"><span class="pulse"></span>op-9928 running</div>
+  <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle dark/light mode"><span class="theme-icon">◐</span></button>
+  <div class="user"><div class="avatar">JD</div>jrdoe</div>
+</div>
+
+<div class="wrap">
+  <div class="eyebrow">07 · Analysis &amp; Verification Results</div>
+  <div class="page-title">Analysis</div>
+
+  <div class="ctx-banner">
+    <span class="badge info"><span class="dot"></span>Core System Model — Read Only</span>
+    <span class="prov">● System Field Records bound</span>
+    <span style="color:var(--ink-muted); font-size:var(--text-meta);">csm-8841 · dataset-2214</span>
+  </div>
+
+  <div class="tabs">
+    <input type="radio" name="tab" id="t1" checked>
+    <input type="radio" name="tab" id="t2">
+    <input type="radio" name="tab" id="t3">
+    <div class="tab-labels">
+      <label for="t1">A · Rule Verification</label>
+      <label for="t2">B · Simulation Analysis</label>
+      <label for="t3">C · Field Data Analysis</label>
+    </div>
+    <div class="panels">
+      <div id="p1">
+        <div class="rule-grid">
+          <div class="rule-card"><h4>Topic QoS Conformance</h4><span class="badge good"><span class="dot"></span>Conforming</span><div class="items">Durability, Reliability, Lifespan, Transport Priority</div></div>
+          <div class="rule-card"><h4>Publisher/Consumer Matching</h4><span class="badge critical"><span class="dot"></span>Non-Conforming</span><div class="items">1 topic with no data consumer</div></div>
+          <div class="rule-card pending"><h4>External-to-Middleware Consistency</h4><span class="badge neutral">Rule set pending (CDR-02)</span></div>
+          <div class="rule-card pending"><h4>Load Balancing</h4><span class="badge neutral">Rule set pending (CDR-03)</span></div>
+          <div class="rule-card"><h4>Processor Core Allocation</h4><span class="badge critical"><span class="dot"></span>Non-Conforming</span><div class="items">Core over-allocation on Proc-Unit-A</div></div>
+          <div class="rule-card pending"><h4>OS Settings Conformance</h4><span class="badge neutral">Rule set pending (CDR-05)</span></div>
+          <div class="rule-card pending"><h4>Runtime Memory Allocation</h4><span class="badge neutral">Rule set pending (CDR-06)</span></div>
+          <div class="rule-card"><h4>Resource Contention / Bottlenecks</h4><span class="badge good"><span class="dot"></span>Conforming</span></div>
+          <div class="rule-card pending"><h4>Architectural Pattern Violations</h4><span class="badge neutral">Rule set pending (CDR-07)</span></div>
+        </div>
+        <div style="margin-top:10px; font-size:var(--text-meta); color:var(--ink-muted);">Classification method itself is provisional pending final rules (CDR-08).</div>
+      </div>
+      <div id="p2">
+        <div class="metric-grid" style="padding-left:0; padding-right:0;">
+          <div class="metric"><div class="n tabular">18.2k</div><div class="label">Messages / min (simulated)</div></div>
+          <div class="metric"><div class="n tabular">3</div><div class="label">Nodes affected by propagation</div></div>
+          <div class="metric"><div class="n">TrackFusion.CSU</div><div class="label">Highest resource usage</div></div>
+        </div>
+        <div class="panel"><div class="panel-header"><h3>Propagation Path — sensor-bus-4 bandwidth narrowing</h3></div>
+          <div class="panel-body" style="font-size:var(--text-body); color:var(--ink-2);">
+            SensorFusion.CSU → <b style="color:var(--ink)">/sensor/raw</b> → TrackFusion.CSU → <b style="color:var(--ink)">/track/contact</b> → SeparationAssuranceCSCI
+            <div style="font-size:var(--text-meta); margin-top:6px; color:var(--ink-muted);">Rendered as a highlighted path overlay on the Explorer/Editor canvas (05/06), not a separate diagram.</div>
+          </div>
+        </div>
+      </div>
+      <div id="p3">
+        <div class="metric-grid" style="padding-left:0; padding-right:0;">
+          <div class="metric"><div class="n" style="color:var(--good)">Healthy</div><div class="label">Operational status</div></div>
+          <div class="metric"><div class="n tabular">62 ms</div><div class="label">Comm. latency (avg)</div></div>
+          <div class="metric"><div class="n tabular">0.4%</div><div class="label">Message loss</div></div>
+        </div>
+        <div class="panel"><div class="panel-header"><h3>Architectural Drift</h3></div>
+          <div class="drift-row"><span>Present in Model Setup Data, not observed</span><span class="badge critical">2</span></div>
+          <div class="drift-row"><span>Observed, not present in Model Setup Data</span><span class="badge good">0</span></div>
+          <div class="drift-row"><span>Incompatible between design and runtime</span><span class="badge critical">1</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Theme toggle functionality
+function toggleTheme() {
+  const html = document.documentElement;
+  const currentTheme = html.getAttribute('data-theme');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', newTheme);
+  localStorage.setItem('saag-theme', newTheme);
+  updateThemeIcon(newTheme);
+}
+
+function updateThemeIcon(theme) {
+  const icons = document.querySelectorAll('.theme-icon');
+  icons.forEach(icon => {
+    icon.textContent = theme === 'dark' ? '☀' : '☾';
+  });
+}
+
+// Initialize theme on page load
+(function() {
+  const savedTheme = localStorage.getItem('saag-theme');
+  const theme = savedTheme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  document.documentElement.setAttribute('data-theme', theme);
+  updateThemeIcon(theme);
+})();
+</script>
