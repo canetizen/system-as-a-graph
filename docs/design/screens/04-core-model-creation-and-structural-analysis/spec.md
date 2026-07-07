@@ -19,19 +19,19 @@ This screen confirms the Core System Model that `02` just built, reports whether
 
 | Basis | Reference |
 |---|---|
-| Design verification/analysis operations never alter the Core System Model | `../../requirements/SRS.md` 3.2.6.15 |
-| Display project/platform/version info for bound Analytical Evaluation Data; report matching status | `../../requirements/SRS.md` 3.2.6.16 |
-| Perform analyses solely on the Core System Model, without Analytical Evaluation Data | `../../requirements/SRS.md` 3.2.6.18 |
-| Analyze structural dependencies, communication connections, runtime-environment relationships | `../../requirements/SRS.md` 3.2.6.19 |
-| Detect circular dependencies between software units | `../../requirements/SRS.md` 3.2.6.28 |
-| Detect disconnected, missing, invalid, or unmatched structural relationships | `../../requirements/SRS.md` 3.2.6.29 |
-| Structural & Dependency Analysis Engine CSU | `../../design/SDD.md` §5.6.3.5 |
-| Model Access Provider (read access to model + bound data) | `../../design/SDD.md` §5.5.3.4, SRS 3.2.5.16–17 |
-| Analytical Data Binder (produces the matching status this screen reports) | `../../design/SDD.md` §5.5.3.3, SRS 3.2.5.10–14 |
+| Design verification/analysis operations never alter the Core System Model | `../../../requirements/SRS.md` 3.2.6.15 |
+| Display project/platform/version info for bound Analytical Evaluation Data; report matching status | `../../../requirements/SRS.md` 3.2.6.16 |
+| Perform analyses solely on the Core System Model, without Analytical Evaluation Data | `../../../requirements/SRS.md` 3.2.6.18 |
+| Analyze structural dependencies, communication connections, runtime-environment relationships | `../../../requirements/SRS.md` 3.2.6.19 |
+| Detect circular dependencies between software units | `../../../requirements/SRS.md` 3.2.6.28 |
+| Detect disconnected, missing, invalid, or unmatched structural relationships | `../../../requirements/SRS.md` 3.2.6.29 |
+| Structural & Dependency Analysis Engine CSU | `../../SDD.md` §5.6.3.5 |
+| Model Access Provider (read access to model + bound data) | `../../SDD.md` §5.5.3.4, SRS 3.2.5.16–17 |
+| Analytical Data Binder (produces the matching status this screen reports) | `../../SDD.md` §5.5.3.3, SRS 3.2.5.10–14 |
 
 **Scope boundary, restated from `02`**: the "Create Core System Model" trigger and its successful/failed result belong to `02-model-setup-data-workflow.md` (per SDD's traceability table, SRS 3.2.6.9 → §5.6.3.2). This screen assumes a Core System Model already exists and only covers reading and analyzing it.
 
-**Scope boundary vs. `07`/`08`**: this screen detects and counts structural problems (circular dependencies, broken relationships) but does not render full finding records (identifier, rule, evidence, severity) — that schema and its presentation belong to the Findings & Reporting Manager (`../../design/SDD.md` §5.6.3.10, SRS 3.2.6.44), covered in `08-findings-and-reporting.md`. This screen links out to `08` for detail rather than duplicating it. Likewise, "conforming/non-conforming" classification (SRS 3.2.6.42) is traced to the Architectural Rule Verification Engine (`07`), not to this CSU — this screen reports *detected counts*, not a conformance verdict.
+**Scope boundary vs. `07`/`08`**: this screen detects and counts structural problems (circular dependencies, broken relationships) but does not render full finding records (identifier, rule, evidence, severity) — that schema and its presentation belong to the Findings & Reporting Manager (`../../SDD.md` §5.6.3.10, SRS 3.2.6.44), covered in `08-findings-and-reporting.md`. This screen links out to `08` for detail rather than duplicating it. Likewise, "conforming/non-conforming" classification (SRS 3.2.6.42) is traced to the Architectural Rule Verification Engine (`07`), not to this CSU — this screen reports *detected counts*, not a conformance verdict.
 
 ---
 
@@ -92,9 +92,9 @@ flowchart TD
 
 | Data | Source |
 |---|---|
-| `model_id`, `project_id`, `platform_id`, `system_version_id`, `model_setup_data_file_ref`, `creation_time`, `model_status` | `../../design/SDD.md` §4.1 `CoreSystemModel` |
-| Node/relationship counts (by `node_type` / `relationship_type`) | `../../design/SDD.md` §4.1 `Node`, `Relationship` |
-| Analytical Evaluation Data provenance (`source_type`) and matching (`match_status` ∈ {matched, unmatched}) | `../../design/SDD.md` §4.2 `AnalyticalEvaluationDataset`, `AnalyticalDataBinding` |
+| `model_id`, `project_id`, `platform_id`, `system_version_id`, `model_setup_data_file_ref`, `creation_time`, `model_status` | `../../SDD.md` §4.1 `CoreSystemModel` |
+| Node/relationship counts (by `node_type` / `relationship_type`) | `../../SDD.md` §4.1 `Node`, `Relationship` |
+| Analytical Evaluation Data provenance (`source_type`) and matching (`match_status` ∈ {matched, unmatched}) | `../../SDD.md` §4.2 `AnalyticalEvaluationDataset`, `AnalyticalDataBinding` |
 | Structural/dependency finding counts | Aggregated from the same finding records `08` presents in full (SRS 3.2.6.44) |
 
 ---
@@ -104,7 +104,7 @@ flowchart TD
 | Condition | Treatment |
 |---|---|
 | Core System Model construction itself failed | Not reachable here — that failure is shown and handled entirely in `02` (SRS 3.2.5.9). This screen's precondition is a successfully constructed model. |
-| Analytical Evaluation Data bound but some nodes/relationships have no matching record | Shown as an "unmatched" count in the Analytical Evaluation Data panel, per `../../requirements/SRS.md` 3.2.5.14 — presented as informational, not as an error state, since an unmatched record is an expected possibility, not a failure. |
+| Analytical Evaluation Data bound but some nodes/relationships have no matching record | Shown as an "unmatched" count in the Analytical Evaluation Data panel, per `../../../requirements/SRS.md` 3.2.5.14 — presented as informational, not as an error state, since an unmatched record is an expected possibility, not a failure. |
 | No Analytical Evaluation Data bound at all | Not an error — SRS 3.2.6.18 explicitly allows structure-only analysis; shown as an explanatory note, not an Error Banner. |
 | Zero circular dependencies / zero broken relationships found | Displayed as "None detected," styled as a positive result (reuses the "good" status token from foundations §5.3), not as an empty state. |
 | Mapping a specific detected condition (e.g., a circular dependency) to a specific severity level | Not decided by this screen — SRS/SDD never prescribe which severity a given structural finding type carries; that assignment happens wherever the finding record itself is produced and is only surfaced, with its actual severity, in `08`. This screen deliberately shows counts, not severities, to avoid presupposing that mapping. |

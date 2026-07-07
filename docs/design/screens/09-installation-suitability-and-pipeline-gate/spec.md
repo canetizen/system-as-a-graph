@@ -19,20 +19,20 @@ Lets the **Interactive User** (foundations §3) see installation-suitability / p
 
 | Basis | Reference |
 |---|---|
-| Accept analysis requests via Build Automation Tools/CLI; present ongoing-operation status to both interactive users and automation clients; run analysis operations concurrently and independently | `../../requirements/SRS.md` 3.2.6.50 |
-| Evaluate software-unit installation suitability across 4 headings: structural/architectural conformance, interface/topic/communication conformance, dependency/integration conformance, resource/performance sufficiency | `../../requirements/SRS.md` 3.2.6.51 |
-| Define each control rule with identifier, evaluation heading, severity, weight, acceptance criterion, blocking status; score/classify per a method TBD | `../../requirements/SRS.md` 3.2.6.52 |
-| A critical-severity finding or a blocking-rule violation forces "non-conforming" regardless of overall score; the blocking decision is transmitted to the automation client | `../../requirements/SRS.md` 3.2.6.53 |
-| Evaluate one or more software units under independent operation identifiers; report per-unit score/class/blocking-findings/decision plus an aggregate result, in machine-processable format | `../../requirements/SRS.md` 3.2.6.54 |
-| Automation Interface CSU / Installation Suitability Evaluator CSU | `../../design/SDD.md` §5.6.3.11 / §5.6.3.12 |
-| Build Automation Tools / CLI interface | `../../design/SDD.md` §4.3 EXT-IF-07 |
-| Underlying candidate model construct | `../../design/SDD.md` §5.5.3.6 Candidate Evaluation Model Builder, SRS 3.2.5.20; `../../design/SDD.md` §4.1 `CoreSystemModel.is_candidate_evaluation` / `candidate_software_unit_ref` |
-| Scoring/classification method — open item | `../../design/CDR.md` CDR-14 |
-| CLI/build-automation protocol and machine-processable result format — open item | `../../design/CDR.md` CDR-22 |
+| Accept analysis requests via Build Automation Tools/CLI; present ongoing-operation status to both interactive users and automation clients; run analysis operations concurrently and independently | `../../../requirements/SRS.md` 3.2.6.50 |
+| Evaluate software-unit installation suitability across 4 headings: structural/architectural conformance, interface/topic/communication conformance, dependency/integration conformance, resource/performance sufficiency | `../../../requirements/SRS.md` 3.2.6.51 |
+| Define each control rule with identifier, evaluation heading, severity, weight, acceptance criterion, blocking status; score/classify per a method TBD | `../../../requirements/SRS.md` 3.2.6.52 |
+| A critical-severity finding or a blocking-rule violation forces "non-conforming" regardless of overall score; the blocking decision is transmitted to the automation client | `../../../requirements/SRS.md` 3.2.6.53 |
+| Evaluate one or more software units under independent operation identifiers; report per-unit score/class/blocking-findings/decision plus an aggregate result, in machine-processable format | `../../../requirements/SRS.md` 3.2.6.54 |
+| Automation Interface CSU / Installation Suitability Evaluator CSU | `../../SDD.md` §5.6.3.11 / §5.6.3.12 |
+| Build Automation Tools / CLI interface | `../../SDD.md` §4.3 EXT-IF-07 |
+| Underlying candidate model construct | `../../SDD.md` §5.5.3.6 Candidate Evaluation Model Builder, SRS 3.2.5.20; `../../SDD.md` §4.1 `CoreSystemModel.is_candidate_evaluation` / `candidate_software_unit_ref` |
+| Scoring/classification method — open item | `../../CDR.md` CDR-14 |
+| CLI/build-automation protocol and machine-processable result format — open item | `../../CDR.md` CDR-22 |
 
 **Another gap in the same family as `06`/`08`**: beyond the two `CoreSystemModel` fields above, there is **no database entity for the control-rule catalog, per-unit score/class/decision, or aggregate result**. This screen's data shapes (§6) are transcribed from SRS 3.2.6.52–54, not read from a designed schema.
 
-**This screen's one inferred extension, flagged explicitly**: SRS ties 3.2.6.51/54 to "the production deployment pipeline," which every other reference in the doc set (`../../design/SDP.md`, SDD §4.3 EXT-IF-07) treats as CLI/automation-initiated. Nothing in SRS/SDD forbids an Interactive User from also triggering an ad-hoc evaluation directly, and it's a natural, low-risk UI affordance — so this doc includes a manual "Evaluate Candidate Software Unit" trigger (§4), clearly marked here as this document's own addition, not a cited requirement.
+**This screen's one inferred extension, flagged explicitly**: SRS ties 3.2.6.51/54 to "the production deployment pipeline," which every other reference in the doc set (`../../../planning/SDP.md`, SDD §4.3 EXT-IF-07) treats as CLI/automation-initiated. Nothing in SRS/SDD forbids an Interactive User from also triggering an ad-hoc evaluation directly, and it's a natural, low-risk UI affordance — so this doc includes a manual "Evaluate Candidate Software Unit" trigger (§4), clearly marked here as this document's own addition, not a cited requirement.
 
 **A second inferred extension, same posture**: this doc also allows any Interactive User viewing an evaluation operation to cancel it while in progress (foundations §6.7) — including one initiated by the Automation Client via CLI — since SRS 3.2.6.50 already requires ongoing-operation status to be shared/visible across both actor types; making a visible operation actionable is a small extension of that, not a new capability class. Cancelling records Failed with reason "Cancelled by user," not a new status value, and does not affect any other concurrently-running operation (3.2.6.50/54's "independently of one another" guarantee).
 
@@ -103,13 +103,13 @@ Keyboard navigation for this screen's operations table, detail panel, and manual
 
 | Data | Source |
 |---|---|
-| Candidate model reference: `is_candidate_evaluation`, `candidate_software_unit_ref` | `../../design/SDD.md` §4.1 `CoreSystemModel` |
-| Control rule: rule identifier, evaluation heading, severity, weight, acceptance criterion, blocking status | `../../requirements/SRS.md` 3.2.6.52 |
-| Per-unit result: conformance score, score class, blocking findings, installation decision | `../../requirements/SRS.md` 3.2.6.53–54 |
-| Aggregate operation result | `../../requirements/SRS.md` 3.2.6.54 |
-| Candidate unit/version selector values | `../../design/SDD.md` §4.3 `SoftwareUnitVersionInventory` (`is_candidate` flag) |
+| Candidate model reference: `is_candidate_evaluation`, `candidate_software_unit_ref` | `../../SDD.md` §4.1 `CoreSystemModel` |
+| Control rule: rule identifier, evaluation heading, severity, weight, acceptance criterion, blocking status | `../../../requirements/SRS.md` 3.2.6.52 |
+| Per-unit result: conformance score, score class, blocking findings, installation decision | `../../../requirements/SRS.md` 3.2.6.53–54 |
+| Aggregate operation result | `../../../requirements/SRS.md` 3.2.6.54 |
+| Candidate unit/version selector values | `../../SDD.md` §4.3 `SoftwareUnitVersionInventory` (`is_candidate` flag) |
 
-**Automation Client output vs. UI presentation**: SRS 3.2.6.54 requires the installation decision to be transmitted to the Automation Client in machine-processable form. That transmission carries only the SRS-defined fields listed above (decision, score, blocking findings, rule violations) — not any of this document set's own UI-only additions. Specifically, `08`'s Triage Status is an analyst-facing annotation layered on top of an immutable backend decision (see `08` §7); it never appears in the Automation Client's wire-format output and never influences the decision the client consumes. The wire format itself remains undetermined (`../../design/CDR.md` CDR-22), but whatever format is chosen will exclude Triage Status on the same footing it excludes the human-readable presentation conventions this document defines.
+**Automation Client output vs. UI presentation**: SRS 3.2.6.54 requires the installation decision to be transmitted to the Automation Client in machine-processable form. That transmission carries only the SRS-defined fields listed above (decision, score, blocking findings, rule violations) — not any of this document set's own UI-only additions. Specifically, `08`'s Triage Status is an analyst-facing annotation layered on top of an immutable backend decision (see `08` §7); it never appears in the Automation Client's wire-format output and never influences the decision the client consumes. The wire format itself remains undetermined (`../../CDR.md` CDR-22), but whatever format is chosen will exclude Triage Status on the same footing it excludes the human-readable presentation conventions this document defines.
 
 ---
 
@@ -119,10 +119,10 @@ Keyboard navigation for this screen's operations table, detail panel, and manual
 |---|---|
 | Critical-severity finding or blocking-rule violation present | Decision is forced Non-Conforming regardless of the numeric score; the UI must show the override explicitly (§4), never a plain score that could read as a pass. |
 | Multi-unit operation where only one unit blocks | Aggregate result is Non-Conforming; each unit's own result is still shown individually so it's clear which unit(s) caused the aggregate failure. |
-| Scoring/classification method not yet defined | Score/class marked provisional, per `../../design/CDR.md` CDR-14 — same convention as `07`'s CDR-08 caveat. |
+| Scoring/classification method not yet defined | Score/class marked provisional, per `../../CDR.md` CDR-14 — same convention as `07`'s CDR-08 caveat. |
 | Manual trigger used on a software unit that isn't flagged `is_candidate` in the inventory | Blocked at the selector — only candidate versions are offered, since the underlying Candidate Evaluation Model Builder (SDD §5.5.3.6) is defined specifically for the candidate-under-evaluation case. |
 | Interactive User's authorization scope insufficient for manual trigger | Blocked at the Submit action — the form remains visible and fillable (so the user understands what operation they would be attempting), but the Submit button is disabled with an explanatory tooltip (e.g., "Your authorization scope does not include triggering evaluations"). This is the same posture as `01`'s authorization-scope caveat (`01` §7): SRS/SDD do not define per-operation authorization granularity, so this doc treats the trigger as a standard analysis action gated by the user's overall context access. If SRS/SDD later define finer-grained authorization (e.g., analyst-only evaluation triggers), this default would need revisiting. |
 | Two evaluations for the same software unit run concurrently (one CLI-triggered, one manually triggered) | Both proceed independently per SRS 3.2.6.50/54 ("concurrently and independently of one another") — shown as separate rows with separate operation identifiers, never merged. |
-| Automation Client-facing result format vs. this screen's human-readable display | The two are different renderings of the same result; the actual wire format to the Automation Client is undetermined (`../../design/CDR.md` CDR-22), so this doc only specifies the human-facing presentation. |
+| Automation Client-facing result format vs. this screen's human-readable display | The two are different renderings of the same result; the actual wire format to the Automation Client is undetermined (`../../CDR.md` CDR-22), so this doc only specifies the human-facing presentation. |
 | User cancels an in-progress evaluation, including a CLI-triggered one | Transitions to Failed with reason "Cancelled by user" (foundations §6.7); does not affect any other concurrently-running operation for a different unit/context (3.2.6.50/54). |
 | A blocking finding surfaced by this evaluation is later Waived/Acknowledged/Resolved in `08` | The Non-Conforming decision for the operation that produced it **does not change** — `08`'s Triage Status is an analyst annotation only, decoupled from the backend-computed decision (see `08` §7). A re-evaluation (new operation, new operation identifier) is the only way to obtain a different decision. |

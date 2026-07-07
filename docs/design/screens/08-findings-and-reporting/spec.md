@@ -19,15 +19,15 @@ Presents every finding produced by any verification/analysis/simulation operatio
 
 | Basis | Reference |
 |---|---|
-| Present each finding with identifier, type, description, affected entity/relationship, related rule/criterion, evidence, and severity | `../../requirements/SRS.md` 3.2.6.44 |
-| Record and display cause-and-effect relationships between findings from the same operation | `../../requirements/SRS.md` 3.2.6.45 |
-| Sort/filter findings by operation type, evaluation result, finding type, severity, project, platform, version, or affected nodes | `../../requirements/SRS.md` 3.2.6.46 |
-| Record error cause, interruption stage, and error time for an interrupted operation | `../../requirements/SRS.md` 3.2.6.47 |
-| Generate exportable summary/detailed reports with a defined content list | `../../requirements/SRS.md` 3.2.6.49 |
-| Findings & Reporting Manager CSU | `../../design/SDD.md` §5.6.3.10 |
-| Exportable report file format — open item | `../../design/CDR.md` CDR-13 |
+| Present each finding with identifier, type, description, affected entity/relationship, related rule/criterion, evidence, and severity | `../../../requirements/SRS.md` 3.2.6.44 |
+| Record and display cause-and-effect relationships between findings from the same operation | `../../../requirements/SRS.md` 3.2.6.45 |
+| Sort/filter findings by operation type, evaluation result, finding type, severity, project, platform, version, or affected nodes | `../../../requirements/SRS.md` 3.2.6.46 |
+| Record error cause, interruption stage, and error time for an interrupted operation | `../../../requirements/SRS.md` 3.2.6.47 |
+| Generate exportable summary/detailed reports with a defined content list | `../../../requirements/SRS.md` 3.2.6.49 |
+| Findings & Reporting Manager CSU | `../../SDD.md` §5.6.3.10 |
+| Exportable report file format — open item | `../../CDR.md` CDR-13 |
 
-**A genuine gap, flagged rather than papered over**: `../../design/SDD.md` documents exactly 5 data stores (Core System Model, Analytical Evaluation Data, Software Unit Version Inventory, Field Records Database, Model Setup Data) — **there is no `Finding`, `Operation`, or `Report` entity anywhere in the database design**. Everything this screen displays is derived directly from the SRS text's field lists (3.2.6.44, 47, 49), not from a designed schema. This doc's tables (§4, §6) describe the *shape* SRS requires, not a cited persistence design — the same posture as `06`'s working-model gap.
+**A genuine gap, flagged rather than papered over**: `../../SDD.md` documents exactly 5 data stores (Core System Model, Analytical Evaluation Data, Software Unit Version Inventory, Field Records Database, Model Setup Data) — **there is no `Finding`, `Operation`, or `Report` entity anywhere in the database design**. Everything this screen displays is derived directly from the SRS text's field lists (3.2.6.44, 47, 49), not from a designed schema. This doc's tables (§4, §6) describe the *shape* SRS requires, not a cited persistence design — the same posture as `06`'s working-model gap.
 
 **This doc's own addition, flagged the same way**: SRS 3.2.6.44–47 defines a finding's fixed fields (identifier, type, description, affected entity, rule/criterion, evidence, severity) but no lifecycle beyond that — a finding is detected and displayed, full stop. For a spec whose whole point (`09`) is a CI/CD gate that re-runs and re-reports on every build, that means the same non-actionable or already-understood finding reappears identically forever with no way to record "seen, not real" or "seen, accepted." This doc adds a **Triage Status** (§4, §6) on top of the SRS-defined fields — not a cited requirement, and importantly **not a re-scoring mechanism**: see §7 for why triaging a finding never changes an operation's evaluation result or `09`'s installation decision.
 
@@ -102,11 +102,11 @@ Keyboard navigation for this screen's findings table, filter row, detail panel, 
 
 | Data | Source |
 |---|---|
-| Finding: identifier, type, description, affected entity/relationship, related rule/acceptance criterion, evidence, severity | `../../requirements/SRS.md` 3.2.6.44 |
-| Cause-and-effect links between findings from the same operation | `../../requirements/SRS.md` 3.2.6.45 |
+| Finding: identifier, type, description, affected entity/relationship, related rule/acceptance criterion, evidence, severity | `../../../requirements/SRS.md` 3.2.6.44 |
+| Cause-and-effect links between findings from the same operation | `../../../requirements/SRS.md` 3.2.6.45 |
 | Triage Status: New / Acknowledged / Waived / False Positive / Resolved, plus actor, justification, and time per change | This doc's own addition (§1) — not sourced from SRS/SDD |
-| Interrupted-operation record: error cause, interruption stage, error time | `../../requirements/SRS.md` 3.2.6.47 |
-| Report contents: project/platform/system-version info, Core System Model used, Analytical Evaluation Data used + its source, operation identifier/type/start/end time, evaluation result, findings, affected nodes/relationships, severity levels, additional finding information | `../../requirements/SRS.md` 3.2.6.49 |
+| Interrupted-operation record: error cause, interruption stage, error time | `../../../requirements/SRS.md` 3.2.6.47 |
+| Report contents: project/platform/system-version info, Core System Model used, Analytical Evaluation Data used + its source, operation identifier/type/start/end time, evaluation result, findings, affected nodes/relationships, severity levels, additional finding information | `../../../requirements/SRS.md` 3.2.6.49 |
 
 ---
 
@@ -117,9 +117,9 @@ Keyboard navigation for this screen's findings table, filter row, detail panel, 
 | Operation completed, zero findings | Positive "No findings detected" state (§4), not treated as empty/absence of data. |
 | Filters applied, zero matching findings | Neutral empty state (foundations §6.6), distinct styling from the row above. |
 | Operation interrupted before completion | Interrupted-operation banner (error cause/stage/time, 3.2.6.47) replaces the findings table for that operation. |
-| "Evaluation result" filter applied to a finding from Engine B (Simulation) or C (Field Data) | SRS 3.2.6.42's conforming/non-conforming classification is traced specifically to the Architectural Rule Verification Engine (`../../design/SDD.md` §5.6.3.6), not to Simulation or Field Data Analysis — **it's an open interpretation** whether/how this filter applies to non-rule-verification findings; this doc flags the ambiguity rather than assuming an answer. |
-| Report format | SRS 3.2.6.49 leaves the exportable file format undetermined (`../../design/CDR.md` CDR-13); this screen offers Summary/Detailed and a scope selector, but not a committed file type. |
+| "Evaluation result" filter applied to a finding from Engine B (Simulation) or C (Field Data) | SRS 3.2.6.42's conforming/non-conforming classification is traced specifically to the Architectural Rule Verification Engine (`../../SDD.md` §5.6.3.6), not to Simulation or Field Data Analysis — **it's an open interpretation** whether/how this filter applies to non-rule-verification findings; this doc flags the ambiguity rather than assuming an answer. |
+| Report format | SRS 3.2.6.49 leaves the exportable file format undetermined (`../../CDR.md` CDR-13); this screen offers Summary/Detailed and a scope selector, but not a committed file type. |
 | A finding's affected entity no longer exists (e.g. deleted in a Working Model since the finding was produced) | Not addressed by SRS/SDD; default treatment is to show the finding with a "entity no longer present" note instead of a broken link — a UX default, not a cited requirement. |
 | A finding is marked Waived, False Positive, or Resolved | The Triage Status change is recorded (actor, justification, time) but **never alters the underlying operation's evaluation result or `09`'s installation-suitability decision** — those are computed by the backend evaluation engines per SRS 3.2.6.42/52–53, and this screen has no mechanism to re-trigger them. Triage Status is an analyst annotation layered on top of an immutable result, not a way to clear a finding from the record. |
 | Report generation scoped to a filtered set that excludes Waived/False-Positive findings | Allowed (the filter row supports it, §3) but the report content itself still reflects the actual evaluation result per SRS 3.2.6.49 — filtering what's *displayed*/*exported* never implies the underlying decision changed (same principle as the row above). |
-| Automation Client wire output and Triage Status | The machine-processable result the Automation Client receives (SRS 3.2.6.54, see `09` §6) carries only the SRS-defined finding fields (identifier, type, description, affected entity, rule/criterion, evidence, severity). Triage Status is a UI-only annotation and is **not** included in that output — because triaging a finding does not re-compute the evaluation result, exposing triage state to downstream automation would risk silent drift between what the client sees and what the backend decision actually says. The wire format itself is open per `../../design/CDR.md` CDR-22, but whatever schema is chosen must preserve this separation. |
+| Automation Client wire output and Triage Status | The machine-processable result the Automation Client receives (SRS 3.2.6.54, see `09` §6) carries only the SRS-defined finding fields (identifier, type, description, affected entity, rule/criterion, evidence, severity). Triage Status is a UI-only annotation and is **not** included in that output — because triaging a finding does not re-compute the evaluation result, exposing triage state to downstream automation would risk silent drift between what the client sees and what the backend decision actually says. The wire format itself is open per `../../CDR.md` CDR-22, but whatever schema is chosen must preserve this separation. |

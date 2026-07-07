@@ -19,12 +19,12 @@ Lets the user make non-destructive "what-if" structural changes — add/remove n
 
 | Basis | Reference |
 |---|---|
-| Add/remove nodes and relationships, update attributes, on a working model derived from the Core System Model, without breaking structural integrity; enable analysis on the updated working model | `../../requirements/SRS.md` 3.2.6.17 |
-| Working Model Editor CSU | `../../design/SDD.md` §5.6.3.4 |
-| Non-destructive experimentation (CSCI-wide design decision) | `../../design/SDD.md` §3, decision 4 |
-| The Core System Model is never altered by this or any analysis operation | `../../design/SDD.md` §5.6.1; SRS 3.2.6.15, 18 |
+| Add/remove nodes and relationships, update attributes, on a working model derived from the Core System Model, without breaking structural integrity; enable analysis on the updated working model | `../../../requirements/SRS.md` 3.2.6.17 |
+| Working Model Editor CSU | `../../SDD.md` §5.6.3.4 |
+| Non-destructive experimentation (CSCI-wide design decision) | `../../SDD.md` §3, decision 4 |
+| The Core System Model is never altered by this or any analysis operation | `../../SDD.md` §5.6.1; SRS 3.2.6.15, 18 |
 
-**A genuine gap, flagged rather than papered over**: unlike every other data type in this document set, the **working model has no entity design anywhere in `../../design/SDD.md`** — there is no `WorkingModel` table, no persistence, no save/discard/share semantics defined in SRS or SDD. This screen's editing behavior (§4, §5) is designed at the UX level using the same `Node`/`Relationship` shape the Core System Model already has (`../../design/SDD.md` §4.1), since the working model is explicitly "derived from" it — but **whether a working model persists beyond the current session, and how, is an open question this document does not resolve**, on the same footing as an unlisted `../../design/CDR.md` item. This doc's default (§7) is a reasonable UX convention, not a cited requirement.
+**A genuine gap, flagged rather than papered over**: unlike every other data type in this document set, the **working model has no entity design anywhere in `../../SDD.md`** — there is no `WorkingModel` table, no persistence, no save/discard/share semantics defined in SRS or SDD. This screen's editing behavior (§4, §5) is designed at the UX level using the same `Node`/`Relationship` shape the Core System Model already has (`../../SDD.md` §4.1), since the working model is explicitly "derived from" it — but **whether a working model persists beyond the current session, and how, is an open question this document does not resolve**, on the same footing as an unlisted `../../CDR.md` item. This doc's default (§7) is a reasonable UX convention, not a cited requirement.
 
 **A related assumption, stated explicitly**: SRS 3.2.5.18 requires the backend to support concurrent read/write on the same Core System Model across sessions without compromising integrity or query-result consistency (foundations §6.8) — but SRS/SDD never say whether a *working* model is private to the session that derived it or shared across sessions. This doc assumes **each working model is private to the deriving user's session** — it exists only for the duration of that session's editing activity, and no other session can see or modify it. Under that assumption, 3.2.5.18's guarantee applies to the concurrent Core System Model *reads* each session's working-model derivation performs, not to shared editing of one working model — so no edit-conflict UI (locking, merge, "someone else is editing this") is needed here. If a future revision of SRS/SDD instead specifies shared/collaborative working models, this assumption — and the absence of conflict handling below — would need to be revisited.
 
@@ -90,8 +90,8 @@ Same shape as `05`, applied to the derived working copy rather than the Core Sys
 
 | Data | Source |
 |---|---|
-| Node: `node_id`, `node_type`, `name`, `cpu_allocation`, `os_settings`, `runtime_env_config` | `../../design/SDD.md` §4.1 `Node` shape (the working model has no distinct schema of its own — see §1) |
-| Relationship: `relationship_id`, `relationship_type`, `source_node_id`, `target_node_id` | `../../design/SDD.md` §4.1 `Relationship` shape, same caveat |
+| Node: `node_id`, `node_type`, `name`, `cpu_allocation`, `os_settings`, `runtime_env_config` | `../../SDD.md` §4.1 `Node` shape (the working model has no distinct schema of its own — see §1) |
+| Relationship: `relationship_id`, `relationship_type`, `source_node_id`, `target_node_id` | `../../SDD.md` §4.1 `Relationship` shape, same caveat |
 
 ---
 

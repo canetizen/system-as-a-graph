@@ -5,9 +5,9 @@
 
 ## 1. Purpose and How to Use This Document
 
-This document is the shared design reference for the SaaG screen spec set (`docs/screens/`). It defines the vocabulary, personas, information architecture, visual tokens, and shared components that the screen-level documents (`01`–`09`, one per user-facing workflow) all reuse rather than redefine.
+This document is the shared design reference for the SaaG screen spec set (`docs/design/screens/`). It defines the vocabulary, personas, information architecture, visual tokens, and shared components that the screen-level documents (`01`–`09`, one per user-facing workflow) all reuse rather than redefine.
 
-This is **not** a MIL-STD-498 Data Item Description — no DID for UI/UX design exists in that standard. It governs the UI of **VAE (Design Verification, Analysis and Evaluation)**, the only user-facing Computer Software Component (CSC) in the SaaG CSCI (`../../design/SDD.md` §4.2, §5.6.1); the other five CSCs (MSD, SCG, FRD, ADP, CSM) are backend data producers with no direct UI.
+This is **not** a MIL-STD-498 Data Item Description — no DID for UI/UX design exists in that standard. It governs the UI of **VAE (Design Verification, Analysis and Evaluation)**, the only user-facing Computer Software Component (CSC) in the SaaG CSCI (`../../SDD.md` §4.2, §5.6.1); the other five CSCs (MSD, SCG, FRD, ADP, CSM) are backend data producers with no direct UI.
 
 The `.md` documents (this one and `01`–`09`) remain the authoritative, traceable spec — text and Mermaid diagrams, each claim cited back to SRS/SDD/CDR. Alongside each screen's `.md`, that screen's own folder holds a companion visual layer: rendered HTML wireframes for every moment of that screen, all built on the token system in §5 below. Start with [`style-guide.html`](style-guide.html) — it's the visual rendering of §5's colors, badges, and iconography, and the exact reference the other nine wireframes were copied from.
 
@@ -20,17 +20,17 @@ Screen documents 01–09 must:
 
 ## 2. Design Principles
 
-These are derived from what `../../requirements/SRS.md` and `../../design/SDD.md` actually specify, not generic UX guidance:
+These are derived from what `../../../requirements/SRS.md` and `../../SDD.md` actually specify, not generic UX guidance:
 
-1. **Read-only by default; editing is an explicit, separate mode.** All verification and analysis operations run read-only against the Core System Model (`../../design/SDD.md` §5.6.1; SRS 3.2.6.15, 18). The only component that mutates anything is the Working Model Editor (SDD §5.6.3.4, SRS 3.2.6.17), and it only ever mutates a **derived working model**, never the Core System Model itself. The UI must make this distinction visually unmistakable at all times (see §6.2).
+1. **Read-only by default; editing is an explicit, separate mode.** All verification and analysis operations run read-only against the Core System Model (`../../SDD.md` §5.6.1; SRS 3.2.6.15, 18). The only component that mutates anything is the Working Model Editor (SDD §5.6.3.4, SRS 3.2.6.17), and it only ever mutates a **derived working model**, never the Core System Model itself. The UI must make this distinction visually unmistakable at all times (see §6.2).
 
-2. **Provenance is always visible, never buried in a tooltip.** Every data type the CSCI produces carries its source, time, and project/platform/system-version association as a first-class attribute, not an afterthought (`../../design/SDD.md` §3, decision 3: "Provenance Preservation"). Screens showing Analytical Evaluation Data, findings, or reports must always show whether the data came from System Field Records or Scenario Generator synthetic data (SRS 3.2.5.12).
+2. **Provenance is always visible, never buried in a tooltip.** Every data type the CSCI produces carries its source, time, and project/platform/system-version association as a first-class attribute, not an afterthought (`../../SDD.md` §3, decision 3: "Provenance Preservation"). Screens showing Analytical Evaluation Data, findings, or reports must always show whether the data came from System Field Records or Scenario Generator synthetic data (SRS 3.2.5.12).
 
 3. **Severity and status vocabulary is fixed and never re-labeled per screen.** SRS 3.2.6.44 defines exactly five severity levels; SRS 3.2.6.6 (and parallel paragraphs for CSM/ADP) define exactly three process-status values. No screen may introduce a different label for the same concept (see §5.4, §6.1).
 
 4. **The model is the hub; every workflow returns to it.** The Core/Working Model (via the Model Visualization & Navigation UI, SDD §5.6.3.9) is the center of the information architecture. Data-production workflows (MSD, Analytical Data) and analysis workflows (rule verification, simulation, field-data analysis, findings) are entered from and return to the model view, not treated as a separate silo (see §4).
 
-5. **Errors are surfaced at the point of the operation that produced them, using one shared pattern.** Every data-acquisition or production path (configuration data, source repository files, field records, synthetic data, Model Setup Data, model construction) performs format/integrity/mandatory-field checks and records failures with the same attribute set — source, reason, time (`../../design/SDD.md` §3, decision 5: "Common validation-and-error-recording pattern"). The UI must present all of these through one shared error-banner component (§6.3), not a bespoke error treatment per workflow.
+5. **Errors are surfaced at the point of the operation that produced them, using one shared pattern.** Every data-acquisition or production path (configuration data, source repository files, field records, synthetic data, Model Setup Data, model construction) performs format/integrity/mandatory-field checks and records failures with the same attribute set — source, reason, time (`../../SDD.md` §3, decision 5: "Common validation-and-error-recording pattern"). The UI must present all of these through one shared error-banner component (§6.3), not a bespoke error treatment per workflow.
 
 ---
 
@@ -40,8 +40,8 @@ Per user decision, this spec stays strictly within the two actors SRS/SDD actual
 
 | Persona | Definition | Access | Cannot |
 |---|---|---|---|
-| **Interactive User** | A human authenticated against the LDAP directory service; access is restricted to "their authorizations" (SRS 3.2.6.3). SRS/SDD do not define distinct sub-roles (e.g. no separate "admin" vs. "analyst" role is specified), so this spec treats all interactive users as one persona with an unspecified authorization scope. | Everything in screens 01–09: data-production workflows, model visualization/navigation, working-model editing, all analysis engines, findings/reporting, installation-suitability review. | Whatever falls outside their (unspecified) authorization scope — authorization-scope gating is out of scope for this document set and left to the LDAP-driven access-control mechanism (`../../design/SDD.md` §4.3 EXT-IF-06). |
-| **Automation Client** | A non-human actor (build automation tooling / CLI, e.g. Jenkins) that submits requests via EXT-IF-07 (`../../design/SDD.md` §4.3). | Submitting analysis requests and installation-suitability evaluation requests; reading back operation status and results in machine-processable form (SRS 3.2.6.50, 54). | Visualization, working-model editing, or any screen-based interaction — SRS defines no UI surface for this actor; it interacts only through the CLI/API, never through the screens this spec describes. |
+| **Interactive User** | A human authenticated against the LDAP directory service; access is restricted to "their authorizations" (SRS 3.2.6.3). SRS/SDD do not define distinct sub-roles (e.g. no separate "admin" vs. "analyst" role is specified), so this spec treats all interactive users as one persona with an unspecified authorization scope. | Everything in screens 01–09: data-production workflows, model visualization/navigation, working-model editing, all analysis engines, findings/reporting, installation-suitability review. | Whatever falls outside their (unspecified) authorization scope — authorization-scope gating is out of scope for this document set and left to the LDAP-driven access-control mechanism (`../../SDD.md` §4.3 EXT-IF-06). |
+| **Automation Client** | A non-human actor (build automation tooling / CLI, e.g. Jenkins) that submits requests via EXT-IF-07 (`../../SDD.md` §4.3). | Submitting analysis requests and installation-suitability evaluation requests; reading back operation status and results in machine-processable form (SRS 3.2.6.50, 54). | Visualization, working-model editing, or any screen-based interaction — SRS defines no UI surface for this actor; it interacts only through the CLI/API, never through the screens this spec describes. |
 
 Screens 01–09 are written for the **Interactive User** persona only. The Automation Client is mentioned only where its activity becomes visible to the Interactive User (e.g. a CLI-triggered installation-suitability run showing up in a shared status feed — see `09-installation-suitability-and-pipeline-gate/spec.md`).
 
@@ -216,7 +216,7 @@ A persistent, unmissable indicator (not just a subtle label) of whether the curr
 
 ### 6.3 Error / Validation Banner
 
-One shared pattern for every format/integrity/mandatory-field/access error across MSD, FRD, ADP, CSM production paths (SDD §3 decision 5). Always shows: source (which data source/process), reason, and time — matching the attribute set the backend already records (`../../design/SDD.md` validation_status attribute). Never a bespoke per-workflow error style.
+One shared pattern for every format/integrity/mandatory-field/access error across MSD, FRD, ADP, CSM production paths (SDD §3 decision 5). Always shows: source (which data source/process), reason, and time — matching the attribute set the backend already records (`../../SDD.md` validation_status attribute). Never a bespoke per-workflow error style.
 
 **Lifecycle and dismissal**:
 - **Appearance**: banner appears inline near the operation that triggered it (e.g., below a login form, beside a production action row); never as a modal overlay.
@@ -239,16 +239,16 @@ Used by Findings (`08`), Field Records list (`03`), Model Setup Data file list (
 
 ### 6.7 Cancelable Operation Pattern
 
-Every production/analysis/evaluation operation across `02`, `03`, `04`, `07`, and `09` follows Idle → In Progress → Successful/Failed (§5.3's fixed three-value vocabulary). None of those screens previously offered a way to stop a run in progress. This pattern adds one: while an operation is **In Progress**, its status badge shows a Cancel affordance alongside it. Cancelling does **not** introduce a fourth status value — SRS fixes exactly three (§5.3), and this doc's own rule is that vocabulary is never re-labeled per screen. Instead, cancelling transitions the operation straight to **Failed**, with reason `"Cancelled by user"` recorded through the same source/reason/time triple every other failure already uses (`../../design/SDD.md` §3 decision 5). A cancelled operation is therefore indistinguishable in *status* from any other failure — only its recorded reason differs — which keeps the badge vocabulary honest rather than growing it.
+Every production/analysis/evaluation operation across `02`, `03`, `04`, `07`, and `09` follows Idle → In Progress → Successful/Failed (§5.3's fixed three-value vocabulary). None of those screens previously offered a way to stop a run in progress. This pattern adds one: while an operation is **In Progress**, its status badge shows a Cancel affordance alongside it. Cancelling does **not** introduce a fourth status value — SRS fixes exactly three (§5.3), and this doc's own rule is that vocabulary is never re-labeled per screen. Instead, cancelling transitions the operation straight to **Failed**, with reason `"Cancelled by user"` recorded through the same source/reason/time triple every other failure already uses (`../../SDD.md` §3 decision 5). A cancelled operation is therefore indistinguishable in *status* from any other failure — only its recorded reason differs — which keeps the badge vocabulary honest rather than growing it.
 
 By default, any Interactive User viewing an operation may cancel it, including one initiated by another session or by the Automation Client (`03`, §4.2's ambient status feed already makes cross-session operations visible; this pattern makes them actionable too). This is this doc's own addition — SRS/SDD never mention cancellation — flagged in the same posture as `09`'s manual-trigger extension.
 
 ### 6.8 Concurrent Session / Model-Freshness Indicator
 
-`../../requirements/SRS.md` 3.2.5.18 requires the backend to support concurrent read/write on the same Core System Model across sessions "without compromising model integrity or the consistency of query results"; 3.2.5.19 (and `../../design/CDR.md` CDR-16) covers concurrent operation execution more broadly. No screen document previously gave either paragraph a UI expression. Two additions close that:
+`../../../requirements/SRS.md` 3.2.5.18 requires the backend to support concurrent read/write on the same Core System Model across sessions "without compromising model integrity or the consistency of query results"; 3.2.5.19 (and `../../CDR.md` CDR-16) covers concurrent operation execution more broadly. No screen document previously gave either paragraph a UI expression. Two additions close that:
 
 - **Status Feed Indicator, extended** (`§4.2`): each in-progress or recently-completed operation row now also shows its initiator (session/user, or "Automation Client" for CLI-triggered runs) — the visible expression of 3.2.5.19/CDR-16's "concurrently and independently" guarantee, and of the shared (not per-browser-tab) in-progress state a second session needs to see before starting a conflicting run (see `02`, `03`, `04`, `07`, `09`'s "second run in progress" edge cases).
-- **Model-Updated banner**: shown in `04` and `05` when the Core System Model currently loaded in the view is older than the latest one for the same project/platform/system-version (compares the loaded `creation_time` against the current latest, `../../design/SDD.md` §4.1 `CoreSystemModel` — no new backend field required). Offers a "Reload" action; never force-refreshes out from under the user's current selection/camera position. This is the concrete UI expression of 3.2.5.18's "consistency of query results": the user is always told when what they're looking at is stale, rather than silently served an inconsistent view.
+- **Model-Updated banner**: shown in `04` and `05` when the Core System Model currently loaded in the view is older than the latest one for the same project/platform/system-version (compares the loaded `creation_time` against the current latest, `../../SDD.md` §4.1 `CoreSystemModel` — no new backend field required). Offers a "Reload" action; never force-refreshes out from under the user's current selection/camera position. This is the concrete UI expression of 3.2.5.18's "consistency of query results": the user is always told when what they're looking at is stale, rather than silently served an inconsistent view.
 
 Working models (`06`) are explicitly out of scope for this indicator — see `06` §1 for why concurrent-edit conflict handling isn't needed there.
 
@@ -256,7 +256,7 @@ Working models (`06`) are explicitly out of scope for this indicator — see `06
 
 ## 7. Terminology Glossary
 
-Copied verbatim from `../../requirements/SRS.md` Appendix A so every screen document (01–09) uses identical terms:
+Copied verbatim from `../../../requirements/SRS.md` Appendix A so every screen document (01–09) uses identical terms:
 
 | Term / Acronym | Meaning |
 |---|---|
@@ -301,7 +301,7 @@ Copied verbatim from `../../requirements/SRS.md` Appendix A so every screen docu
 | §6.2 Model-Mode Indicator | SDD §5.6.1, §5.6.3.4; SRS 3.2.6.17 |
 | §6.3 Error Banner | SDD §3 decision 5; SDD §4.4 `validation_status` attribute |
 | §6.4 Provenance Tag | SRS 3.2.5.12; SDD §4.4 decision 3 |
-| §6.8 Concurrent Session / Model-Freshness Indicator | SRS 3.2.5.18–19; `../../design/CDR.md` CDR-16 |
+| §6.8 Concurrent Session / Model-Freshness Indicator | SRS 3.2.5.18–19; `../../CDR.md` CDR-16 |
 | §7 Glossary | SRS Appendix A |
 
 ---

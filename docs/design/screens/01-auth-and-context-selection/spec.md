@@ -19,13 +19,13 @@ This is the mandatory entry gate for every VAE session: authenticate the user, t
 
 | Basis | Reference |
 |---|---|
-| Authenticate via LDAP; restrict access to the user's authorizations | `../../requirements/SRS.md` 3.2.6.3 |
-| Enable project/platform/system-version selection; distinctly display the effective version | `../../requirements/SRS.md` 3.2.6.4 |
-| Project/platform/version/effective-version data sourced from the configuration management database | `../../requirements/SRS.md` 3.2.1.6–9 |
-| Session & Authentication Manager CSU | `../../design/SDD.md` §5.6.3.1 |
-| LDAP Directory Service interface | `../../design/SDD.md` §4.3 EXT-IF-06 |
-| Configuration Management Database interface (feeds project/platform/version lists via MSD) | `../../design/SDD.md` §4.3 EXT-IF-01 |
-| LDAP communication method/protocol — open item | `../../design/CDR.md` CDR-21 |
+| Authenticate via LDAP; restrict access to the user's authorizations | `../../../requirements/SRS.md` 3.2.6.3 |
+| Enable project/platform/system-version selection; distinctly display the effective version | `../../../requirements/SRS.md` 3.2.6.4 |
+| Project/platform/version/effective-version data sourced from the configuration management database | `../../../requirements/SRS.md` 3.2.1.6–9 |
+| Session & Authentication Manager CSU | `../../SDD.md` §5.6.3.1 |
+| LDAP Directory Service interface | `../../SDD.md` §4.3 EXT-IF-06 |
+| Configuration Management Database interface (feeds project/platform/version lists via MSD) | `../../SDD.md` §4.3 EXT-IF-01 |
+| LDAP communication method/protocol — open item | `../../CDR.md` CDR-21 |
 
 ---
 
@@ -109,9 +109,9 @@ Keyboard navigation for this screen's forms and cascading dropdowns follows the 
 | Data | Source |
 |---|---|
 | Username (shown in the global header post-login) | LDAP authentication result, EXT-IF-06 |
-| Project list | MSD's Configuration Data Acquisition CSU (`../../design/SDD.md` §5.1.3.2), via the Configuration Management Database (`../../design/SDD.md` §4.3 EXT-IF-01), per `../../requirements/SRS.md` 3.2.1.6 |
-| Platform list (scoped to selected Project) | Same source, `../../requirements/SRS.md` 3.2.1.7 |
-| System Version list + effective-version flag (scoped to selected Project+Platform) | Same source, `../../requirements/SRS.md` 3.2.1.8–9 |
+| Project list | MSD's Configuration Data Acquisition CSU (`../../SDD.md` §5.1.3.2), via the Configuration Management Database (`../../SDD.md` §4.3 EXT-IF-01), per `../../../requirements/SRS.md` 3.2.1.6 |
+| Platform list (scoped to selected Project) | Same source, `../../../requirements/SRS.md` 3.2.1.7 |
+| System Version list + effective-version flag (scoped to selected Project+Platform) | Same source, `../../../requirements/SRS.md` 3.2.1.8–9 |
 
 ---
 
@@ -119,8 +119,8 @@ Keyboard navigation for this screen's forms and cascading dropdowns follows the 
 
 | Condition | Treatment |
 |---|---|
-| Invalid credentials | Generic "Sign-in failed — check your username and password" message; never confirms whether the username itself exists, per `../../requirements/SRS.md` 3.2.6.3 ("only users who successfully authenticate"). |
-| LDAP directory service unreachable | Shared Error Banner (foundations §6.3), source = LDAP Directory Service. Specific timeout/retry behavior is left open pending `../../design/CDR.md` CDR-21 (LDAP communication method/protocol undetermined) — this doc does not assume a value. |
-| Configuration Management Database deficiency, access error, or format incompatibility while loading Project/Platform/Version lists | Shared Error Banner, source = Configuration Management Database, per `../../requirements/SRS.md` 3.2.1.12. |
+| Invalid credentials | Generic "Sign-in failed — check your username and password" message; never confirms whether the username itself exists, per `../../../requirements/SRS.md` 3.2.6.3 ("only users who successfully authenticate"). |
+| LDAP directory service unreachable | Shared Error Banner (foundations §6.3), source = LDAP Directory Service. Specific timeout/retry behavior is left open pending `../../CDR.md` CDR-21 (LDAP communication method/protocol undetermined) — this doc does not assume a value. |
+| Configuration Management Database deficiency, access error, or format incompatibility while loading Project/Platform/Version lists | Shared Error Banner, source = Configuration Management Database, per `../../../requirements/SRS.md` 3.2.1.12. |
 | No projects, platforms, or versions available | Empty state per foundations §6.6, with explanatory text (e.g. "No projects available for your account") — no next action offered, since data acquisition is out of the Interactive User's control from this screen. |
-| Authorization scope insufficient for a chosen project | `../../requirements/SRS.md` 3.2.6.3 scopes access to "their authorizations" but neither SRS nor SDD define per-project authorization granularity. **Open question**, flagged here in the same posture as `../../design/CDR.md`'s open items rather than an invented authorization model — to be resolved when/if a CDR item for this is added. |
+| Authorization scope insufficient for a chosen project | `../../../requirements/SRS.md` 3.2.6.3 scopes access to "their authorizations" but neither SRS nor SDD define per-project authorization granularity. **Open question**, flagged here in the same posture as `../../CDR.md`'s open items rather than an invented authorization model — to be resolved when/if a CDR item for this is added. |

@@ -19,19 +19,19 @@ This screen lets the user choose where the model's *behavioral* overlay (Analyti
 
 | Basis | Reference |
 |---|---|
-| Choose Analytical Evaluation Data source: System Field Records or Scenario Generator synthetic data | `../../requirements/SRS.md` 3.2.6.10 |
-| Select the records to use, if System Field Records | `../../requirements/SRS.md` 3.2.6.11 |
-| Determine scenario scope/type/time interval/data density/data types, if synthetic data | `../../requirements/SRS.md` 3.2.6.12 |
-| Start/track synthetic data production, view errors | `../../requirements/SRS.md` 3.2.6.13 |
-| Start/track Analytical Evaluation Data production, view errors | `../../requirements/SRS.md` 3.2.6.14 |
-| Record scenario name/inputs/production time/project-platform-version association | `../../requirements/SRS.md` 3.2.6.48 |
-| Analytical Data Workflow Manager CSU | `../../design/SDD.md` §5.6.3.3 |
-| Field Records selection is scoped by FRD's catalog (project/platform/version/source/upload time) | `../../requirements/SRS.md` 3.2.3.3–4; `../../design/SDD.md` §5.3.3.2 Record Catalog Manager |
-| Scenario input capture and synthetic data production | `../../requirements/SRS.md` 3.2.2.2–7; `../../design/SDD.md` §5.2.3.1–3 |
-| Analytical Evaluation Data assembly from either source | `../../requirements/SRS.md` 3.2.4.1–6; `../../design/SDD.md` §5.4.3.1–3 |
-| Internal handoffs | `../../design/SDD.md` §4.3 INT-IF-02 (SCG → ADP), INT-IF-03 (FRD → ADP), INT-IF-04 (ADP → CSM) |
+| Choose Analytical Evaluation Data source: System Field Records or Scenario Generator synthetic data | `../../../requirements/SRS.md` 3.2.6.10 |
+| Select the records to use, if System Field Records | `../../../requirements/SRS.md` 3.2.6.11 |
+| Determine scenario scope/type/time interval/data density/data types, if synthetic data | `../../../requirements/SRS.md` 3.2.6.12 |
+| Start/track synthetic data production, view errors | `../../../requirements/SRS.md` 3.2.6.13 |
+| Start/track Analytical Evaluation Data production, view errors | `../../../requirements/SRS.md` 3.2.6.14 |
+| Record scenario name/inputs/production time/project-platform-version association | `../../../requirements/SRS.md` 3.2.6.48 |
+| Analytical Data Workflow Manager CSU | `../../SDD.md` §5.6.3.3 |
+| Field Records selection is scoped by FRD's catalog (project/platform/version/source/upload time) | `../../../requirements/SRS.md` 3.2.3.3–4; `../../SDD.md` §5.3.3.2 Record Catalog Manager |
+| Scenario input capture and synthetic data production | `../../../requirements/SRS.md` 3.2.2.2–7; `../../SDD.md` §5.2.3.1–3 |
+| Analytical Evaluation Data assembly from either source | `../../../requirements/SRS.md` 3.2.4.1–6; `../../SDD.md` §5.4.3.1–3 |
+| Internal handoffs | `../../SDD.md` §4.3 INT-IF-02 (SCG → ADP), INT-IF-03 (FRD → ADP), INT-IF-04 (ADP → CSM) |
 
-**Out of scope**: uploading *new* System Field Records into FRD (`../../requirements/SRS.md` 3.2.3.2, FRD's Record Upload Manager, `../../design/SDD.md` §5.3.3.1) is an FRD-owned capability, not one of VAE's 12 CSUs, and per this document set's stated boundary (`docs/screens/README.md`) is out of scope here. This screen assumes records already exist in FRD and only covers **selecting** from them (SRS 3.2.6.11) — record upload is not designed in this UX spec.
+**Out of scope**: uploading *new* System Field Records into FRD (`../../../requirements/SRS.md` 3.2.3.2, FRD's Record Upload Manager, `../../SDD.md` §5.3.3.1) is an FRD-owned capability, not one of VAE's 12 CSUs, and per this document set's stated boundary (`docs/design/screens/README.md`) is out of scope here. This screen assumes records already exist in FRD and only covers **selecting** from them (SRS 3.2.6.11) — record upload is not designed in this UX spec.
 
 ---
 
@@ -60,7 +60,7 @@ The user wants to get a bound Analytical Evaluation Data dataset — from whiche
 
 | Component | States |
 |---|---|
-| **Source selector** | System Field Records ⇄ Scenario Generator (mutually exclusive per production run — `../../design/SDD.md` §5.4.1's design decision that Analytical Evaluation Data is produced from exactly one of the two upstream sources, based on SRS 3.2.4.1). |
+| **Source selector** | System Field Records ⇄ Scenario Generator (mutually exclusive per production run — `../../SDD.md` §5.4.1's design decision that Analytical Evaluation Data is produced from exactly one of the two upstream sources, based on SRS 3.2.4.1). |
 | **Field Records table** | Loading → Populated → Empty (foundations §6.6: "No System Field Records match these filters"). Filter row above the table (foundations §6.5 convention). |
 | **Scenario input form** | Empty → Filled → Validation error (missing mandatory field) → Submitted. |
 | **Synthetic Data Production** | Idle → In Progress (cancelable, foundations §6.7) → Successful (dataset available to the next step) → Failed (Error Banner, or reason "Cancelled by user" if cancelled). *SRS 3.2.6.13 doesn't name explicit states the way 3.2.6.6 does for Model Setup Data production — reusing the fixed in-progress/successful/failed vocabulary (foundations §5.3) here is this doc's inferred consistency choice, not a verbatim requirement.* |
@@ -100,9 +100,9 @@ Keyboard navigation for this screen's tables, forms, and toggle between source b
 
 | Data | Source |
 |---|---|
-| Field Records: `record_id`, `project_id`, `platform_id`, `system_version_id`, `record_source`, `upload_time`, `record_type`, `validation_status` | `../../design/SDD.md` §4.4 `SystemFieldRecord` |
-| Scenario inputs: name, scope, type, time interval, data density, data types | `../../requirements/SRS.md` 3.2.2.3, 3.2.6.12, 48 |
-| Analytical Evaluation Data result: `dataset_id`, `model_id`, `project_id`, `platform_id`, `system_version_id`, `source_type` (FieldRecords / ScenarioSynthetic), `production_time` | `../../design/SDD.md` §4.2 `AnalyticalEvaluationDataset` |
+| Field Records: `record_id`, `project_id`, `platform_id`, `system_version_id`, `record_source`, `upload_time`, `record_type`, `validation_status` | `../../SDD.md` §4.4 `SystemFieldRecord` |
+| Scenario inputs: name, scope, type, time interval, data density, data types | `../../../requirements/SRS.md` 3.2.2.3, 3.2.6.12, 48 |
+| Analytical Evaluation Data result: `dataset_id`, `model_id`, `project_id`, `platform_id`, `system_version_id`, `source_type` (FieldRecords / ScenarioSynthetic), `production_time` | `../../SDD.md` §4.2 `AnalyticalEvaluationDataset` |
 
 The `source_type` field is what powers the Provenance Tag (foundations §6.4) shown wherever this dataset is used downstream (analysis results, findings, reports).
 
@@ -112,8 +112,8 @@ The `source_type` field is what powers the Provenance Tag (foundations §6.4) sh
 
 | Condition | Treatment |
 |---|---|
-| Format incompatibility or unreadable data in selected System Field Records | Error Banner, source = Field Record Ingestion (ADP), per `../../requirements/SRS.md` 3.2.4.5. |
-| Format incompatibility, unreadable data, or missing fields in synthetic data | Error Banner, source = Scenario Data Ingestion (ADP), per `../../requirements/SRS.md` 3.2.4.6. |
+| Format incompatibility or unreadable data in selected System Field Records | Error Banner, source = Field Record Ingestion (ADP), per `../../../requirements/SRS.md` 3.2.4.5. |
+| Format incompatibility, unreadable data, or missing fields in synthetic data | Error Banner, source = Scenario Data Ingestion (ADP), per `../../../requirements/SRS.md` 3.2.4.6. |
 | No System Field Records match the current filters | Empty state (foundations §6.6); no upload action offered here (see §1 "Out of scope"). |
 | Scenario input form submitted with a missing mandatory field | Inline validation before "Start Synthetic Data Production" is enabled. |
 | User switches source mid-flow | Non-destructive — the other branch's in-progress input (selected records, or filled form) is preserved, not discarded, so switching back doesn't lose work. |

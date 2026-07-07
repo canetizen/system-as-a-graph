@@ -40,7 +40,7 @@ This repository currently contains the **MIL-STD-498 documentation set and VAE U
 | [`docs/planning/SDP.md`](docs/planning/SDP.md) | Software Development Plan. |
 | [`docs/design/CDR.md`](docs/design/CDR.md) | Critical Design Review — open items register. |
 | [`docs/test/STD.md`](docs/test/STD.md) | Software Test Plan and Descriptions — the 31 test cases. |
-| [`docs/screens/README.md`](docs/screens/README.md) | VAE screen-by-screen UX/UI specification (00–09) with wireframes. |
+| [`docs/design/screens/README.md`](docs/design/screens/README.md) | VAE screen-by-screen UX/UI specification (00–09) with wireframes. |
 
 The document set follows MIL-STD-498 (Data Item Descriptions DI-IPSC-81427/81433/81435/81436/81437/81438/81439) and is mutually traceable across documents.
 
@@ -49,10 +49,9 @@ The document set follows MIL-STD-498 (Data Item Descriptions DI-IPSC-81427/81433
 ```
 docs/
   requirements/  # SRS
-  design/        # SDD, CDR
+  design/        # SDD, CDR, screens/ (VAE UX/UI screen specs + wireframes, 00-09)
   planning/      # SDP
   test/          # STD
-  screens/       # VAE UX/UI screen specs + HTML wireframes (00-09)
 LICENSE
 ```
 

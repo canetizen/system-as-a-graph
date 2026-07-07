@@ -19,11 +19,11 @@ This is one document covering **three** CSUs that share a result-presentation pa
 
 | Engine | CSU | SRS Basis |
 |---|---|---|
-| **A. Architectural Rule Verification** | `../../design/SDD.md` §5.6.3.6 | 3.2.6.20–27, 30, 42 |
-| **B. Simulation Analysis** | `../../design/SDD.md` §5.6.3.7 | 3.2.6.31–36 |
-| **C. Field Data Analysis** | `../../design/SDD.md` §5.6.3.8 | 3.2.6.37–41 |
+| **A. Architectural Rule Verification** | `../../SDD.md` §5.6.3.6 | 3.2.6.20–27, 30, 42 |
+| **B. Simulation Analysis** | `../../SDD.md` §5.6.3.7 | 3.2.6.31–36 |
+| **C. Field Data Analysis** | `../../SDD.md` §5.6.3.8 | 3.2.6.37–41 |
 
-**Important honesty note on Engine A**: SRS 3.2.6.20–27 and 30 each verify conformance "to rules to be determined during the critical design phase" — every one of these rule sets is an open item (`../../design/CDR.md` CDR-01–07), and the conforming/non-conforming classification method itself (SRS 3.2.6.42) is *also* open (CDR-08). This screen is designed to present results generically (a status + a detected-incompatibility list) without assuming what any specific rule's content is — see §7.
+**Important honesty note on Engine A**: SRS 3.2.6.20–27 and 30 each verify conformance "to rules to be determined during the critical design phase" — every one of these rule sets is an open item (`../../CDR.md` CDR-01–07), and the conforming/non-conforming classification method itself (SRS 3.2.6.42) is *also* open (CDR-08). This screen is designed to present results generically (a status + a detected-incompatibility list) without assuming what any specific rule's content is — see §7.
 
 Circular-dependency and broken-relationship detection (SRS 3.2.6.28–29) are **not** part of this screen — those are traced to the Structural & Dependency Analysis Engine and covered in `04-core-model-creation-and-structural-analysis.md`.
 
@@ -113,10 +113,10 @@ flowchart TD
 
 | Data | Source |
 |---|---|
-| Message counts, data volume, resource usage, latency, error events, and other metrics (Engines B & C) | `../../design/SDD.md` §4.2 `AnalyticalDataRecord` (`metric_type`, `value`, `event_timestamp`) — this entity is explicitly cited against SRS 3.2.6.32, 38, 40 |
-| Analytical Evaluation Data provenance for the context banner | `../../design/SDD.md` §4.2 `AnalyticalEvaluationDataset` (`source_type`) |
-| Core/Working Model structure being verified (Engine A) | `../../design/SDD.md` §4.1 `Node`, `Relationship` |
-| Model Setup Data vs. observed-runtime comparison (Engine C drift report) | `../../requirements/SRS.md` 3.2.6.39 — no dedicated database comparison entity exists; this is computed at analysis time from `Node`/`Relationship` vs. `AnalyticalDataRecord`/`AnalyticalDataBinding`, not read from a stored "drift" table. |
+| Message counts, data volume, resource usage, latency, error events, and other metrics (Engines B & C) | `../../SDD.md` §4.2 `AnalyticalDataRecord` (`metric_type`, `value`, `event_timestamp`) — this entity is explicitly cited against SRS 3.2.6.32, 38, 40 |
+| Analytical Evaluation Data provenance for the context banner | `../../SDD.md` §4.2 `AnalyticalEvaluationDataset` (`source_type`) |
+| Core/Working Model structure being verified (Engine A) | `../../SDD.md` §4.1 `Node`, `Relationship` |
+| Model Setup Data vs. observed-runtime comparison (Engine C drift report) | `../../../requirements/SRS.md` 3.2.6.39 — no dedicated database comparison entity exists; this is computed at analysis time from `Node`/`Relationship` vs. `AnalyticalDataRecord`/`AnalyticalDataBinding`, not read from a stored "drift" table. |
 
 Every result produced by all three engines ultimately becomes a finding record (identifier, type, description, affected entity, rule/criterion, evidence, severity — SRS 3.2.6.44), owned and rendered in full by `08`; this screen's cards/panels are the analysis-time view, not the archival one.
 

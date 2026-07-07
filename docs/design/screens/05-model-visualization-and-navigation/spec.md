@@ -19,12 +19,12 @@ The graph explorer: search, filter, and visually navigate the Core System Model 
 
 | Basis | Reference |
 |---|---|
-| Search a system entity/relationship; filter by type, project, platform, system version, or software unit; zoom in/out, pan, select, display attributes | `../../requirements/SRS.md` 3.2.6.43 |
-| Model Visualization & Navigation UI CSU | `../../design/SDD.md` §5.6.3.9 |
-| Read access to the Core System Model and bound Analytical Evaluation Data (what this screen renders) | `../../design/SDD.md` §5.5.3.4 Model Access Provider, SRS 3.2.5.16–17 |
-| Node types, relationship types, and node attributes (cpu allocation, OS settings, runtime env config) | `../../requirements/SRS.md` 3.2.5.6–8; `../../design/SDD.md` §4.1 `Node`/`Relationship` |
+| Search a system entity/relationship; filter by type, project, platform, system version, or software unit; zoom in/out, pan, select, display attributes | `../../../requirements/SRS.md` 3.2.6.43 |
+| Model Visualization & Navigation UI CSU | `../../SDD.md` §5.6.3.9 |
+| Read access to the Core System Model and bound Analytical Evaluation Data (what this screen renders) | `../../SDD.md` §5.5.3.4 Model Access Provider, SRS 3.2.5.16–17 |
+| Node types, relationship types, and node attributes (cpu allocation, OS settings, runtime env config) | `../../../requirements/SRS.md` 3.2.5.6–8; `../../SDD.md` §4.1 `Node`/`Relationship` |
 | Iconography and color encoding for node/relationship types | foundations §5.4 — reused here, not redefined |
-| Software Unit filter data | `../../design/SDD.md` §4.3 `SoftwareUnitVersionInventory` |
+| Software Unit filter data | `../../SDD.md` §4.3 `SoftwareUnitVersionInventory` |
 
 ---
 
@@ -86,12 +86,12 @@ flowchart TD
 
 | Data | Source |
 |---|---|
-| Node: `node_id`, `node_type`, `name`, `cpu_allocation`, `os_settings`, `runtime_env_config` | `../../design/SDD.md` §4.1 `Node` |
-| Relationship: `relationship_id`, `relationship_type`, `source_node_id`, `target_node_id` | `../../design/SDD.md` §4.1 `Relationship` |
-| Software Unit filter values: `software_unit_name`, `software_unit_version`, `is_candidate` | `../../design/SDD.md` §4.3 `SoftwareUnitVersionInventory` |
-| Whether the selected node/relationship has bound Analytical Evaluation Data, and its provenance | `../../design/SDD.md` §4.2 `AnalyticalDataBinding` (`match_status`), `AnalyticalEvaluationDataset` (`source_type`) |
+| Node: `node_id`, `node_type`, `name`, `cpu_allocation`, `os_settings`, `runtime_env_config` | `../../SDD.md` §4.1 `Node` |
+| Relationship: `relationship_id`, `relationship_type`, `source_node_id`, `target_node_id` | `../../SDD.md` §4.1 `Relationship` |
+| Software Unit filter values: `software_unit_name`, `software_unit_version`, `is_candidate` | `../../SDD.md` §4.3 `SoftwareUnitVersionInventory` |
+| Whether the selected node/relationship has bound Analytical Evaluation Data, and its provenance | `../../SDD.md` §4.2 `AnalyticalDataBinding` (`match_status`), `AnalyticalEvaluationDataset` (`source_type`) |
 
-**A note on the project/platform/system-version filter**: a given Core System Model instance is already scoped to exactly one project/platform/system version (`../../design/SDD.md` §4.1 `CoreSystemModel` keys) — SRS 3.2.6.43 lists these as filter dimensions regardless, so this doc keeps them as filters for consistency with the requirement text. The one case where they'd filter something within a single screen load is a **candidate evaluation model** (`is_candidate_evaluation`, SRS 3.2.5.20) viewed alongside the target system version's regular model; SRS/SDD don't describe this side-by-side case in UI terms, so it's noted here as an open interpretation, not a committed design.
+**A note on the project/platform/system-version filter**: a given Core System Model instance is already scoped to exactly one project/platform/system version (`../../SDD.md` §4.1 `CoreSystemModel` keys) — SRS 3.2.6.43 lists these as filter dimensions regardless, so this doc keeps them as filters for consistency with the requirement text. The one case where they'd filter something within a single screen load is a **candidate evaluation model** (`is_candidate_evaluation`, SRS 3.2.5.20) viewed alongside the target system version's regular model; SRS/SDD don't describe this side-by-side case in UI terms, so it's noted here as an open interpretation, not a committed design.
 
 ---
 
