@@ -1,584 +1,285 @@
-# Software Design Description
-## System-as-a-Graph (SaG)
-
-Detailed design of the components, interfaces, data structures, and algorithms that realise the SaG architecture.
+# Software Design Description (SDD)
+## System as a Graph (SaaG) Digital System Model
+### Prepared in accordance with MIL-STD-498 (Data Item Description DI-IPSC-81435)
 
 ---
 
-| Field | Value |
+## 1. Scope
+
+### 1.1 Identification
+
+This document is the Software Design Description (SDD) for the **System as a Graph (SaaG) Digital System Model** CSCI, prepared in the format defined by MIL-STD-498, Data Item Description DI-IPSC-81435. It describes the design that satisfies the requirements stated in `../requirements/SRS.md`.
+
+### 1.2 System Overview
+
+SaaG is a static digital system model built using an architectural digital twin approach: it represents the structural and relational architecture of the target system as a node-relationship graph, without executing the target system's software. Software units, middleware and communication services, processor/console units, topics, and messages are modeled as nodes; dependency, publishing, and consuming relationships between them are modeled as relationships. Behavioral analysis is achieved by overlaying Analytical Evaluation Data — derived from field records or a scenario generator — onto this structural graph, rather than by running the components themselves.
+
+### 1.3 Document Overview
+
+This SDD specifies the CSCI-wide design decisions (Section 3), the CSCI's architectural decomposition into Computer Software Components (CSCs) and its concept of execution (Section 4), the detailed design of each CSC down to Computer Software Unit (CSU) level (Section 5), and the traceability of every SRS requirement to the design element that satisfies it (Section 6). Interface characteristics and database designs are specified in companion documents — the Interface Design Description (IDD) and Database Design Description (DBDD) — and are only referenced here, not duplicated.
+
+---
+
+## 2. Referenced Documents
+
+- MIL-STD-498, *Software Development and Documentation*, Data Item Description DI-IPSC-81435 (Software Design Description).
+- `../requirements/SRS.md` — Software Requirements Specification for the SaaG CSCI (parent requirements document for this SDD).
+- `IDD.md` — Interface Design Description for the SaaG CSCI.
+- `DBDD.md` — Database Design Description for the SaaG CSCI.
+
+---
+
+## 3. CSCI-Wide Design Decisions
+
+1. **Static digital twin, no execution**: The CSCI never executes the target system's actual software units; it constructs and analyzes a node-relationship representation of the system's architecture (SRS 1.2).
+2. **Separable structural and behavioral layers**: The structural graph (Core System Model, built from Model Setup Data) and the behavioral overlay (Analytical Evaluation Data) are constructed independently and bound together without either altering the other, so they remain separable at all times (SRS 3.2.5.13).
+3. **Concurrency-safe shared model access**: Multiple user sessions, and multiple concurrent production-pipeline/analysis/simulation operations, read and write the same Core System Model without compromising model integrity or result consistency (SRS 3.2.5.18–19).
+4. **Non-destructive experimentation**: Structural "what-if" changes (adding/removing nodes or relationships, altering attributes) are performed only on a working model derived from the Core System Model, never on the Core System Model itself (SRS 3.2.6.17).
+5. **Common validation-and-error-recording pattern**: Every data-acquisition path in the CSCI (configuration data, source repository files, field records, synthetic data, Model Setup Data) performs format/integrity/mandatory-field checks and records failures with a consistent set of attributes (source, reason, time), rather than each CSC inventing its own error model.
+
+---
+
+## 4. CSCI Architectural Design
+
+### 4.1 CSCI Components
+
+The SaaG CSCI is decomposed into 6 Computer Software Components (CSCs), mapped 1:1 onto the capability areas already defined in the SRS:
+
+| CSC | Abbreviation | SRS Reference | CSUs | SDD Reference |
+|---|---|---|---|---|
+| Model Setup Data Generation | MSD | §3.2.1 | 5 | §5.1 |
+| Scenario Generator | SCG | §3.2.2 | 3 | §5.2 |
+| Field Records Database | FRD | §3.2.3 | 2 | §5.3 |
+| Analytical Data Preparation | ADP | §3.2.4 | 3 | §5.4 |
+| Node-Relationship Based Core System Model | CSM | §3.2.5 | 6 | §5.5 |
+| Design Verification, Analysis and Evaluation | VAE | §3.2.6 | 12 | §5.6 |
+
+### 4.2 Concept of Execution
+
+1. **MSD** acquires and validates data from the configuration management database, source code repository, package repository, and network topology source, and assembles it into a Model Setup Data file.
+2. **CSM** ingests the Model Setup Data file and constructs the Core System Model (nodes and relationships).
+3. In parallel, **SCG** produces synthetic data from user-defined scenarios, and **FRD** stores System Field Records uploaded from the field.
+4. **ADP** consumes either the System Field Records (from FRD) or the synthetic data (from SCG) — never both for the same run — and produces Analytical Evaluation Data.
+5. **CSM** binds the Analytical Evaluation Data to the relevant nodes and relationships of the Core System Model, preserving which upstream source (field or synthetic) produced it.
+6. **VAE** is the sole component through which users and automation clients (CLI/build tools) interact with the model: it drives the MSD/CSM/ADP production processes, performs read-only verification and analysis against the bound model (or a derived working model), and reports findings, reports, and installation-suitability decisions.
+
+### 4.3 Interface Design
+
+Interface characteristics for all external interfaces (configuration management DB, source code repository, package repository, network topology source, field-data recording mechanism, LDAP directory service, CLI/build automation) and internal interfaces (MSD→CSM, SCG→ADP, FRD→ADP, ADP→CSM, CSM→VAE) are specified in `IDD.md` §3.3 and §3.4 respectively. This SDD does not restate them.
+
+---
+
+## 5. CSCI Detailed Design
+
+### 5.1 MSD — Model Setup Data Generation
+
+#### 5.1.1 CSC-wide design decisions
+All external data acquisition is funneled through a common validation and error-recording path (mandatory-field checks, missing-data status, access/authorization/integrity error handling) before a single Model Setup Data file is assembled (SRS 3.2.1.1).
+
+#### 5.1.2 CSC architectural design
+MSD is composed of 5 CSUs: Data Source Connector & Configuration Manager, Configuration Data Acquisition, Software Unit Version Inventory Manager, Source Repository Ingestion, and Data Validation & Model Setup Data Assembler. Data flows left to right through this list, converging on the assembled Model Setup Data file passed to CSM.
+
+#### 5.1.3 CSU detailed design
+
+**5.1.3.1 Data Source Connector & Configuration Manager**
+Purpose: manage controlled, traceable access to the four external data sources (configuration management database, source code repository, package repository, network topology data source), including user-definable per-source configuration (source type, name, access method, connection address, credentials) and the two supported methods of network topology acquisition (automatic or manual entry). Traces to SRS 3.2.1.2–4. Interface characteristics: see IDD. Data: see DBDD.
+
+**5.1.3.2 Configuration Data Acquisition**
+Purpose: retrieve current project, platform, and system version information from the configuration management database; mark the effective version; mark the acquisition process with an error status on deficiency, access error, or format incompatibility. Traces to SRS 3.2.1.5–9, 12.
+
+**5.1.3.3 Software Unit Version Inventory Manager**
+Purpose: record and update the Software Unit Version Inventory (software unit name/version per project, platform, version), including insertion of a candidate software unit version alongside the other defined versions. Traces to SRS 3.2.1.10–11. Data: see DBDD.
+
+**5.1.3.4 Source Repository Ingestion**
+Purpose: transfer source code, installation scripts, and configuration files for the software units in scope from the source code repository; record file name, path, package/version, and update timestamp per file; report missing-data status for mandatory files that cannot be obtained; report access/authorization/integrity errors. Traces to SRS 3.2.1.13–16.
+
+**5.1.3.5 Data Validation & Model Setup Data Assembler**
+Purpose: perform a mandatory-field-presence check across all received/manually-entered source data; record error reason, source name/type, project/platform association, and error time for each failure; assemble the data that passes verification into the Model Setup Data file handed off to CSM. Traces to SRS 3.2.1.17–19.
+
+---
+
+### 5.2 SCG — Scenario Generator
+
+#### 5.2.1 CSC-wide design decisions
+Synthetic data generation is fully decoupled from field data collection; scenario inputs and the data they produced are recorded together so any synthetic data set is traceable back to the exact inputs that generated it (SRS 3.2.2.6).
+
+#### 5.2.2 CSC architectural design
+SCG is composed of 3 CSUs: Scenario Input Manager, Synthetic Data Generator, and Scenario Output Recorder.
+
+#### 5.2.3 CSU detailed design
+
+**5.2.3.1 Scenario Input Manager**
+Purpose: capture and traceably record user-defined scenario inputs — scenario scope, scenario type, time interval, data density, and data types to be produced. Traces to SRS 3.2.2.3, 6.
+
+**5.2.3.2 Synthetic Data Generator**
+Purpose: serve as the data source for system-wide simulation processes; produce synthetic data structurally equivalent to the topic/message schema, field naming, and value-range constraints used by the actual software units. Traces to SRS 3.2.2.2, 4.
+
+**5.2.3.3 Scenario Output Recorder**
+Purpose: record produced synthetic data together with scenario name, production time, and project/platform/system-version association; prepare the data for transfer to ADP. Traces to SRS 3.2.2.5, 7.
+
+---
+
+### 5.3 FRD — Field Records Database
+
+#### 5.3.1 CSC-wide design decisions
+System Field Records are stored centrally and indexed for retrieval by project, platform, system version, record source, and upload time; upload-time validation prevents malformed records from entering the store (SRS 3.2.3.1). Storage hardware disk capacity is an environment/infrastructure requirement (SRS 3.2.3.6) whose sizing will be determined during the critical design phase; it is not modeled as a CSU.
+
+#### 5.3.2 CSC architectural design
+FRD is composed of 2 CSUs: Record Upload Manager and Record Catalog Manager.
+
+#### 5.3.3 CSU detailed design
+
+**5.3.3.1 Record Upload Manager**
+Purpose: accept user uploads of telemetry and system data records into the database in a controlled, traceable manner, associated with project/platform/system-version; detect and report format incompatibility, integrity errors, or missing fields at upload time. Traces to SRS 3.2.3.2, 5.
+
+**5.3.3.2 Record Catalog Manager**
+Purpose: record each uploaded System Field Record with its source, upload time, and project/platform/version association; support listing, search, and selection of existing records by project, platform, system version, record source, or upload time. Traces to SRS 3.2.3.3–4. Data: see DBDD.
+
+---
+
+### 5.4 ADP — Analytical Data Preparation
+
+#### 5.4.1 CSC-wide design decisions
+Analytical Evaluation Data is produced from exactly one of two upstream sources — System Field Records (via FRD) or synthetic data (via SCG) — through parallel, independently-validated ingestion paths that converge on a single assembly step (SRS 3.2.4.1).
+
+#### 5.4.2 CSC architectural design
+ADP is composed of 3 CSUs: Field Record Ingestion, Scenario Data Ingestion, and Analytical Data Assembler.
+
+#### 5.4.3 CSU detailed design
+
+**5.4.3.1 Field Record Ingestion**
+Purpose: obtain System Field Records from FRD for Analytical Evaluation Data production; detect and report format incompatibility or unreadable data. Traces to SRS 3.2.4.2, 5.
+
+**5.4.3.2 Scenario Data Ingestion**
+Purpose: obtain synthetic data from SCG for Analytical Evaluation Data production; detect and report format incompatibility, unreadable data, or missing fields. Traces to SRS 3.2.4.3, 6.
+
+**5.4.3.3 Analytical Data Assembler**
+Purpose: process and appropriately associate the ingested System Field Records or synthetic data, and produce the Analytical Evaluation Data transmitted to CSM. Traces to SRS 3.2.4.4. Data: see DBDD.
+
+---
+
+### 5.5 CSM — Node-Relationship Based Core System Model
+
+#### 5.5.1 CSC-wide design decisions
+The structural graph (Core System Model) and the behavioral overlay (Analytical Evaluation Data) are built and bound as separable layers (SRS 3.2.5.1, 13) and exposed under concurrency control to multiple simultaneous consumers, including isolated per-candidate evaluation models used by the production deployment pipeline (SRS 3.2.5.18–20).
+
+#### 5.5.2 CSC architectural design
+CSM is composed of 6 CSUs: Model Construction Engine, Node-Relationship Schema Manager, Analytical Data Binder, Model Access Provider, Concurrency & Session Manager, and Candidate Evaluation Model Builder.
+
+#### 5.5.3 CSU detailed design
+
+**5.5.3.1 Model Construction Engine**
+Purpose: accept the Model Setup Data produced by MSD; perform format/schema/integrity/mandatory-field checks; convert validated data into a node-relationship Core System Model associated with project/platform/system version; report missing-entity and invalid-relationship errors; record the Model Setup Data file used, creation time, and model status. Traces to SRS 3.2.5.2–5, 9, 15.
+
+**5.5.3.2 Node-Relationship Schema Manager**
+Purpose: define and maintain the node types (System, Software Segment, CSCI, CSC, CSU, Role, Topic, Message, Operator Console/Processor Units, Network components, Middleware Services, Communication Technology services) and relationship types (runs-on, uses-middleware/communication-service, publishes, consumes, depends-on, assigned-to-role); expose CPU allocation, OS settings, and runtime environment configuration as queryable node attributes. Traces to SRS 3.2.5.6–8. Data: see DBDD.
+
+**5.5.3.3 Analytical Data Binder**
+Purpose: accept Analytical Evaluation Data from ADP; associate it with the relevant project/platform/system version/model; match record, telemetry, and synthetic data to the corresponding nodes and relationships; preserve provenance (field vs. synthetic); keep the binding separable from the Core System Model; report unmatched node/relationship records. Traces to SRS 3.2.5.10–14.
+
+**5.5.3.4 Model Access Provider**
+Purpose: make the Core System Model, and the Analytical Evaluation Data bound to it, available for read access by VAE. Traces to SRS 3.2.5.16–17.
+
+**5.5.3.5 Concurrency & Session Manager**
+Purpose: handle concurrent read/write operations from multiple user sessions on the same Core System Model without compromising integrity or query-result consistency; execute production-pipeline operations and user analysis/simulation operations concurrently and independently of one another. Traces to SRS 3.2.5.18–19.
+
+**5.5.3.6 Candidate Evaluation Model Builder**
+Purpose: create a new, process-specific Core System Model combining a candidate software unit version under evaluation with the other software units of the target system version, isolated from other concurrent evaluations. Traces to SRS 3.2.5.20.
+
+---
+
+### 5.6 VAE — Design Verification, Analysis and Evaluation
+
+#### 5.6.1 CSC-wide design decisions
+All verification and analysis operations are read-only against the Core System Model (SRS 3.2.6.15, 18); structural experimentation happens only on a derived working model (§5.6.3.4). Analysis is organized by the kind of check being performed — rule-based static verification, scenario-driven simulation analysis, and field-record-driven observational analysis — with shared findings, reporting, and access-control infrastructure common to all of them.
+
+#### 5.6.2 CSC architectural design
+VAE is composed of 12 CSUs: Session & Authentication Manager, Model Setup Data Workflow Manager, Analytical Data Workflow Manager, Working Model Editor, Structural & Dependency Analysis Engine, Architectural Rule Verification Engine, Simulation Analysis Engine, Field Data Analysis Engine, Model Visualization & Navigation UI, Findings & Reporting Manager, Automation Interface (CLI/Build Tools), and Installation Suitability Evaluator.
+
+#### 5.6.3 CSU detailed design
+
+**5.6.3.1 Session & Authentication Manager**
+Purpose: authenticate users against a defined LDAP directory service and restrict access to their authorizations; let the user select the working project/platform/system version and see the currently effective version; mediate VAE's interaction with MSD, SCG, ADP, and CSM. Traces to SRS 3.2.6.1–4.
+
+**5.6.3.2 Model Setup Data Workflow Manager**
+Purpose: list Model Setup Data files for the selected project/platform/version and let the user pick one; start and monitor the Model Setup Data production process (in progress/successful/failed); continuously display data-source accessibility status; display missing-data/access/authorization/format/integrity errors from MSD. Traces to SRS 3.2.6.5–9.
+
+**5.6.3.3 Analytical Data Workflow Manager**
+Purpose: let the user choose the Analytical Evaluation Data source (System Field Records or SCG synthetic data), select field records or specify scenario inputs accordingly, start/track synthetic- and Analytical-Evaluation-Data production and view errors, and record the scenario name/inputs/production time/project-platform-version association used. Traces to SRS 3.2.6.10–14, 48.
+
+**5.6.3.4 Working Model Editor**
+Purpose: derive a working model from the Core System Model and let the user add/remove nodes and relationships and update attributes without breaking structural integrity, enabling verification/analysis on the updated working model. Traces to SRS 3.2.6.17.
+
+**5.6.3.5 Structural & Dependency Analysis Engine**
+Purpose: start the Core System Model creation process and monitor its result; display Analytical Evaluation Data binding/matching status; analyze structural dependencies, communication connections, and runtime-environment relationships (with or without Analytical Evaluation Data); detect circular dependencies and disconnected/missing/invalid/unmatched structural relationships. Traces to SRS 3.2.6.15–16, 18–19, 28–29.
+
+**5.6.3.6 Architectural Rule Verification Engine**
+Purpose: statically verify the Core System Model against design rules — topic QoS conformance (durability, reliability, lifespan, transport priority), publisher/consumer matching, external-to-middleware communication consistency, software-unit load-balancing distribution, processor core allocation conformance, OS-settings conformance, runtime-environment memory allocation conformance, resource-contention/bottleneck detection, and architectural-rule-violating design patterns; classify each result as conforming/non-conforming. Traces to SRS 3.2.6.20–27, 30, 42.
+
+**5.6.3.7 Simulation Analysis Engine**
+Purpose: analyze Analytical Evaluation Data produced from SCG synthetic data — message flow direction/count/volume/frequency, the effect of a node/relationship becoming inactive, design-time traffic analysis under increased topic/message density or changed publish/consume behavior, propagation of fault/load/communication-interruption/bandwidth-narrowing conditions to dependent nodes (with affected path), and the highest-resource-usage/most-intensive-messaging entities. Traces to SRS 3.2.6.31–36.
+
+**5.6.3.8 Field Data Analysis Engine**
+Purpose: analyze Analytical Evaluation Data produced from System Field Records — operational/health status; processor/memory/storage/network usage; error/warning/restart/timeout information; message flow/volume/frequency; communication latency/message loss/successful-transmission rates; topic publish/consume activity; comparison of Model Setup Data vs. observed runtime entities/relationships (architectural drift: present-but-not-observed, observed-but-not-present, incompatible); event-record analysis; and highest-resource-usage/most-intensive-messaging entities. Traces to SRS 3.2.6.37–41.
+
+**5.6.3.9 Model Visualization & Navigation UI**
+Purpose: let the user search the node-relationship structure, filter by type/project/platform/system-version/software-unit, and perform zoom/pan/selection/attribute-display operations. Traces to SRS 3.2.6.43.
+
+**5.6.3.10 Findings & Reporting Manager**
+Purpose: present each finding with identifier, type, description, affected entity/relationship, related rule/acceptance criterion, supporting evidence, and severity (informational/low/medium/high/critical); record cause-and-effect relationships between findings from the same operation; support sort/filter of findings by operation type, result, finding type, severity, project, platform, version, or affected nodes; record error cause/interruption stage/error time for interrupted operations; generate exportable summary/detailed reports containing project/platform/version, model used, Analytical Evaluation Data used and its source, operation identifier/type/start/end time, evaluation result, findings, affected nodes/relationships, severity levels, and additional finding information. Traces to SRS 3.2.6.44–47, 49.
+
+**5.6.3.11 Automation Interface (CLI/Build Tools)**
+Purpose: accept analysis requests from Build Automation Tools and a Command Line Interface; present ongoing-operation status to both interactive users and automation clients (e.g., Jenkins); ensure requested analysis operations run concurrently and independently of one another. Traces to SRS 3.2.6.50.
+
+**5.6.3.12 Installation Suitability Evaluator**
+Purpose: evaluate a software unit's suitability for target-environment installation across structural/architectural conformance, interface/topic/communication conformance, dependency/integration conformance, and resource/performance sufficiency; score conformance per control rule (rule identifier, evaluation heading, severity, weight, acceptance criterion, blocking status); force a "non-conforming" installation result whenever a critical-severity finding or a blocking-rule violation occurs, regardless of overall score, and transmit the pipeline-blocking decision to the automation client; run installation evaluations for one or more software units under independent operation identifiers, reporting a separate score/class/blocking-findings/decision per unit plus an aggregate result, in machine-processable format. Traces to SRS 3.2.6.51–54.
+
+---
+
+## 6. Requirements Traceability
+
+| SRS Paragraph(s) | Design Element |
 |---|---|
-| Document | Software Design Description (SDD) |
-| Product | System-as-a-Graph (SaG) |
-| Version | 0.1 (Baseline Draft) |
-| Date | 2026-06-29 |
-| Status | Draft — for review |
-| Standard | Structured per ISO/IEC/IEEE 1016-style content within the 42010 view framework of the SAD |
-| Aligns to | SaG SRS v0.1, SaG SAD v0.1 |
-| Extends | Software-as-a-Graph (`saag/`) interfaces |
+| 3.2.1.1 | §5.1 MSD (CSC-wide) |
+| 3.2.1.2–4 | §5.1.3.1 Data Source Connector & Configuration Manager |
+| 3.2.1.5–9, 12 | §5.1.3.2 Configuration Data Acquisition |
+| 3.2.1.10–11 | §5.1.3.3 Software Unit Version Inventory Manager |
+| 3.2.1.13–16 | §5.1.3.4 Source Repository Ingestion |
+| 3.2.1.17–19 | §5.1.3.5 Data Validation & Model Setup Data Assembler |
+| 3.2.2.1 | §5.2 SCG (CSC-wide) |
+| 3.2.2.3, 6 | §5.2.3.1 Scenario Input Manager |
+| 3.2.2.2, 4 | §5.2.3.2 Synthetic Data Generator |
+| 3.2.2.5, 7 | §5.2.3.3 Scenario Output Recorder |
+| 3.2.3.1 | §5.3 FRD (CSC-wide) |
+| 3.2.3.6 | §5.3.1 FRD (environment/infrastructure note) |
+| 3.2.3.2, 5 | §5.3.3.1 Record Upload Manager |
+| 3.2.3.3–4 | §5.3.3.2 Record Catalog Manager |
+| 3.2.4.1 | §5.4 ADP (CSC-wide) |
+| 3.2.4.2, 5 | §5.4.3.1 Field Record Ingestion |
+| 3.2.4.3, 6 | §5.4.3.2 Scenario Data Ingestion |
+| 3.2.4.4 | §5.4.3.3 Analytical Data Assembler |
+| 3.2.5.1 | §5.5 CSM (CSC-wide) |
+| 3.2.5.2–5, 9, 15 | §5.5.3.1 Model Construction Engine |
+| 3.2.5.6–8 | §5.5.3.2 Node-Relationship Schema Manager |
+| 3.2.5.10–14 | §5.5.3.3 Analytical Data Binder |
+| 3.2.5.16–17 | §5.5.3.4 Model Access Provider |
+| 3.2.5.18–19 | §5.5.3.5 Concurrency & Session Manager |
+| 3.2.5.20 | §5.5.3.6 Candidate Evaluation Model Builder |
+| 3.2.6.1–4 | §5.6.3.1 Session & Authentication Manager |
+| 3.2.6.5–9 | §5.6.3.2 Model Setup Data Workflow Manager |
+| 3.2.6.10–14, 48 | §5.6.3.3 Analytical Data Workflow Manager |
+| 3.2.6.17 | §5.6.3.4 Working Model Editor |
+| 3.2.6.15–16, 18–19, 28–29 | §5.6.3.5 Structural & Dependency Analysis Engine |
+| 3.2.6.20–27, 30, 42 | §5.6.3.6 Architectural Rule Verification Engine |
+| 3.2.6.31–36 | §5.6.3.7 Simulation Analysis Engine |
+| 3.2.6.37–41 | §5.6.3.8 Field Data Analysis Engine |
+| 3.2.6.43 | §5.6.3.9 Model Visualization & Navigation UI |
+| 3.2.6.44–47, 49 | §5.6.3.10 Findings & Reporting Manager |
+| 3.2.6.50 | §5.6.3.11 Automation Interface (CLI/Build Tools) |
+| 3.2.6.51–54 | §5.6.3.12 Installation Suitability Evaluator |
 
 ---
 
-## Table of Contents
+## 7. Notes
 
-1. [Introduction](#1-introduction)
-2. [Design Overview](#2-design-overview)
-3. [Component Design](#3-component-design)
-4. [Interface Design](#4-interface-design)
-5. [Data Design](#5-data-design)
-6. [Detailed Processing and Algorithms](#6-detailed-processing-and-algorithms)
-7. [Error Handling and Logging](#7-error-handling-and-logging)
-8. [Concurrency and Isolation](#8-concurrency-and-isolation)
-9. [Security Design](#9-security-design)
-10. [Design Traceability](#10-design-traceability)
-11. [Appendix — Open Design Items](#11-appendix--open-design-items)
-
----
-
-## 1. Introduction
-
-### 1.1 Purpose
-
-This SDD specifies the detailed software design for SaG: the classes, services, ports, and adapters; their interface signatures; the data structures persisted and exchanged; and the algorithms that implement the required behaviour. It refines the SAD into implementable detail and remains traceable to the SRS.
-
-### 1.2 Scope and conventions
-
-The design covers the five subsystems (MKV, SUR, AVH, CSM, DAD) and the cross-cutting concerns. Interface signatures are given in Python (the implementation language; `Protocol`/`dataclass` style, Python 3.11). Graph schema is given in Cypher (Neo4j 5.x). Algorithms are given in pseudocode. Identifiers reference SRS requirements as `SRS-…` and SAD elements as `§/ADR-…`.
-
-Consistent with SRS A-3 / SAD ADR-05, learned prediction and prescription are **out of scope**; `PredictGraphUseCase` and `PrescribeGraphUseCase` remain in the research core and are not wired into the SaG product surface.
-
-### 1.3 Design principles applied
-
-Reuse-first (the `saag/` analytical core is extended, not forked); dependency inversion (the core depends only on ports); non-destructive overlay (analytical data never mutates structure); immutability of results; configuration over code for all rule sets.
-
----
-
-## 2. Design Overview
-
-### 2.1 Layering and dependency direction
-
-```mermaid
-graph TD
-    subgraph Adapters_In["Driving adapters"]
-        REST["api/ (FastAPI routers, presenters)"]
-        CLI["cli/ runners"]
-        CIEP["CI entry point"]
-    end
-    subgraph UseCases["Use cases (orchestration)"]
-        UC_NEW["Ingest / Scenario / PrepareAnalytical / BuildModel / DetectDrift / Report / EvaluateDeployment"]
-        UC_REUSE["Analyze / Validate / Simulate / Visualize (reused)"]
-    end
-    subgraph Services["Services"]
-        SVC_NEW["ingestion / scenario / analytical / drift / findings / gate / reporting"]
-        SVC_REUSE["analysis / validation / simulation / visualization (reused)"]
-    end
-    subgraph Ports["Ports"]
-        P["IGraphRepository* | IModelSetupSource | IFieldRecordRepository | IResultRepository | IAuthenticator | IReportExporter"]
-    end
-    subgraph Adapters_Out["Driven adapters"]
-        A["Neo4jRepository* | Memory* | CMDB/SCM/Pkg/Topology connectors | FieldRecordStore | ResultStore | LdapAuthenticator | ReportExporter"]
-    end
-    REST --> UC_NEW
-    REST --> UC_REUSE
-    CLI --> UC_NEW
-    CIEP --> UC_NEW
-    UC_NEW --> SVC_NEW
-    UC_REUSE --> SVC_REUSE
-    SVC_NEW --> P
-    SVC_REUSE --> P
-    P --> A
-```
-
-`*` reused unchanged from `saag/`. Arrows point inward; no core module imports an envelope module.
-
-### 2.2 Reused interfaces (from `saag/`, unchanged)
-
-| Interface | Existing signature (abbreviated) | Used by SaG for |
-|---|---|---|
-| `IGraphRepository` | `save_graph(graph_data, clear=False)`, `get_graph_data()`, `derive_dependencies()`, `export_json()` | CSM persistence and the structural read path |
-| `AnalysisService(repo)` | `analyze_layer(layer) -> LayerAnalysisResult` (`.structural`, `.qos_profile`, …) | DAD structure-only analysis |
-| `ValidationService(analysis, prediction, simulation)` | `validate_layers(layers) -> PipelineResult` | DAD validation (structure-only path used) |
-| `SimulationService(repo)` | `run_failure_simulation_exhaustive(layer) -> [...]` | DAD impact simulation |
-| `AntiPatternDetector` | `detect(...)` | DAD anti-pattern checks |
-
-> Note: `ValidationService` currently constructs a `PredictionService`. In the SaG product configuration it is invoked in its **structure-only** mode (the prediction path is not exercised), preserving ADR-05. This is a configuration choice, not a core change.
-
----
-
-## 3. Component Design
-
-### 3.1 MKV — Model Setup Data Generation (`ingestion/`)
-
-| Element | Responsibility |
-|---|---|
-| `IngestionService` | Orchestrate source fetches, build the Software Unit Version Inventory, validate fields, emit `ModelSetupData`. |
-| `IModelSetupSource` adapters | `CmdbConnector`, `ScmConnector`, `PackageConnector`, `NetworkTopologyConnector`. |
-| `ModelSetupValidator` | Field/entity presence, schema, integrity checks; produces structured errors. |
-| `IngestModelSetupDataUseCase` | Entry point invoked by API/CLI/CI. |
-
-```python
-class IngestionService:
-    def __init__(self, sources: dict[str, IModelSetupSource],
-                 validator: ModelSetupValidator, store: IModelSetupStore): ...
-    def ingest(self, identity: Identity,
-               manual_topology: TopologyParams | None = None) -> ModelSetupData: ...
-```
-
-### 3.2 SUR — Scenario Generator (`scenario/`)
-
-| Element | Responsibility |
-|---|---|
-| `ScenarioService` | Generate synthetic, schema-faithful records from user inputs. |
-| `ScenarioSpec` | scope, type, time-range, density, data-types. |
-| `SchemaConformer` | Enforce field naming and value-range parity with field records (reuses QoS/dataset distributions from `tools/generation/datasets`). |
-| `GenerateScenarioUseCase` | Entry point; records provenance. |
-
-```python
-class ScenarioService:
-    def generate(self, identity: Identity, spec: ScenarioSpec) -> SyntheticDataset: ...
-```
-
-### 3.3 AVH — Analytical Data Preparation (`analytical/`)
-
-| Element | Responsibility |
-|---|---|
-| `AnalyticalDataService` | Convert field records OR synthetic data into `AnalyticalEvaluationData`. |
-| `IFieldRecordRepository` adapter | Field Record Store access. |
-| `RecordNormalizer` | Detect format/unreadable/missing-field issues; report. |
-| `PrepareAnalyticalDataUseCase` | Entry point. |
-
-```python
-class AnalyticalDataService:
-    def prepare_from_field(self, identity: Identity, selection: RecordFilter) -> AnalyticalEvaluationData: ...
-    def prepare_from_synthetic(self, synthetic: SyntheticDataset) -> AnalyticalEvaluationData: ...
-```
-
-### 3.4 CSM — Core System Model (`saag/` extended)
-
-| Element | Responsibility |
-|---|---|
-| `BuildCoreSystemModelUseCase` | Validate Model Setup Data, build the typed graph via `IGraphRepository`, derive `DEPENDS_ON`. Extends `ModelGraphUseCase`. |
-| `OverlayBinder` | Attach `AnalyticalEvaluationData` non-destructively (separate store, by reference). |
-| `ComposedReadModel` | Present structure + overlay to DAD without merging them in storage. |
-
-```python
-class BuildCoreSystemModelUseCase:
-    def __init__(self, repo: IGraphRepository, validator: ModelSetupValidator): ...
-    def execute(self, setup: ModelSetupData, clear: bool = True) -> CoreSystemModelRef: ...
-
-class OverlayBinder:
-    def bind(self, model_ref: CoreSystemModelRef,
-             analytical: AnalyticalEvaluationData) -> OverlayRef: ...   # never mutates structure
-```
-
-### 3.5 DAD — Validation, Analysis, Evaluation (`orchestration/` + reused use cases)
-
-| Element | Responsibility |
-|---|---|
-| `AnalyzeGraphUseCase`, `ValidateGraphUseCase`, `SimulateGraphUseCase`, `VisualizeGraphUseCase` | **Reused** structure-only analysis, QoS conformance, pub/sub matching, cyclic-dependency, anti-patterns, simulation, dashboard. |
-| `DetectDriftUseCase` / `DriftService` | Compare model structure vs runtime-observed structure. |
-| `FindingsService` | Build, classify, and link findings; persist immutable results. |
-| `ReportingService` / `IReportExporter` | Exportable summary/detailed reports. |
-| `GateScoringService` | Per-rule scoring, blocking semantics, decision. |
-| `EvaluateDeploymentSuitabilityUseCase` | Single CI entry-point orchestrator. |
-
----
-
-## 4. Interface Design
-
-### 4.1 New ports
-
-```python
-from typing import Protocol, Iterable, Iterator
-
-class IModelSetupSource(Protocol):
-    source_type: str                       # "cmdb" | "scm" | "package" | "topology"
-    def test_connection(self) -> ConnectionStatus: ...
-    def fetch(self, identity: "Identity") -> RawSourcePayload: ...   # raises SourceAccessError
-
-class IModelSetupStore(Protocol):
-    def put(self, data: "ModelSetupData") -> ModelSetupId: ...
-    def get(self, id: ModelSetupId) -> "ModelSetupData": ...
-    def list(self, identity: "Identity") -> list[ModelSetupSummary]: ...
-
-class IFieldRecordRepository(Protocol):
-    def store(self, identity: "Identity", records: Iterable["FieldRecord"]) -> UploadReceipt: ...
-    def query(self, identity: "Identity", filters: "RecordFilter") -> Iterator["FieldRecord"]: ...
-
-class IResultRepository(Protocol):
-    def append(self, result: "OperationResult") -> OperationId: ...   # append-only; no overwrite
-    def get(self, operation_id: OperationId) -> "OperationResult": ...
-    def search(self, criteria: "ResultQuery") -> list["OperationResultSummary"]: ...
-
-class IAuthenticator(Protocol):
-    def authenticate(self, username: str, password: str) -> "Principal": ...   # via LDAP
-    def authorize(self, principal: "Principal", operation: str, identity: "Identity") -> bool: ...
-
-class IReportExporter(Protocol):
-    def export(self, result: "OperationResult", fmt: str, detail: str) -> bytes: ...
-```
-
-### 4.2 New use-case interfaces
-
-```python
-class IngestModelSetupDataUseCase:
-    def execute(self, identity: Identity, manual_topology: TopologyParams | None = None) -> ModelSetupData: ...
-
-class PrepareAnalyticalDataUseCase:
-    def execute(self, identity: Identity, source: AnalyticalSource) -> AnalyticalEvaluationData: ...
-
-class DetectDriftUseCase:
-    def execute(self, model_ref: CoreSystemModelRef, analytical: AnalyticalEvaluationData) -> list[Finding]: ...
-
-class EvaluateDeploymentSuitabilityUseCase:
-    def execute(self, batch: list[CandidateUnit], platform_version: Version,
-                profile: GateProfile) -> BatchDeploymentResult: ...
-```
-
-### 4.3 REST API (extends `/api/v1`)
-
-| Method | Path | Purpose | SRS |
-|---|---|---|---|
-| GET | `/projects` · `/platforms` · `/versions` | Identity selection; effective version flag | SRS-DAD-002 |
-| POST | `/model-setup` | Start MKV ingestion; returns job + status | SRS-DAD-004 |
-| GET | `/model-setup/{id}` | Model Setup Data status/errors | SRS-MKV-009 |
-| POST | `/models` | Build Core System Model from setup data | SRS-DAD-005 |
-| POST | `/scenarios` | Generate synthetic dataset | SRS-DAD-007 |
-| POST | `/analytical-data` | Prepare from field or synthetic | SRS-DAD-006 |
-| POST | `/models/{id}/analyze` | Structure-only analysis/validation | SRS-DAD-010…019 |
-| POST | `/models/{id}/simulate` | Impact simulation (overlay) | SRS-DAD-030…034 |
-| POST | `/models/{id}/drift` | Architectural drift detection | SRS-DAD-042 |
-| GET | `/results` · `/results/{operation_id}` | Search/retrieve immutable results | SRS-DAD-055 |
-| GET | `/results/{operation_id}/report` | Export report | SRS-DAD-057 |
-| POST | `/gate/evaluate` | **Single CI entry point**; machine-readable batch result | SRS-DAD-060…064 |
-
-All endpoints carry the identity tuple; request-scoped repository binding follows the existing `api/dependencies.py` pattern. `/gate/evaluate` is also reachable via CLI and build-tool clients (SRS-EXT-030…032).
-
-### 4.4 CLI (extends `cli/`)
-
-| Command | Maps to |
-|---|---|
-| `cli/ingest_model_setup.py` | `IngestModelSetupDataUseCase` |
-| `cli/build_model.py` | `BuildCoreSystemModelUseCase` |
-| `cli/prepare_analytical.py` | `PrepareAnalyticalDataUseCase` |
-| `cli/detect_drift.py` | `DetectDriftUseCase` |
-| `cli/evaluate_deployment.py` | `EvaluateDeploymentSuitabilityUseCase` (CI) |
-| (reused) `analyze_graph.py`, `simulate_graph.py`, `validate_graph.py`, `visualize_graph.py` | DAD analytical operations |
-
----
-
-## 5. Data Design
-
-### 5.1 Domain data structures
-
-```python
-@dataclass(frozen=True)
-class Identity:
-    project: str
-    platform: str
-    version: str
-    effective: bool = False
-
-@dataclass
-class SoftwareUnitRef:
-    name: str; version: str
-    commit: str | None; branch: str | None; package: str | None
-
-@dataclass
-class ModelSetupData:
-    id: str
-    identity: Identity
-    inventory: list[SoftwareUnitRef]
-    source_provenance: dict[str, SourceMeta]       # per source: type, name, ts
-    status: str                                     # "succeeded" | "failed" | "incomplete"
-    errors: list[AcquisitionError]
-    created_at: datetime
-
-@dataclass
-class AnalyticalEvaluationData:
-    id: str
-    identity: Identity
-    source_type: str                                # "field" | "synthetic"
-    scenario_ref: str | None
-    records: list[Observation]                      # see 5.3
-    created_at: datetime
-
-@dataclass
-class Finding:
-    finding_id: str
-    type: str
-    description: str
-    affected_entity: str                            # node/edge id
-    rule_ref: str
-    evidence: dict
-    severity: str                                   # info|low|medium|high|critical
-    caused_by: list[str] = field(default_factory=list)
-
-@dataclass
-class RuleDefinition:
-    rule_id: str
-    heading: str                                    # structural|interface|dependency|resource
-    severity: str
-    weight: float
-    acceptance_criterion: str
-    blocking: bool
-
-@dataclass
-class OperationResult:                              # immutable once appended
-    operation_id: str
-    operation_type: str
-    identity: Identity
-    model_ref: str
-    analytical_ref: str | None
-    started_at: datetime; ended_at: datetime
-    evaluation_result: str                          # "conformant" | "non-conformant"
-    findings: list[Finding]
-```
-
-### 5.2 Graph schema (Neo4j 5.x) — structural model
-
-The reused five-type schema is retained; SaG adds the extended modelled entities and an identity stamp. Structural properties are the only ones the analysis path reads.
-
-```cypher
-// Identity stamp on every structural node and edge
-//   {project, platform, version}
-
-// Reused structural node labels
-(:Application {id, name, role, app_type, version, weight})
-(:Broker      {id, name, weight})
-(:Topic       {id, name, size, qos_reliability, qos_durability,
-               qos_transport_priority, qos_lifespan, weight})
-(:Node        {id, name, weight})
-(:Library     {id, name, version, weight})
-
-// Extended modelled entities (ADR-04: first-class vs container is open)
-(:System {id, name})  (:Segment {id, name})
-(:CSCI {id, name})    (:CSC {id, name})    (:CSU {id, name})
-(:Role {id, name})    (:Console {id, name})   (:Processor {id, name})
-(:NetworkComponent {id, name})
-(:MiddlewareService {id, name})  (:CommService {id, name})  (:Message {id, name})
-
-// Structural edges (reused)
-(:Application)-[:PUBLISHES_TO {weight}]->(:Topic)
-(:Application)-[:SUBSCRIBES_TO {weight}]->(:Topic)
-(:Broker)-[:ROUTES {weight}]->(:Topic)
-(:Application|Broker)-[:RUNS_ON]->(:Node|Console|Processor)
-(:Node)-[:CONNECTS_TO]->(:Node)
-(:Application)-[:USES {weight}]->(:Library)
-// Extended structural edges
-(:Application)-[:USES_SERVICE]->(:MiddlewareService|:CommService)
-(:CSU)-[:ASSIGNED_TO]->(:Role)
-(:CSC)-[:CONTAINS]->(:CSU)   (:CSCI)-[:CONTAINS]->(:CSC)   ...
-
-// Derived (computed at build): dependent -> dependency
-(src)-[:DEPENDS_ON {dependency_type, weight, shared_topics}]->(tgt)
-```
-
-### 5.3 Overlay (analytical) data — stored separately (ADR-06)
-
-To guarantee independence, analytical data is **not** written as properties on structural nodes/edges. It is stored in the Field Record / Result store keyed by `(model_ref, entity_id)` and exposed only through the `ComposedReadModel`.
-
-```python
-@dataclass
-class Observation:
-    entity_id: str                  # references a structural node/edge id
-    kind: str                       # health | cpu | mem | storage | net | error |
-                                    # warning | restart | timeout | unreachable |
-                                    # msg_count | msg_volume | msg_freq | latency |
-                                    # loss | delivery_rate | topic_activity | event
-    value: float | str
-    ts: datetime
-    source_type: str                # "field" | "synthetic"
-```
-
-### 5.4 Result and field-record stores
-
-`IResultRepository` is append-only; `operation_id` is the key; searchable by identity, operation type, and time (SRS-DAD-055). `IFieldRecordRepository` stores raw telemetry by identity, schema-faithful to the source.
-
-### 5.5 Configuration schema (externalised policy)
-
-```yaml
-gate_profile:
-  scoring_method: weighted_sum        # configurable
-  score_classes: [{name: pass, min: 0.85}, {name: warn, min: 0.6}, {name: fail, min: 0.0}]
-  rules:
-    - {rule_id: STRUCT-CYCLE, heading: structural, severity: high, weight: 0.2,
-       acceptance_criterion: "no new cyclic dependency", blocking: true}
-    - {rule_id: IFACE-NOSUB, heading: interface, severity: medium, weight: 0.1,
-       acceptance_criterion: "no topic without consumer", blocking: false}
-    # ... QoS, load-balancing, anti-pattern catalogue, resource rules
-waiver_register:
-  - {rule_id: STRUCT-SPOF, entity_id: ConflictDetector, reason: "intentional SPOF", expires: 2027-01-01}
-```
-
----
-
-## 6. Detailed Processing and Algorithms
-
-### 6.1 MKV — acquisition and validation
-
-```
-function ingest(identity, manual_topology):
-    result = ModelSetupData(identity, status="incomplete")
-    payloads = {}
-    for src in [cmdb, scm, package, topology]:
-        status = src.test_connection()
-        record source-availability(status)                 # SRS-EXT/DAD-041 UI feed
-        try: payloads[src] = src.fetch(identity)
-        except SourceAccessError as e:
-            result.errors += AcquisitionError(reason, src, identity, now())
-            if src is required: result.status = "failed"; return persist(result)
-    if manual_topology: payloads[topology] = manual_topology
-    inventory = build_software_unit_inventory(payloads[cmdb], identity)   # mark effective version
-    fields_ok, field_errors = validator.validate(payloads, inventory)
-    if not fields_ok:
-        result.errors += field_errors; result.status = "failed"; return persist(result)
-    result.inventory = inventory; result.status = "succeeded"
-    return persist(result)
-```
-
-### 6.2 AVH — analytical-data preparation
-
-```
-function prepare(identity, source):
-    raw = (FieldRecordRepo.query(identity, source.filter) if source.type=="field"
-           else source.synthetic.records)
-    issues = normalizer.scan(raw)                          # format/unreadable/missing-field
-    if issues: report(issues)                              # recorded, may still proceed partially
-    observations = map(raw -> Observation(entity_id, kind, value, ts, source.type))
-    return AnalyticalEvaluationData(identity, source.type, observations)
-```
-
-### 6.3 CSM — construction and non-destructive overlay
-
-```
-function build(setup, clear):
-    if not validator.schema_ok(setup): return error("incomplete model")
-    graph_data = transform(setup -> structural nodes/edges + identity stamp)
-    repo.save_graph(graph_data, clear)                     # reused
-    repo.derive_dependencies()                             # reused DEPENDS_ON derivation
-    return CoreSystemModelRef(setup.identity, model_id)
-
-function bind_overlay(model_ref, analytical):              # INDEPENDENCE-CRITICAL
-    for obs in analytical.records:
-        result_store.put_observation(model_ref, obs)       # separate store; structure untouched
-    return OverlayRef(model_ref, analytical.id)
-```
-
-Invariant: `bind_overlay` writes only to the observation/result store; it never calls `repo.save_graph` or mutates structural properties (SRS-CSM-010, SRS-NFR-001).
-
-### 6.4 Drift detection
-
-```
-function detect_drift(model_ref, analytical_field):
-    M_ent, M_edge, M_topic = structural_sets(model_ref)
-    O_ent, O_edge, O_topic = observed_sets(analytical_field)     # projected from field observations
-    findings = []
-    findings += [Finding(type="missing_at_runtime", e, sev=medium)  for e in M_ent  - O_ent]
-    findings += [Finding(type="unexpected_runtime", e, sev=high)    for e in O_ent  - M_ent]
-    findings += [Finding(type="runtime_only_topic", t, sev=high)    for t in O_topic - M_topic]   # SRS-DAD-041
-    findings += [Finding(type="edge_drift", x, sev=medium)         for x in symmetric_diff(M_edge, O_edge)]
-    findings += [Finding(type="attribute_drift", e, sev=low)       for e in (M_ent & O_ent) if conflict(e)]
-    return classify_and_link(findings)
-```
-
-### 6.5 Deployment-suitability gate
-
-```
-function evaluate_deployment(batch, platform_version, profile):
-    results = []
-    for candidate in batch:                                # independent operation ids -> isolation
-        op = new_operation_id()
-        setup = IngestModelSetup.execute(Identity(candidate.project, candidate.platform, candidate.version))
-        if setup.status == "failed":
-            results += DeploymentDecision(candidate, decision="non-conformant", reason=setup.errors); continue
-        model = BuildModel.execute(setup)                  # process-specific model (SRS-CSM-022)
-        findings = []
-        for heading in [structural, interface, dependency, resource]:
-            findings += run_checks(model, heading, profile.rules)     # reuses Analyze/Validate/anti-patterns
-        score = weighted_sum(findings, profile)
-        # blocking: critical finding OR violated blocking-rule, delta-aware and waiver-filtered
-        blocking = [f for f in findings
-                    if (f.severity == "critical" or rule(f).blocking)
-                    and is_new_regression(f, baseline(candidate))      # not pre-existing
-                    and not waived(f, candidate.identity)]
-        decision = "non-conformant" if blocking else class_of(score, profile)
-        op_result = OperationResult(op, "deployment_suitability", candidate.identity,
-                                    model.ref, None, ..., decision, findings)
-        result_store.append(op_result)                     # immutable
-        results += machine_readable(op_result, score, blocking)
-        if decision == "non-conformant": signal_halt(candidate)        # SRS-DAD-063
-    return BatchDeploymentResult(results)                  # machine-readable (SRS-DAD-064)
-```
-
-`is_new_regression` compares against the effective-version baseline so intentional, pre-existing structures (e.g. a known SPOF) do not fail the gate; `waived` consults the waiver register (§5.5). This implements SAD §6.3.
-
-### 6.6 What-if working copy
-
-```
-function what_if(model_ref, edits):
-    g = repo.export_json()                                 # reused; never touches stored model
-    g' = apply(edits, g)                                   # add/remove entity/edge, update attrs
-    assert structural_integrity(g')                        # reject integrity-breaking edits
-    tmp = MemoryRepository(); tmp.save_graph(g'); tmp.derive_dependencies()
-    return Analyze/Validate/Simulate over tmp              # SRS-DAD-020
-```
-
-### 6.7 Independence enforcement (design)
-
-Two mechanisms, both verifiable:
-1. **Storage separation** — structural data in the graph store; analytical data in the observation/field/result store (§5.3). The analysis services receive only the structural read model.
-2. **Static import-separation test** — the existing `tests/test_independence_guarantee.py` and `test_predict_simulate_separation.py` are extended with a rule that no module under `saag/analysis/` or `orchestration/` analysis paths imports `analytical/`, `IFieldRecordRepository`, `Observation`, or simulation symbols. The build fails on violation (SRS-NFR-002, ADR-02).
-
----
-
-## 7. Error Handling and Logging
-
-Every subsystem records structured errors with `{reason, stage, source, identity, timestamp}` and surfaces them to interactive users and automation clients (SRS-MKV-009, SRS-AVH-005, SRS-DAD-054). MKV distinguishes `missing-data`, `access/connection`, `authorization`, `format`, and `integrity` errors. Acquisition failure on a required source sets `status="failed"` and aborts construction. Partial analytical issues are reported but may allow a degraded run. Credentials are never logged (§9).
-
----
-
-## 8. Concurrency and Isolation
-
-- **Request-scoped binding** — each API request resolves its own repository/service instances (existing `api/dependencies.py` pattern); no shared mutable analysis state (SRS-NFR-020).
-- **Process-specific models** — each candidate evaluation builds an isolated model keyed by operation id (SRS-CSM-022/023); concurrent CI jobs cannot interfere.
-- **Append-only results** — `IResultRepository.append` guarantees no overwrite under concurrency (SRS-CSM-021, SRS-DAD-055); writes are idempotent on `operation_id`.
-- **Read consistency** — overlay reads are snapshot-scoped to a `(model_ref, operation_id)` so concurrent overlays do not cross-contaminate a running analysis.
-
----
-
-## 9. Security Design
-
-`LdapAuthenticator` implements `IAuthenticator.authenticate` against the configured directory; a `Principal` carries authorised scopes. Every use-case entry point calls `authorize(principal, operation, identity)` before acting. Source-connection credentials are stored encrypted in the configuration store and redacted from logs, findings, reports, and exports (SRS-NFR-030/031).
-
----
-
-## 10. Design Traceability
-
-| Design element | SRS | SAD |
-|---|---|---|
-| `IngestionService`, `IModelSetupSource`, §6.1 | SRS-MKV-001…009, SRS-EXT-001…005 | §4, §7 |
-| `ScenarioService`, §3.2 | SRS-SUR-001…006 | §4.2 |
-| `AnalyticalDataService`, `IFieldRecordRepository`, §6.2 | SRS-AVH-001…005, SRS-EXT-010…011 | §4.3, §5.4 |
-| `BuildCoreSystemModelUseCase`, schema §5.2, overlay §6.3 | SRS-CSM-001…013 | §5.1–§5.2, ADR-04/06 |
-| Reused `Analyze/Validate/Simulate`, §3.5 | SRS-DAD-010…019, 030…034 | §6.1–§6.2 |
-| `DetectDriftUseCase`, §6.4 | SRS-DAD-040…043 | §6.2 |
-| `FindingsService`, `OperationResult` §5.1, `ReportingService` | SRS-DAD-050…057 | §5.3, §9.5 |
-| `EvaluateDeploymentSuitabilityUseCase`, §6.5 | SRS-DAD-060…064 | §6.3, ADR-07 |
-| What-if §6.6 | SRS-DAD-020 | §6.2 |
-| Independence §6.7 | SRS-NFR-001/002 | §9.1, ADR-02 |
-| Identity DTO §5.1, append-only store §5.4 | SRS-NFR-010…012 | §9.2, ADR-03 |
-| Concurrency §8 | SRS-NFR-020, SRS-CSM-021…023 | §6.4 |
-| `LdapAuthenticator` §9 | SRS-NFR-030/031, SRS-EXT-020 | §9.3 |
-
----
-
-## 11. Appendix — Open Design Items
-
-- **ADR-04 (taxonomy realisation).** §5.2 lists the extended labels but leaves first-class-node vs container/attribute open; the `DEPENDS_ON` derivation and simulation operate on the structural pub/sub/routing/hosting edges regardless, so this decision can be deferred without blocking 6.1–6.4.
-- **ADR-05 (learned layer).** `PredictionService` is invoked only in structure-only mode; if the advisory layer is later admitted, it attaches as a read-only adapter consuming the structural read model, and §6.7's import rule must be relaxed only for that adapter, never for the gate path.
-- **Gate reference profile.** §5.5 gives a schema; a validated default rule set, weights, and score-class thresholds require an empirical reference profile before the gate is promoted from advisory to blocking in production.
-- **Observation projection for drift.** §6.4's `observed_sets` projection (which field signals constitute "observed" presence of an entity/edge/topic) should be pre-registered before tuning, to avoid post-hoc fitting.
-
----
-
-*End of document.*
+None.
