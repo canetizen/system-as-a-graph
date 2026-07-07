@@ -16,7 +16,7 @@ SaaG is a static digital system model built using an architectural digital twin 
 
 ### 1.3 Document Overview
 
-This SDD specifies the CSCI-wide design decisions (Section 3), the CSCI's architectural decomposition into Computer Software Components (CSCs) and its concept of execution (Section 4), the detailed design of each CSC down to Computer Software Unit (CSU) level (Section 5), and the traceability of every SRS requirement to the design element that satisfies it (Section 6). Interface characteristics and database designs are specified in companion documents — the Interface Design Description (IDD) and Database Design Description (DBDD) — and are only referenced here, not duplicated.
+This SDD specifies the CSCI-wide design decisions (Section 3), the CSCI's architectural decomposition into Computer Software Components (CSCs) and its concept of execution (Section 4), the detailed design of each CSC down to Computer Software Unit (CSU) level (Section 5), and the traceability of every SRS requirement to the design element that satisfies it (Section 6). Interface characteristics are specified in the Interface Design Description (IDD) and are only referenced here, not duplicated.
 
 ---
 
@@ -25,7 +25,6 @@ This SDD specifies the CSCI-wide design decisions (Section 3), the CSCI's archit
 - MIL-STD-498, *Software Development and Documentation*, Data Item Description DI-IPSC-81435 (Software Design Description).
 - `../requirements/SRS.md` — Software Requirements Specification for the SaaG CSCI (parent requirements document for this SDD).
 - `IDD.md` — Interface Design Description for the SaaG CSCI.
-- `DBDD.md` — Database Design Description for the SaaG CSCI.
 
 ---
 
@@ -67,6 +66,10 @@ The SaaG CSCI is decomposed into 6 Computer Software Components (CSCs), mapped 1
 
 Interface characteristics for all external interfaces (configuration management DB, source code repository, package repository, network topology source, field-data recording mechanism, LDAP directory service, CLI/build automation) and internal interfaces (MSD→CSM, SCG→ADP, FRD→ADP, ADP→CSM, CSM→VAE) are specified in `IDD.md` §3.3 and §3.4 respectively. This SDD does not restate them.
 
+### 4.4 Database Design
+
+SaaG persists 5 data stores: the Core System Model (node-relationship structural graph), Analytical Evaluation Data (behavioral overlay), Software Unit Version Inventory, Field Records Database, and Model Setup Data file. Database-wide design decisions include: (1) project/platform/version keying for all stores; (2) separable structural and behavioral data joined through a binding entity; (3) provenance preservation for analytical data; (4) common validation-status attribute across ingestion-oriented stores; (5) physical storage technology to be determined during critical design phase. Entity schemas and detailed attribute definitions are to be finalized during the critical design phase.
+
 ---
 
 ## 5. CSCI Detailed Design
@@ -82,13 +85,13 @@ MSD is composed of 5 CSUs: Data Source Connector & Configuration Manager, Config
 #### 5.1.3 CSU detailed design
 
 **5.1.3.1 Data Source Connector & Configuration Manager**
-Purpose: manage controlled, traceable access to the four external data sources (configuration management database, source code repository, package repository, network topology data source), including user-definable per-source configuration (source type, name, access method, connection address, credentials) and the two supported methods of network topology acquisition (automatic or manual entry). Traces to SRS 3.2.1.2–4. Interface characteristics: see IDD. Data: see DBDD.
+Purpose: manage controlled, traceable access to the four external data sources (configuration management database, source code repository, package repository, network topology data source), including user-definable per-source configuration (source type, name, access method, connection address, credentials) and the two supported methods of network topology acquisition (automatic or manual entry). Traces to SRS 3.2.1.2–4. Interface characteristics: see IDD. Data: see §4.4.
 
 **5.1.3.2 Configuration Data Acquisition**
 Purpose: retrieve current project, platform, and system version information from the configuration management database; mark the effective version; mark the acquisition process with an error status on deficiency, access error, or format incompatibility. Traces to SRS 3.2.1.5–9, 12.
 
 **5.1.3.3 Software Unit Version Inventory Manager**
-Purpose: record and update the Software Unit Version Inventory (software unit name/version per project, platform, version), including insertion of a candidate software unit version alongside the other defined versions. Traces to SRS 3.2.1.10–11. Data: see DBDD.
+Purpose: record and update the Software Unit Version Inventory (software unit name/version per project, platform, version), including insertion of a candidate software unit version alongside the other defined versions. Traces to SRS 3.2.1.10–11. Data: see §4.4.
 
 **5.1.3.4 Source Repository Ingestion**
 Purpose: transfer source code, installation scripts, and configuration files for the software units in scope from the source code repository; record file name, path, package/version, and update timestamp per file; report missing-data status for mandatory files that cannot be obtained; report access/authorization/integrity errors. Traces to SRS 3.2.1.13–16.
@@ -133,7 +136,7 @@ FRD is composed of 2 CSUs: Record Upload Manager and Record Catalog Manager.
 Purpose: accept user uploads of telemetry and system data records into the database in a controlled, traceable manner, associated with project/platform/system-version; detect and report format incompatibility, integrity errors, or missing fields at upload time. Traces to SRS 3.2.3.2, 5.
 
 **5.3.3.2 Record Catalog Manager**
-Purpose: record each uploaded System Field Record with its source, upload time, and project/platform/version association; support listing, search, and selection of existing records by project, platform, system version, record source, or upload time. Traces to SRS 3.2.3.3–4. Data: see DBDD.
+Purpose: record each uploaded System Field Record with its source, upload time, and project/platform/version association; support listing, search, and selection of existing records by project, platform, system version, record source, or upload time. Traces to SRS 3.2.3.3–4. Data: see §4.4.
 
 ---
 
@@ -154,7 +157,7 @@ Purpose: obtain System Field Records from FRD for Analytical Evaluation Data pro
 Purpose: obtain synthetic data from SCG for Analytical Evaluation Data production; detect and report format incompatibility, unreadable data, or missing fields. Traces to SRS 3.2.4.3, 6.
 
 **5.4.3.3 Analytical Data Assembler**
-Purpose: process and appropriately associate the ingested System Field Records or synthetic data, and produce the Analytical Evaluation Data transmitted to CSM. Traces to SRS 3.2.4.4. Data: see DBDD.
+Purpose: process and appropriately associate the ingested System Field Records or synthetic data, and produce the Analytical Evaluation Data transmitted to CSM. Traces to SRS 3.2.4.4. Data: see §4.4.
 
 ---
 
@@ -172,7 +175,7 @@ CSM is composed of 6 CSUs: Model Construction Engine, Node-Relationship Schema M
 Purpose: accept the Model Setup Data produced by MSD; perform format/schema/integrity/mandatory-field checks; convert validated data into a node-relationship Core System Model associated with project/platform/system version; report missing-entity and invalid-relationship errors; record the Model Setup Data file used, creation time, and model status. Traces to SRS 3.2.5.2–5, 9, 15.
 
 **5.5.3.2 Node-Relationship Schema Manager**
-Purpose: define and maintain the node types (System, Software Segment, CSCI, CSC, CSU, Role, Topic, Message, Operator Console/Processor Units, Network components, Middleware Services, Communication Technology services) and relationship types (runs-on, uses-middleware/communication-service, publishes, consumes, depends-on, assigned-to-role); expose CPU allocation, OS settings, and runtime environment configuration as queryable node attributes. Traces to SRS 3.2.5.6–8. Data: see DBDD.
+Purpose: define and maintain the node types (System, Software Segment, CSCI, CSC, CSU, Role, Topic, Message, Operator Console/Processor Units, Network components, Middleware Services, Communication Technology services) and relationship types (runs-on, uses-middleware/communication-service, publishes, consumes, depends-on, assigned-to-role); expose CPU allocation, OS settings, and runtime environment configuration as queryable node attributes. Traces to SRS 3.2.5.6–8. Data: see §4.4.
 
 **5.5.3.3 Analytical Data Binder**
 Purpose: accept Analytical Evaluation Data from ADP; associate it with the relevant project/platform/system version/model; match record, telemetry, and synthetic data to the corresponding nodes and relationships; preserve provenance (field vs. synthetic); keep the binding separable from the Core System Model; report unmatched node/relationship records. Traces to SRS 3.2.5.10–14.

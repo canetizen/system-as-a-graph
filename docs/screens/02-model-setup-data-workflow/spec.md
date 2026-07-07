@@ -96,9 +96,9 @@ Keyboard navigation for this screen's table, action buttons, and source accessib
 | Data | Source |
 |---|---|
 | Source accessibility (Reachable/Unreachable) for each of the 4 sources | `../../design/IDD.md` EXT-IF-01–04, per `../../requirements/SRS.md` 3.2.6.7 |
-| Model Setup Data file: `file_id`, `project_id`, `platform_id`, `system_version_id`, `generation_time`, `validation_status` | `../../design/DBDD.md` §4.5 `ModelSetupDataFile` entity |
-| Production/creation error detail: source, reason, time | Shared Error Banner fields (foundations §6.3), backed by the `validation_status` attribute pattern (`../../design/DBDD.md` §3 decision 4) |
-| Core System Model result: `model_id`, `model_setup_data_file_ref`, `creation_time`, `model_status` | `../../design/DBDD.md` §4.1 `CoreSystemModel` entity |
+| Model Setup Data file: `file_id`, `project_id`, `platform_id`, `system_version_id`, `generation_time`, `validation_status` | `../../design/SDD.md` §4.5 `ModelSetupDataFile` entity |
+| Production/creation error detail: source, reason, time | Shared Error Banner fields (foundations §6.3), backed by the `validation_status` attribute pattern (`../../design/SDD.md` §3 decision 4) |
+| Core System Model result: `model_id`, `model_setup_data_file_ref`, `creation_time`, `model_status` | `../../design/SDD.md` §4.1 `CoreSystemModel` entity |
 
 ---
 

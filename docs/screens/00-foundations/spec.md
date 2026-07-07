@@ -9,7 +9,7 @@ This document is the shared design reference for the SaaG screen spec set (`docs
 
 This is **not** a MIL-STD-498 Data Item Description — no DID for UI/UX design exists in that standard. It governs the UI of **VAE (Design Verification, Analysis and Evaluation)**, the only user-facing Computer Software Component (CSC) in the SaaG CSCI (`../../design/SDD.md` §4.2, §5.6.1); the other five CSCs (MSD, SCG, FRD, ADP, CSM) are backend data producers with no direct UI.
 
-The `.md` documents (this one and `01`–`09`) remain the authoritative, traceable spec — text and Mermaid diagrams, each claim cited back to SRS/SDD/DBDD/IDD/CDR. Alongside each screen's `.md`, that screen's own folder holds a companion visual layer: rendered HTML wireframes for every moment of that screen, all built on the token system in §5 below. Start with [`style-guide.html`](style-guide.html) — it's the visual rendering of §5's colors, badges, and iconography, and the exact reference the other nine wireframes were copied from.
+The `.md` documents (this one and `01`–`09`) remain the authoritative, traceable spec — text and Mermaid diagrams, each claim cited back to SRS/SDD/IDD/CDR. Alongside each screen's `.md`, that screen's own folder holds a companion visual layer: rendered HTML wireframes for every moment of that screen, all built on the token system in §5 below. Start with [`style-guide.html`](style-guide.html) — it's the visual rendering of §5's colors, badges, and iconography, and the exact reference the other nine wireframes were copied from.
 
 Screen documents 01–09 must:
 - Use the exact severity and status vocabulary fixed in §5 and §6 of this document — never re-label or introduce synonyms.
@@ -24,7 +24,7 @@ These are derived from what `../../requirements/SRS.md` and `../../design/SDD.md
 
 1. **Read-only by default; editing is an explicit, separate mode.** All verification and analysis operations run read-only against the Core System Model (`../../design/SDD.md` §5.6.1; SRS 3.2.6.15, 18). The only component that mutates anything is the Working Model Editor (SDD §5.6.3.4, SRS 3.2.6.17), and it only ever mutates a **derived working model**, never the Core System Model itself. The UI must make this distinction visually unmistakable at all times (see §6.2).
 
-2. **Provenance is always visible, never buried in a tooltip.** Every data type the CSCI produces carries its source, time, and project/platform/system-version association as a first-class attribute, not an afterthought (`../../design/DBDD.md` §3, decision 3: "Provenance Preservation"). Screens showing Analytical Evaluation Data, findings, or reports must always show whether the data came from System Field Records or Scenario Generator synthetic data (SRS 3.2.5.12).
+2. **Provenance is always visible, never buried in a tooltip.** Every data type the CSCI produces carries its source, time, and project/platform/system-version association as a first-class attribute, not an afterthought (`../../design/SDD.md` §3, decision 3: "Provenance Preservation"). Screens showing Analytical Evaluation Data, findings, or reports must always show whether the data came from System Field Records or Scenario Generator synthetic data (SRS 3.2.5.12).
 
 3. **Severity and status vocabulary is fixed and never re-labeled per screen.** SRS 3.2.6.44 defines exactly five severity levels; SRS 3.2.6.6 (and parallel paragraphs for CSM/ADP) define exactly three process-status values. No screen may introduce a different label for the same concept (see §5.4, §6.1).
 
@@ -200,7 +200,7 @@ Designed for typical enterprise workstation displays (1920×1080 and larger). Mi
 
 **Forms (01, 03, 09)**: form fields stack vertically at narrow viewports instead of flowing into a multi-column grid. Inline validation messages remain adjacent to their target field at all sizes.
 
-**Not addressed here**: specific breakpoint pixel values per screen are implementation details — this section defines the adaptation strategy (stack, scroll, or switch-mode); individual wireframes do not enumerate every intermediate width. SRS/SDD/DBDD do not specify viewport requirements; this is the document set's own UX decision.
+**Not addressed here**: specific breakpoint pixel values per screen are implementation details — this section defines the adaptation strategy (stack, scroll, or switch-mode); individual wireframes do not enumerate every intermediate width. SRS/SDD do not specify viewport requirements; this is the document set's own UX decision.
 
 ---
 
@@ -216,7 +216,7 @@ A persistent, unmissable indicator (not just a subtle label) of whether the curr
 
 ### 6.3 Error / Validation Banner
 
-One shared pattern for every format/integrity/mandatory-field/access error across MSD, FRD, ADP, CSM production paths (SDD §3 decision 5). Always shows: source (which data source/process), reason, and time — matching the attribute set the backend already records (`../../design/DBDD.md` validation_status attribute). Never a bespoke per-workflow error style.
+One shared pattern for every format/integrity/mandatory-field/access error across MSD, FRD, ADP, CSM production paths (SDD §3 decision 5). Always shows: source (which data source/process), reason, and time — matching the attribute set the backend already records (`../../design/SDD.md` validation_status attribute). Never a bespoke per-workflow error style.
 
 **Lifecycle and dismissal**:
 - **Appearance**: banner appears inline near the operation that triggered it (e.g., below a login form, beside a production action row); never as a modal overlay.
@@ -226,7 +226,7 @@ One shared pattern for every format/integrity/mandatory-field/access error acros
 
 ### 6.4 Provenance Tag
 
-A small, always-visible tag on any Analytical Evaluation Data, finding, or report indicating its origin: **System Field Records** or **Scenario Generator**. Direct expression of Principle §2.2 and DBDD §3 decision 3.
+A small, always-visible tag on any Analytical Evaluation Data, finding, or report indicating its origin: **System Field Records** or **Scenario Generator**. Direct expression of Principle §2.2 and SDD §4.4 decision 3.
 
 ### 6.5 Data Table Conventions
 
@@ -248,7 +248,7 @@ By default, any Interactive User viewing an operation may cancel it, including o
 `../../requirements/SRS.md` 3.2.5.18 requires the backend to support concurrent read/write on the same Core System Model across sessions "without compromising model integrity or the consistency of query results"; 3.2.5.19 (and `../../reviews/CDR.md` CDR-16) covers concurrent operation execution more broadly. No screen document previously gave either paragraph a UI expression. Two additions close that:
 
 - **Status Feed Indicator, extended** (`§4.2`): each in-progress or recently-completed operation row now also shows its initiator (session/user, or "Automation Client" for CLI-triggered runs) — the visible expression of 3.2.5.19/CDR-16's "concurrently and independently" guarantee, and of the shared (not per-browser-tab) in-progress state a second session needs to see before starting a conflicting run (see `02`, `03`, `04`, `07`, `09`'s "second run in progress" edge cases).
-- **Model-Updated banner**: shown in `04` and `05` when the Core System Model currently loaded in the view is older than the latest one for the same project/platform/system-version (compares the loaded `creation_time` against the current latest, `../../design/DBDD.md` §4.1 `CoreSystemModel` — no new backend field required). Offers a "Reload" action; never force-refreshes out from under the user's current selection/camera position. This is the concrete UI expression of 3.2.5.18's "consistency of query results": the user is always told when what they're looking at is stale, rather than silently served an inconsistent view.
+- **Model-Updated banner**: shown in `04` and `05` when the Core System Model currently loaded in the view is older than the latest one for the same project/platform/system-version (compares the loaded `creation_time` against the current latest, `../../design/SDD.md` §4.1 `CoreSystemModel` — no new backend field required). Offers a "Reload" action; never force-refreshes out from under the user's current selection/camera position. This is the concrete UI expression of 3.2.5.18's "consistency of query results": the user is always told when what they're looking at is stale, rather than silently served an inconsistent view.
 
 Working models (`06`) are explicitly out of scope for this indicator — see `06` §1 for why concurrent-edit conflict handling isn't needed there.
 
@@ -288,9 +288,9 @@ Copied verbatim from `../../requirements/SRS.md` Appendix A so every screen docu
 
 ## 8. Traceability Summary
 
-| Section | Primary SRS/SDD/DBDD Basis |
+| Section | Primary SRS/SDD Basis |
 |---|---|
-| §2 Design Principles | SDD §5.6.1; SRS 3.2.6.15, 17–18; DBDD §3 decisions 3, 4; SDD §3 decision 5 |
+| §2 Design Principles | SDD §5.6.1; SRS 3.2.6.15, 17–18; SDD §4.4 decisions 3, 4; SDD §3 decision 5 |
 | §3 Personas | SRS 3.2.6.3, 50; IDD §4.7 (EXT-IF-07) |
 | §4 Information Architecture | SRS 3.2.6.3–4, 50; SDD §5.6.2 CSU list |
 | §5.2 Severity Scale | SRS 3.2.6.44 |
@@ -299,8 +299,8 @@ Copied verbatim from `../../requirements/SRS.md` Appendix A so every screen docu
 | §5.5 Typography and Spacing | UX addition; sized for "dense enterprise dashboard" tone |
 | §5.6 Responsive Layout | UX addition; minimum viewport 1280×720, adaptation strategy |
 | §6.2 Model-Mode Indicator | SDD §5.6.1, §5.6.3.4; SRS 3.2.6.17 |
-| §6.3 Error Banner | SDD §3 decision 5; DBDD `validation_status` attribute |
-| §6.4 Provenance Tag | SRS 3.2.5.12; DBDD §3 decision 3 |
+| §6.3 Error Banner | SDD §3 decision 5; SDD §4.4 `validation_status` attribute |
+| §6.4 Provenance Tag | SRS 3.2.5.12; SDD §4.4 decision 3 |
 | §6.8 Concurrent Session / Model-Freshness Indicator | SRS 3.2.5.18–19; `../../reviews/CDR.md` CDR-16 |
 | §7 Glossary | SRS Appendix A |
 
@@ -308,7 +308,7 @@ Copied verbatim from `../../requirements/SRS.md` Appendix A so every screen docu
 
 ## 9. Accessibility
 
-Not addressed anywhere in SRS/SDD/DBDD; this section is this document's own addition, applying beyond just the color-contrast treatment §5.2 already covers.
+Not addressed anywhere in SRS/SDD; this section is this document's own addition, applying beyond just the color-contrast treatment §5.2 already covers.
 
 - **Keyboard navigation for the canvas** (`05`, `06`): Tab/Shift-Tab cycles focus through selectable nodes in a stable order (e.g. by `node_id`); arrow keys pan; `+`/`-` zoom; Enter opens the attribute panel for the focused node/relationship (same result as a mouse click, `05` §5); Escape clears selection. This mirrors the mouse-driven zoom/pan/select interactions `05` already defines rather than inventing a separate keyboard model.
 - **Screen-reader alternative to the canvas**: a rendered graph canvas cannot itself be made meaningfully accessible to a screen reader. Both `05` and `06` offer a toggle-able **list view** — the same filtered node/relationship set as the canvas, rendered as a data table (`§6.5` conventions) — as the screen-reader-facing alternative, not an attempt to narrate the graphic itself.
@@ -321,6 +321,6 @@ Not addressed anywhere in SRS/SDD/DBDD; this section is this document's own addi
 
 ## 10. Notes
 
-Color values, iconography assignments, typography/spacing scale, and component patterns in §5–6 are new UX value-add — they do not exist in the SRS/SDD/DBDD/IDD source documents and are not attributed to them beyond the *vocabulary* (severity levels, status values, node/relationship type lists) those documents fix. All such vocabulary is reproduced verbatim; the visual system built on top of it is this document's own design decision, built with a validated, accessibility-checked palette method rather than picked ad hoc.
+Color values, iconography assignments, typography/spacing scale, and component patterns in §5–6 are new UX value-add — they do not exist in the SRS/SDD/IDD source documents and are not attributed to them beyond the *vocabulary* (severity levels, status values, node/relationship type lists) those documents fix. All such vocabulary is reproduced verbatim; the visual system built on top of it is this document's own design decision, built with a validated, accessibility-checked palette method rather than picked ad hoc.
 
-The Cancelable Operation Pattern (§6.7), the Concurrent Session / Model-Freshness Indicator (§6.8), the Accessibility patterns (§9), the finding Triage Status (`08`), and Undo/Redo (`06`) are, likewise, this document set's own additions — none is derived from or required by SRS/SDD/DBDD. Responsive layout (§5.6), Error Banner lifecycle (§6.3), and theme mode handling (§5.1 — switching, default, persistence) are also UX decisions not cited in the source documents. Each is flagged at its point of introduction rather than presented as a cited requirement.
+The Cancelable Operation Pattern (§6.7), the Concurrent Session / Model-Freshness Indicator (§6.8), the Accessibility patterns (§9), the finding Triage Status (`08`), and Undo/Redo (`06`) are, likewise, this document set's own additions — none is derived from or required by SRS/SDD. Responsive layout (§5.6), Error Banner lifecycle (§6.3), and theme mode handling (§5.1 — switching, default, persistence) are also UX decisions not cited in the source documents. Each is flagged at its point of introduction rather than presented as a cited requirement.

@@ -113,10 +113,10 @@ flowchart TD
 
 | Data | Source |
 |---|---|
-| Message counts, data volume, resource usage, latency, error events, and other metrics (Engines B & C) | `../../design/DBDD.md` §4.2 `AnalyticalDataRecord` (`metric_type`, `value`, `event_timestamp`) — this entity is explicitly cited against SRS 3.2.6.32, 38, 40 |
-| Analytical Evaluation Data provenance for the context banner | `../../design/DBDD.md` §4.2 `AnalyticalEvaluationDataset` (`source_type`) |
-| Core/Working Model structure being verified (Engine A) | `../../design/DBDD.md` §4.1 `Node`, `Relationship` |
-| Model Setup Data vs. observed-runtime comparison (Engine C drift report) | `../../requirements/SRS.md` 3.2.6.39 — no dedicated DBDD comparison entity exists; this is computed at analysis time from `Node`/`Relationship` vs. `AnalyticalDataRecord`/`AnalyticalDataBinding`, not read from a stored "drift" table. |
+| Message counts, data volume, resource usage, latency, error events, and other metrics (Engines B & C) | `../../design/SDD.md` §4.2 `AnalyticalDataRecord` (`metric_type`, `value`, `event_timestamp`) — this entity is explicitly cited against SRS 3.2.6.32, 38, 40 |
+| Analytical Evaluation Data provenance for the context banner | `../../design/SDD.md` §4.2 `AnalyticalEvaluationDataset` (`source_type`) |
+| Core/Working Model structure being verified (Engine A) | `../../design/SDD.md` §4.1 `Node`, `Relationship` |
+| Model Setup Data vs. observed-runtime comparison (Engine C drift report) | `../../requirements/SRS.md` 3.2.6.39 — no dedicated database comparison entity exists; this is computed at analysis time from `Node`/`Relationship` vs. `AnalyticalDataRecord`/`AnalyticalDataBinding`, not read from a stored "drift" table. |
 
 Every result produced by all three engines ultimately becomes a finding record (identifier, type, description, affected entity, rule/criterion, evidence, severity — SRS 3.2.6.44), owned and rendered in full by `08`; this screen's cards/panels are the analysis-time view, not the archival one.
 

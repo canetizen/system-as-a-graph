@@ -100,9 +100,9 @@ Keyboard navigation for this screen's tables, forms, and toggle between source b
 
 | Data | Source |
 |---|---|
-| Field Records: `record_id`, `project_id`, `platform_id`, `system_version_id`, `record_source`, `upload_time`, `record_type`, `validation_status` | `../../design/DBDD.md` §4.4 `SystemFieldRecord` |
+| Field Records: `record_id`, `project_id`, `platform_id`, `system_version_id`, `record_source`, `upload_time`, `record_type`, `validation_status` | `../../design/SDD.md` §4.4 `SystemFieldRecord` |
 | Scenario inputs: name, scope, type, time interval, data density, data types | `../../requirements/SRS.md` 3.2.2.3, 3.2.6.12, 48 |
-| Analytical Evaluation Data result: `dataset_id`, `model_id`, `project_id`, `platform_id`, `system_version_id`, `source_type` (FieldRecords / ScenarioSynthetic), `production_time` | `../../design/DBDD.md` §4.2 `AnalyticalEvaluationDataset` |
+| Analytical Evaluation Data result: `dataset_id`, `model_id`, `project_id`, `platform_id`, `system_version_id`, `source_type` (FieldRecords / ScenarioSynthetic), `production_time` | `../../design/SDD.md` §4.2 `AnalyticalEvaluationDataset` |
 
 The `source_type` field is what powers the Provenance Tag (foundations §6.4) shown wherever this dataset is used downstream (analysis results, findings, reports).
 

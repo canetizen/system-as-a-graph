@@ -26,11 +26,11 @@ Lets the **Interactive User** (foundations §3) see installation-suitability / p
 | Evaluate one or more software units under independent operation identifiers; report per-unit score/class/blocking-findings/decision plus an aggregate result, in machine-processable format | `../../requirements/SRS.md` 3.2.6.54 |
 | Automation Interface CSU / Installation Suitability Evaluator CSU | `../../design/SDD.md` §5.6.3.11 / §5.6.3.12 |
 | Build Automation Tools / CLI interface | `../../design/IDD.md` EXT-IF-07 |
-| Underlying candidate model construct | `../../design/SDD.md` §5.5.3.6 Candidate Evaluation Model Builder, SRS 3.2.5.20; `../../design/DBDD.md` §4.1 `CoreSystemModel.is_candidate_evaluation` / `candidate_software_unit_ref` |
+| Underlying candidate model construct | `../../design/SDD.md` §5.5.3.6 Candidate Evaluation Model Builder, SRS 3.2.5.20; `../../design/SDD.md` §4.1 `CoreSystemModel.is_candidate_evaluation` / `candidate_software_unit_ref` |
 | Scoring/classification method — open item | `../../reviews/CDR.md` CDR-14 |
 | CLI/build-automation protocol and machine-processable result format — open item | `../../reviews/CDR.md` CDR-22 |
 
-**Another gap in the same family as `06`/`08`**: beyond the two `CoreSystemModel` fields above, there is **no DBDD entity for the control-rule catalog, per-unit score/class/decision, or aggregate result**. This screen's data shapes (§6) are transcribed from SRS 3.2.6.52–54, not read from a designed schema.
+**Another gap in the same family as `06`/`08`**: beyond the two `CoreSystemModel` fields above, there is **no database entity for the control-rule catalog, per-unit score/class/decision, or aggregate result**. This screen's data shapes (§6) are transcribed from SRS 3.2.6.52–54, not read from a designed schema.
 
 **This screen's one inferred extension, flagged explicitly**: SRS ties 3.2.6.51/54 to "the production deployment pipeline," which every other reference in the doc set (`../../design/SDP.md`, IDD EXT-IF-07) treats as CLI/automation-initiated. Nothing in SRS/SDD forbids an Interactive User from also triggering an ad-hoc evaluation directly, and it's a natural, low-risk UI affordance — so this doc includes a manual "Evaluate Candidate Software Unit" trigger (§4), clearly marked here as this document's own addition, not a cited requirement.
 
@@ -99,15 +99,15 @@ Keyboard navigation for this screen's operations table, detail panel, and manual
 
 ## 6. Data Displayed
 
-*Beyond the two `CoreSystemModel` fields noted below, none of this is backed by a DBDD entity — see §1.*
+*Beyond the two `CoreSystemModel` fields noted below, none of this is backed by a database entity — see §1.*
 
 | Data | Source |
 |---|---|
-| Candidate model reference: `is_candidate_evaluation`, `candidate_software_unit_ref` | `../../design/DBDD.md` §4.1 `CoreSystemModel` |
+| Candidate model reference: `is_candidate_evaluation`, `candidate_software_unit_ref` | `../../design/SDD.md` §4.1 `CoreSystemModel` |
 | Control rule: rule identifier, evaluation heading, severity, weight, acceptance criterion, blocking status | `../../requirements/SRS.md` 3.2.6.52 |
 | Per-unit result: conformance score, score class, blocking findings, installation decision | `../../requirements/SRS.md` 3.2.6.53–54 |
 | Aggregate operation result | `../../requirements/SRS.md` 3.2.6.54 |
-| Candidate unit/version selector values | `../../design/DBDD.md` §4.3 `SoftwareUnitVersionInventory` (`is_candidate` flag) |
+| Candidate unit/version selector values | `../../design/SDD.md` §4.3 `SoftwareUnitVersionInventory` (`is_candidate` flag) |
 
 **Automation Client output vs. UI presentation**: SRS 3.2.6.54 requires the installation decision to be transmitted to the Automation Client in machine-processable form. That transmission carries only the SRS-defined fields listed above (decision, score, blocking findings, rule violations) — not any of this document set's own UI-only additions. Specifically, `08`'s Triage Status is an analyst-facing annotation layered on top of an immutable backend decision (see `08` §7); it never appears in the Automation Client's wire-format output and never influences the decision the client consumes. The wire format itself remains undetermined (`../../reviews/CDR.md` CDR-22), but whatever format is chosen will exclude Triage Status on the same footing it excludes the human-readable presentation conventions this document defines.
 

@@ -12,7 +12,7 @@ This document is the Software Test Plan (STP) for the **System as a Graph (SaaG)
 
 ### 1.2 System Overview
 
-SaaG is a static digital system model built using an architectural digital twin approach, decomposed in `../design/SDD.md` into 6 CSCs (MSD, SCG, FRD, ADP, CSM, VAE) and 31 CSUs. Its external and internal interfaces are specified in `../design/IDD.md`; its persistent data stores in `../design/DBDD.md`.
+SaaG is a static digital system model built using an architectural digital twin approach, decomposed in `../design/SDD.md` into 6 CSCs (MSD, SCG, FRD, ADP, CSM, VAE) and 31 CSUs. Its external and internal interfaces are specified in `../design/IDD.md`; its persistent data stores in `../design/SDD.md` §4.4.
 
 ### 1.3 Document Overview
 
@@ -26,7 +26,6 @@ Section 3 describes the test environment. Section 4 identifies the 31 tests plan
 - `../requirements/SRS.md` — Software Requirements Specification for the SaaG CSCI.
 - `../design/SDD.md` — Software Design Description for the SaaG CSCI.
 - `../design/IDD.md` — Interface Design Description for the SaaG CSCI.
-- `../design/DBDD.md` — Database Design Description for the SaaG CSCI.
 
 ---
 

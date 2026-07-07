@@ -92,9 +92,9 @@ flowchart TD
 
 | Data | Source |
 |---|---|
-| `model_id`, `project_id`, `platform_id`, `system_version_id`, `model_setup_data_file_ref`, `creation_time`, `model_status` | `../../design/DBDD.md` §4.1 `CoreSystemModel` |
-| Node/relationship counts (by `node_type` / `relationship_type`) | `../../design/DBDD.md` §4.1 `Node`, `Relationship` |
-| Analytical Evaluation Data provenance (`source_type`) and matching (`match_status` ∈ {matched, unmatched}) | `../../design/DBDD.md` §4.2 `AnalyticalEvaluationDataset`, `AnalyticalDataBinding` |
+| `model_id`, `project_id`, `platform_id`, `system_version_id`, `model_setup_data_file_ref`, `creation_time`, `model_status` | `../../design/SDD.md` §4.1 `CoreSystemModel` |
+| Node/relationship counts (by `node_type` / `relationship_type`) | `../../design/SDD.md` §4.1 `Node`, `Relationship` |
+| Analytical Evaluation Data provenance (`source_type`) and matching (`match_status` ∈ {matched, unmatched}) | `../../design/SDD.md` §4.2 `AnalyticalEvaluationDataset`, `AnalyticalDataBinding` |
 | Structural/dependency finding counts | Aggregated from the same finding records `08` presents in full (SRS 3.2.6.44) |
 
 ---

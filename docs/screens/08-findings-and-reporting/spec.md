@@ -27,7 +27,7 @@ Presents every finding produced by any verification/analysis/simulation operatio
 | Findings & Reporting Manager CSU | `../../design/SDD.md` §5.6.3.10 |
 | Exportable report file format — open item | `../../reviews/CDR.md` CDR-13 |
 
-**A genuine gap, flagged rather than papered over**: `../../design/DBDD.md` documents exactly 5 data stores (Core System Model, Analytical Evaluation Data, Software Unit Version Inventory, Field Records Database, Model Setup Data) — **there is no `Finding`, `Operation`, or `Report` entity anywhere in the database design**. Everything this screen displays is derived directly from the SRS text's field lists (3.2.6.44, 47, 49), not from a designed schema. This doc's tables (§4, §6) describe the *shape* SRS requires, not a cited persistence design — the same posture as `06`'s working-model gap.
+**A genuine gap, flagged rather than papered over**: `../../design/SDD.md` documents exactly 5 data stores (Core System Model, Analytical Evaluation Data, Software Unit Version Inventory, Field Records Database, Model Setup Data) — **there is no `Finding`, `Operation`, or `Report` entity anywhere in the database design**. Everything this screen displays is derived directly from the SRS text's field lists (3.2.6.44, 47, 49), not from a designed schema. This doc's tables (§4, §6) describe the *shape* SRS requires, not a cited persistence design — the same posture as `06`'s working-model gap.
 
 **This doc's own addition, flagged the same way**: SRS 3.2.6.44–47 defines a finding's fixed fields (identifier, type, description, affected entity, rule/criterion, evidence, severity) but no lifecycle beyond that — a finding is detected and displayed, full stop. For a spec whose whole point (`09`) is a CI/CD gate that re-runs and re-reports on every build, that means the same non-actionable or already-understood finding reappears identically forever with no way to record "seen, not real" or "seen, accepted." This doc adds a **Triage Status** (§4, §6) on top of the SRS-defined fields — not a cited requirement, and importantly **not a re-scoring mechanism**: see §7 for why triaging a finding never changes an operation's evaluation result or `09`'s installation decision.
 
@@ -98,13 +98,13 @@ Keyboard navigation for this screen's findings table, filter row, detail panel, 
 
 ## 6. Data Displayed
 
-*No DBDD entity backs any of the following — see §1. Shapes are transcribed directly from SRS.*
+*No database entity backs any of the following — see §1. Shapes are transcribed directly from SRS.*
 
 | Data | Source |
 |---|---|
 | Finding: identifier, type, description, affected entity/relationship, related rule/acceptance criterion, evidence, severity | `../../requirements/SRS.md` 3.2.6.44 |
 | Cause-and-effect links between findings from the same operation | `../../requirements/SRS.md` 3.2.6.45 |
-| Triage Status: New / Acknowledged / Waived / False Positive / Resolved, plus actor, justification, and time per change | This doc's own addition (§1) — not sourced from SRS/SDD/DBDD |
+| Triage Status: New / Acknowledged / Waived / False Positive / Resolved, plus actor, justification, and time per change | This doc's own addition (§1) — not sourced from SRS/SDD |
 | Interrupted-operation record: error cause, interruption stage, error time | `../../requirements/SRS.md` 3.2.6.47 |
 | Report contents: project/platform/system-version info, Core System Model used, Analytical Evaluation Data used + its source, operation identifier/type/start/end time, evaluation result, findings, affected nodes/relationships, severity levels, additional finding information | `../../requirements/SRS.md` 3.2.6.49 |
 
