@@ -205,12 +205,13 @@
   @media (max-width:720px){ .grid-2{grid-template-columns:1fr;} }
 </style>
 <style>
-  .theme-toggle{position:fixed; top:16px; right:16px; background:transparent; border:1px solid var(--border); border-radius:var(--radius-chip); padding:8px 12px; cursor:pointer; display:flex; align-items:center; gap:6px; color:var(--ink-2); font-size:var(--text-body); transition:all 0.2s; z-index:100;}
+  .theme-toggle{display:inline-flex; align-items:center; gap:6px; border:1px solid var(--border); background:transparent; border-radius:var(--radius-chip); padding:7px 13px; color:var(--ink-2); font-family:var(--font-ui); font-size:var(--text-body); cursor:pointer; transition:all 0.2s;}
   .theme-toggle:hover{background:var(--surface); border-color:var(--accent); color:var(--ink);}
-  .theme-icon{font-size:16px; line-height:1;}
+  .theme-icon{font-size:14px; line-height:1;}
+  .theme-toggle.floating{position:fixed; top:16px; right:16px; z-index:100;}
 </style>
 
-<button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle dark/light mode"><span class="theme-icon">🌓</span></button>
+<button class="theme-toggle floating" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle dark/light mode"><span class="theme-icon">◐</span></button>
 
 <div class="wrap">
   <div class="eyebrow">SaaG · UX/UI Foundations</div>
@@ -370,23 +371,15 @@ function toggleTheme() {
 function updateThemeIcon(theme) {
   const icons = document.querySelectorAll('.theme-icon');
   icons.forEach(icon => {
-    icon.textContent = theme === 'dark' ? '☀️' : '🌙️';
+    icon.textContent = theme === 'dark' ? '☀' : '☾';
   });
 }
 
 // Initialize theme on page load
 (function() {
   const savedTheme = localStorage.getItem('saag-theme');
-  if (savedTheme) {
-    // User has explicit preference - use it
-    document.documentElement.setAttribute('data-theme', savedTheme);
-    updateThemeIcon(savedTheme);
-  } else {
-    // No explicit preference - follow OS/browser preference
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const theme = prefersDark ? 'dark' : 'light';
-    // Don't set data-theme, let CSS media query handle it
-    updateThemeIcon(theme);
-  }
+  const theme = savedTheme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  document.documentElement.setAttribute('data-theme', theme);
+  updateThemeIcon(theme);
 })();
 </script>

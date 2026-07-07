@@ -50,7 +50,7 @@
   .metric .n{font-size:20px; font-weight:700;} .metric .label{font-size:var(--text-meta); color:var(--ink-muted);}
   .drift-row{display:flex; justify-content:space-between; padding:9px 14px; border-bottom:1px solid var(--border); font-size:var(--text-body);}
   .drift-row:last-child{border-bottom:none;}
-  .theme-toggle{background:transparent; border:1px solid var(--border); border-radius:var(--radius-chip); padding:6px 10px; cursor:pointer; display:flex; align-items:center; gap:6px; color:var(--ink-2); font-size:var(--text-body); transition:all 0.2s;}
+  .theme-toggle{display:inline-flex; align-items:center; gap:6px; border:1px solid var(--border); background:transparent; border-radius:var(--radius-chip); padding:7px 13px; color:var(--ink-2); font-family:var(--font-ui); font-size:var(--text-body); cursor:pointer; transition:all 0.2s;}
   .theme-toggle:hover{background:var(--surface); border-color:var(--accent); color:var(--ink);}
   .theme-icon{font-size:14px; line-height:1;}
 </style>
@@ -61,7 +61,7 @@
   <nav><a href="../02-model-setup-data-workflow/happy-path.html">Model Setup Data</a><a href="../03-analytical-data-workflow/happy-path.html">Analytical Data</a><a class="active" href="../05-model-visualization-and-navigation/happy-path.html">Explorer</a><a href="../08-findings-and-reporting/happy-path.html">Findings &amp; Reporting</a><a href="../09-installation-suitability-and-pipeline-gate/happy-path.html">Installation Suitability</a></nav>
   <div class="spacer"></div>
   <div class="status-feed"><span class="pulse"></span>op-9928 running</div>
-  <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle dark/light mode"><span class="theme-icon">🌓</span></button>
+  <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle dark/light mode"><span class="theme-icon">◐</span></button>
   <div class="user"><div class="avatar">JD</div>jrdoe</div>
 </div>
 
@@ -142,23 +142,15 @@ function toggleTheme() {
 function updateThemeIcon(theme) {
   const icons = document.querySelectorAll('.theme-icon');
   icons.forEach(icon => {
-    icon.textContent = theme === 'dark' ? '☀️' : '🌙️';
+    icon.textContent = theme === 'dark' ? '☀' : '☾';
   });
 }
 
 // Initialize theme on page load
 (function() {
   const savedTheme = localStorage.getItem('saag-theme');
-  if (savedTheme) {
-    // User has explicit preference - use it
-    document.documentElement.setAttribute('data-theme', savedTheme);
-    updateThemeIcon(savedTheme);
-  } else {
-    // No explicit preference - follow OS/browser preference
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const theme = prefersDark ? 'dark' : 'light';
-    // Don't set data-theme, let CSS media query handle it
-    updateThemeIcon(theme);
-  }
+  const theme = savedTheme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  document.documentElement.setAttribute('data-theme', theme);
+  updateThemeIcon(theme);
 })();
 </script>
