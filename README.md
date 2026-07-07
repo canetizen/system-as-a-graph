@@ -44,6 +44,7 @@ This repository currently contains the **MIL-STD-498 documentation set and VAE U
 | [`docs/test/STP.md`](docs/test/STP.md) | Software Test Plan. |
 | [`docs/test/STD.md`](docs/test/STD.md) | Software Test Description — the 31 test cases. |
 | [`docs/screens/README.md`](docs/screens/README.md) | VAE screen-by-screen UX/UI specification (00–09) with wireframes. |
+| [`docs/planning/IPM.md`](docs/planning/IPM.md) | Internship Project Menu — 20-day internship project ideas, loosely inspired by SaaG. |
 
 The document set follows MIL-STD-498 (Data Item Descriptions DI-IPSC-81427/81433/81435/81436/81437/81438/81439) and is mutually traceable across documents.
 
@@ -53,7 +54,7 @@ The document set follows MIL-STD-498 (Data Item Descriptions DI-IPSC-81427/81433
 docs/
   requirements/  # SRS
   design/        # SDD, IDD, DBDD
-  planning/      # SDP
+  planning/      # SDP, internship project menu
   reviews/       # CDR
   test/          # STP, STD
   screens/       # VAE UX/UI screen specs + HTML wireframes (00-09)
