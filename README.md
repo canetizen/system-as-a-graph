@@ -61,7 +61,6 @@ csm/             # CSM: Node-Relationship Based Core System Model (CSM-01 model_
 vae/             # VAE: Design Verification, Analysis and Evaluation (VAE-02 design_verifier, VAE-03 design_analyzer, VAE-04 design_evaluator)
 shared/          # contracts, types, errors, security shared across CSCs
 tests/           # integration and acceptance tests
-deploy/          # docker and environment configuration
 main.py          # FastAPI app aggregating each CSC's router
 LICENSE          # Apache License 2.0
 ```

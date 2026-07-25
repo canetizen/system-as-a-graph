@@ -87,7 +87,7 @@ Increment 0 establishes the repository scaffolding, shared infrastructure, and d
 **Demo:** A clean checkout builds, lints, and brings up the full Docker Compose stack with no application logic, and every planned document has a placeholder under `docs/`.
 
 **Definition of Done:**
-- [ ] Repository scaffolded per §4 (per-CSC hexagonal layout, `web/`, `cli/`, `deploy/`, `shared/`)
+- [ ] Repository scaffolded per §4 (per-CSC hexagonal layout, `web/`, `cli/`, `shared/`)
 - [ ] Base Docker Compose stack and CI pipeline stood up
 - [ ] `docs/` skeleton populated for every planned document
 - [ ] Scaffolding builds, lints, and deploys cleanly
@@ -450,13 +450,9 @@ system-as-a-graph/
 │   ├── errors/
 │   └── security/
 │
-├── tests/
-│   ├── integration/
-│   └── acceptance/
-│
-└── deploy/
-    ├── docker/
-    └── environments/
+└── tests/
+    ├── integration/
+    └── acceptance/
 ```
 
 **Table 4. Project Directory Mapping**
@@ -477,7 +473,6 @@ system-as-a-graph/
 | `shared/security/` | Cross-CSC authentication and authorization helpers |
 | `tests/integration/` | Cross-CSC and adapter integration tests |
 | `tests/acceptance/` | End-to-end requirement and increment demonstration tests |
-| `deploy/` | Docker deployment descriptors and environment-specific configuration |
 
 **Table 5. Standard Hexagonal Directory Meaning**
 
