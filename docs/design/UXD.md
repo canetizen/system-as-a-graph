@@ -424,7 +424,7 @@ Concrete, testable targets, not a hope.
 |---|---|
 | §1 Design Principles | VAE-01.1–2 *(CSU-wide role, SDD §3.6.1.1)* |
 | §4 Session & Authentication | VAE-01.3–4 |
-| §4 Setup | VAE-01.5–8, MSD.7–8 *(cross-CSU, SRS Appendix A "Joint" convention: no VAE-01.x covers source config directly)* |
+| §4 Setup | VAE-01.5–8, MSD.7–8 *(cross-CSU, SRS §7 "Joint" convention: no VAE-01.x covers source config directly)* |
 | §4 Field Records | FRD.2–5 *(cross-CSU, same convention)*, VAE-01.10, 12, 15–16 |
 | §4 Scenario Generator | VAE-01.11, 13–16 |
 | §4 Working Model Editor | VAE-01.17 |

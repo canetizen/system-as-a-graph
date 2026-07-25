@@ -1,6 +1,6 @@
 # Software Requirements Specification (SRS): System as a Graph (SaaG)
 
-**Definition:** This Software Requirements Specification (SRS) decomposes the six Computer Software Components (CSCs) specified in the SSS into ten Computer Software Units (CSUs). SaaG is the Computer Software Configuration Item (CSCI); each CSC below is decomposed into one or more CSUs, and each requirement is scoped to exactly one CSU. Every requirement in this document is traceable to its source System/Subsystem Specification (SSS) requirement via Appendix A.
+**Definition:** This Software Requirements Specification (SRS) decomposes the six Computer Software Components (CSCs) specified in the SSS into ten Computer Software Units (CSUs). SaaG is the Computer Software Configuration Item (CSCI); each CSC below is decomposed into one or more CSUs, and each requirement is scoped to exactly one CSU. Every requirement in this document is traceable to its source System/Subsystem Specification (SSS) requirement via §7.
 
 **Table 1. SRS Requirement Distribution**
 
@@ -16,7 +16,7 @@
 
 Per-CSC requirement distribution tables appear under each component's own section below.
 
-**Purpose:** This SRS translates each SSS requirement into one or more CSU-level functional requirements suitable for design and implementation. Each requirement is scoped to a single CSU and is traceable to its source SSS requirement via Appendix A.
+**Purpose:** This SRS translates each SSS requirement into one or more CSU-level functional requirements suitable for design and implementation. Each requirement is scoped to a single CSU and is traceable to its source SSS requirement via §7.
 
 ---
 
@@ -278,7 +278,7 @@ Per-CSC requirement distribution tables appear under each component's own sectio
 
 ---
 
-## Appendix A: Traceability Matrix
+## 7. Requirements Traceability
 
 Relationship key: **Direct** = one SSS requirement reworded to one CSU-scoped SRS requirement, unchanged in substance. **Split** = one SSS requirement's enumerated items each stated as a separate SRS requirement. **Joint** = one SSS requirement (a component charter, or a requirement whose scope spans multiple CSUs) realized by a distinct SRS requirement in each contributing CSU.
 
