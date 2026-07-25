@@ -3,7 +3,7 @@
 **A static digital system model that represents a distributed publish–subscribe system's structural and relational architecture as a node-relationship graph — without ever running the target system.**
 
 ![License](https://img.shields.io/badge/license-Apache--2.0-green)
-![Status](https://img.shields.io/badge/status-documentation--only-orange)
+![Status](https://img.shields.io/badge/status-in--development-orange)
 
 ---
 
@@ -29,7 +29,7 @@ Per the SRS, SaaG is organized into six Computer Software Components (CSCs) and 
 
 ## Current status
 
-This repository currently contains the **structured documentation set** for SaaG. No implementation exists yet — there is no application code, CLI, API, or UI.
+Implementation has begun. The repository has the full documentation set, a scaffolded FastAPI backend ([`main.py`](main.py)), and a scaffolded Next.js frontend ([`web/`](web/)). Each CSU's internals — use cases, domain model, adapters — are still empty; only the folder structure is in place.
 
 ## Documentation
 
@@ -47,13 +47,56 @@ The document set is fully traceable across documents.
 
 ## Repository layout
 
+Every top-level backend directory maps to exactly one CSC and owns its own hexagonal boundary (`api/`, `use_cases/`, `model/`, `ports/`, `adapters/`). `web/` and `cli/` implement the VAE-01 user-facing applications. See [Table 4 in the SDP](docs/planning/SDP.md#4-project-structure) for the full directory mapping.
+
 ```
-docs/
-  requirements/  # SSS and SRS
-  planning/      # SDP
-  design/        # SDD, UXD, and CDR
-  test/          # STD
-LICENSE
+docs/            # SSS, SRS, SDP, SDD, UXD, CDR, STD
+web/             # VAE-01: web application
+cli/             # VAE-01: command-line application
+msd/             # MSD: Model Setup Data Generation
+scg/             # SCG: Scenario Generator
+frd/             # FRD: Field Records Database
+adp/             # ADP: Analytical Data Preparation
+csm/             # CSM: Node-Relationship Based Core System Model (CSM-01 model_manager, CSM-02 data_binder)
+vae/             # VAE: Design Verification, Analysis and Evaluation (VAE-02 design_verifier, VAE-03 design_analyzer, VAE-04 design_evaluator)
+shared/          # contracts, types, errors, security shared across CSCs
+tests/           # integration and acceptance tests
+deploy/          # docker and environment configuration
+main.py          # FastAPI app aggregating each CSC's router
+LICENSE          # Apache License 2.0
+```
+
+## Getting started
+
+### Backend (Python 3.11+)
+
+```bash
+python3.11 -m venv .venv
+source .venv/bin/activate
+pip install .
+uvicorn main:app --reload
+```
+
+Run tests and linting:
+
+```bash
+pytest
+ruff check .
+```
+
+### Web app (Next.js)
+
+```bash
+cd web
+npm install
+npm run dev
+```
+
+Run end-to-end tests and linting:
+
+```bash
+npm run test:e2e
+npm run lint
 ```
 
 ## License
