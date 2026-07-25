@@ -24,6 +24,8 @@ Tokens are shadcn/ui-style CSS custom properties (HSL triples via `hsl(var(--x))
 
 Neutral, near-monochrome palette — no brand hue in UI chrome. Primary actions are high-contrast inverted buttons (white-on-dark / black-on-light), not a colored accent; color-as-meaning is reserved for §2.2's severity/status scale.
 
+**Table 1. Design Tokens — Color (Dark/Light)**
+
 | Token | Dark (default) | Light | Use |
 |---|---|---|---|
 | `--background` | `0 0% 3.9%` | `0 0% 100%` | App canvas background |
@@ -41,6 +43,8 @@ Neutral, near-monochrome palette — no brand hue in UI chrome. Primary actions 
 
 ### 2.2 Severity & status scale (reused across graph nodes, findings tables, charts)
 
+**Table 2. Severity & Status Scale**
+
 | Token | Dark (default) | Light | Meaning |
 |---|---|---|---|
 | `--status-critical` | `0 72% 51%` | `0 72% 42%` | Critical finding / blocking |
@@ -56,6 +60,8 @@ The *only* color vocabulary for status meaning app-wide: a critical finding, a r
 **Usage contract:** status tokens are dots, borders, and fills only — never body text; pair with `--foreground` text instead. Every token clears 3:1 (graphics/large text); all but `--status-info` also clear 4.5:1 (body text), held in reserve. `--status-info` is its own value, not `--primary` — the palette's one deliberate accent.
 
 ### 2.3 Typography
+
+**Table 3. Typography**
 
 | Role | Font | Notes |
 |---|---|---|
@@ -99,7 +105,6 @@ flowchart TB
   - **Model** toggles Browse/Edit on one shared canvas.
   - **Analytical Data** toggles Field Records/Scenario Generator (FRD.2–5, VAE-01.10, 12, 15–16 / VAE-01.11, 13–16) on one shared screen — the same pattern as Model.
   - **Findings**: four-way toggle — **Verification**, **Analysis**, **Evaluation** (split by which of VAE-02/03/04 produced results), plus **Reports** across all three.
-  - **Setup**'s source config (VAE-01.7, MSD.7–8) lives behind a gear-icon settings dialog, not a subpage (§4).
 - **Pipeline-progress badges**: each group carries a two-state readiness dot — `--muted` (not yet available) vs. `--status-conforming` (has output) — not the full severity scale (§2.2). Per active project/platform/version:
   - Setup: `--muted` until an MSD file exists.
   - Model: `--muted` until a Core System Model is built.
@@ -114,12 +119,14 @@ flowchart TB
 ## 4. Screen-by-Screen UX
 
 Each screen maps VAE-01 requirements to actual UX/page boundaries (nearest SDD §3.6.1.2 element; SRS IDs unchanged). Four refinements versus SDD:
-- VAE-01.9 (build Core System Model) ships with Model Visualization, not Setup.
-- Findings toggles Verification (VAE-02) / Analysis (VAE-03) / Evaluation (VAE-04) / Reports, the last a shared tab across all three.
-- Analytical Data toggles Field Records (FRD.2–5, VAE-01.10, 12, 15–16) / Scenario Generator (VAE-01.11, 13–16) by data source.
-- Setup's source config (MSD.7–8) is a settings dialog, not a page; Analysis carries VAE-03.9/21's KPI strip.
+- **Model build placement:** VAE-01.9 (build Core System Model) ships with Model Visualization, not Setup.
+- **Findings toggle:** Findings toggles Verification (VAE-02) / Analysis (VAE-03) / Evaluation (VAE-04) / Reports, the last a shared tab across all three.
+- **Analytical Data toggle:** Analytical Data toggles Field Records (FRD.2–5, VAE-01.10, 12, 15–16) / Scenario Generator (VAE-01.11, 13–16) by data source.
+- **Analysis KPI strip:** Analysis carries VAE-03.9/21's KPI strip.
 
 **Session & Authentication** — *VAE-01.3–4* — Centered single-card login, no shell chrome until authenticated. LDAP form (React Hook Form + shadcn), guarded by Refine's access-control provider (§5). Post-login: project/platform/version selection if none active, else last-visited screen, else Model Visualization & Navigation.
+
+**Figure 2. Session & Authentication — Login Screen**
 
 ```text
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
@@ -139,46 +146,17 @@ Each screen maps VAE-01 requirements to actual UX/page boundaries (nearest SDD �
 └────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-**Sources** *(settings dialog, not a nav page)* — *VAE-01.7, MSD.7–8* — Gear icon on the Setup header opens a modal (tier 20), one card per source — config-mgmt DB, source-code repo, package repo, network topology:
-  - Each card **independently editable and saved** (type/name, access method, address, credentials; React Hook Form + shadcn) — one card failing never blocks another.
-  - Credentials masked (password input, reveal toggle).
-  - Each card has its own **Test connection**, updating its status dot immediately.
-  - Network topology also offers a manual-entry toggle (MSD.7).
-  - Accessibility status (status-scale dots, VAE-01.7) per card and, summarized, on the Setup header.
+**Setup** — *VAE-01.5–8, MSD.7–8* — Stepper-style status view: file list plus a production trigger, progress fed by the top-bar job strip. Errors (missing-data/access/authorization/format/integrity) surface inline via §7. On success, **"Continue to Model →"** navigates to the Model page — the build itself happens there via Model's own **"Build Model"** trigger. A status dot per data source sits under the header (VAE-01.7); **Edit** opens a plain form for that source's address/credentials, including the network-topology manual-entry toggle (MSD.7–8) — one form, no separate dialog.
+
+**Figure 3. Setup**
 
 ```text
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
 │ Project v Platform v Version v 2.3.1 [Setup] Model Analytical Data Findings avatar v   │
-│ Model Setup Data Workflow   (dimmed backdrop)                                          │
-│ .......................................................................................│
-│         ┌──────────────────────────────────────────────────────────────────────┐       │
-│         │                 Sources  (settings dialog · tier 20)                 │       │
-│         ├──────────────────────────────────────────────────────────────────────┤       │
-│         │ * Config-mgmt DB    type / name / address / credentials ••••••••     │       │
-│         │                                         [ Test connection ]  [ Save ]│       │
-│         │ * Source-code repo  type / name / address / credentials ••••••••     │       │
-│         │                                         [ Test connection ]  [ Save ]│       │
-│         │ * Package repo      type / name / address / credentials ••••••••     │       │
-│         │                                         [ Test connection ]  [ Save ]│       │
-│         │ * Network topology   address / credentials ••••••••                  │       │
-│         │     [ ] manual-entry toggle (MSD.7, alt. to auto-acquire)            │       │
-│         │                                         [ Test connection ]  [ Save ]│       │
-│         ├──────────────────────────────────────────────────────────────────────┤       │
-│         │                                                             [ Close ]│       │
-│         └──────────────────────────────────────────────────────────────────────┘       │
-│ .......................................................................................│
-└────────────────────────────────────────────────────────────────────────────────────────┘
-```
-`*` = per-source status dot (§3); `••••••••` = masked credential field. Close, not
-Cancel, is the only dialog-wide control — each card already saves independently.
-
-**Setup: Model Setup Data Workflow** — *VAE-01.5–6, 8* — Stepper-style status view: file list plus a production trigger, progress fed by the top-bar job strip. Errors (missing-data/access/authorization/format/integrity) surface inline via §7. On success, **"Continue to Model →"** navigates to the Model page — the build itself happens there via Model's own **"Build Model"** trigger. Header carries the gear icon for Sources.
-
-```text
-┌────────────────────────────────────────────────────────────────────────────────────────┐
-│ Project v Platform v Version v 2.3.1 [Setup] Model Analytical Data Findings avatar v   │
-│ Model Setup Data Workflow                  [ Produce Model Setup Data ] [gear: Sources]│
+│ Model Setup Data Workflow                             [ Produce Model Setup Data ]     │
 ├────────────────────────────────────────────────────────────────────────────────────────┤
+│ Sources: * config-mgmt DB  * source repo  * package repo  * net topology   [Edit]      │
+│                                                                                        │
 │ Selected MSD file: msd_2026-07-14_platformA.json                                       │
 │                                                                                        │
 │ File list                                                                              │
@@ -194,6 +172,8 @@ Cancel, is the only dialog-wide control — each card already saves independentl
 **Field Records** — *FRD.2–5, VAE-01.10, 12, 15–16* — TanStack Table of uploaded System Field Records, filterable by project/platform/version/source/upload time (FRD.4). Upload (React Hook Form, file input) records source/time/project/platform/version (FRD.2–3); errors inline via §7 (FRD.5). Table-pattern example for §5.
 
 Selecting records and **Produce Analytical Data** (VAE-01.10, 12) starts AED production (VAE-01.15); binding vs. Core System Model is the final stage, a progress card once CSM-02 completes (VAE-01.16). Entered via the Field Records/Scenario Generator toggle, like Model's Browse/Edit.
+
+**Figure 4. Field Records**
 
 ```text
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
@@ -222,6 +202,8 @@ Selecting records and **Produce Analytical Data** (VAE-01.10, 12) starts AED pro
 
 Entered via the same Field Records/Scenario Generator toggle — the tab itself is the source choice.
 
+**Figure 5. Scenario Generator**
+
 ```text
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
 │ Project v Platform v Version v 2.3.1 Setup Model [Analytical Data] Findings avatar v   │
@@ -239,6 +221,8 @@ Entered via the same Field Records/Scenario Generator toggle — the tab itself 
 **Working Model Editor** — *VAE-01.17* — Same canvas as Model Visualization, via a Browse/Edit toggle. A persistent amber `--status-medium` banner/border marks it as non-read-only; selecting a node/edge opens the same Inspector Panel, now editable (React Hook Form + shadcn) — the canvas itself stays non-editable. Every edit is explicit and undoable; edits live only in the Working Model store (SDD §2.4), never autosaved to the Core System Model.
 
 Unsaved edits + Project/Platform/Version switch prompts a confirmation dialog (shadcn `AlertDialog`); switching top-bar groups mid-edit is safe — edits persist, banner reappears on return.
+
+**Figure 6. Working Model Editor**
 
 ```text
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
@@ -260,6 +244,8 @@ Unsaved edits + Project/Platform/Version switch prompts a confirmation dialog (s
 ```
 
 **Model Visualization & Navigation** — *VAE-01.9, 19–20* — Full-bleed React Flow canvas (tier 0), floating top-left search/filter bar (type/project/platform/version/unit), bottom-right minimap. Node/edge selection opens the Inspector Panel (§3). No Core System Model yet: canvas replaced by a "Build Model" trigger + progress (VAE-01.9), fed by the job strip.
+
+**Figure 7. Model Visualization & Navigation**
 
 ```text
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
@@ -284,6 +270,8 @@ canvas entirely.
 
 **Verification** — *VAE-02, VAE-01.18, 21–25* — TanStack Table of VAE-02's rule-based checks against the Core System Model — no AED involved. Severity-colored, sortable/filterable, same columns/Inspector pattern as other Findings tabs (evidence, related rule, cause/effect chain); simulation-only fields never apply here.
 
+**Figure 8. Verification**
+
 ```text
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
 │ Project v Platform v Version v 2.3.1 Setup Model Analytical Data [Findings] avatar v   │
@@ -304,6 +292,8 @@ canvas entirely.
 ```
 
 **Analysis** — *VAE-03, VAE-01.18, 21–25* — TanStack Table of VAE-03 results, headed by a KPI strip (Recharts/shadcn Chart, §5) for top resource-usage/messaging-intensity entities (VAE-03.9, 21). Row selection: evidence, related rule, cause/effect chain, plus scenario name/inputs/time for simulation-sourced findings. Interrupted ops show cause/stage/time inline via §7.
+
+**Figure 9. Analysis**
 
 ```text
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
@@ -332,6 +322,8 @@ canvas entirely.
 
 Row selection: blocking findings behind the decision (rule ID, heading, severity, weight, acceptance criterion — VAE-04.4, 6). Scoring method/score-class open per CDR-14 (VAE-04.6); labels shown are illustrative.
 
+**Figure 10. Evaluation**
+
 ```text
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
 │ Project v Platform v Version v 2.3.1 Setup Model Analytical Data [Findings] avatar v   │
@@ -354,6 +346,8 @@ Row selection: blocking findings behind the decision (rule ID, heading, severity
 ```
 
 **Reports** — *VAE-01.26* — Fourth Findings tab: list of generated reports plus a generate action (summary/detailed, PDF/JSON) synthesizing Verification/Analysis/Evaluation for the selected project/platform/version — Scope control can narrow to just one.
+
+**Figure 11. Reports**
 
 ```text
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
@@ -378,6 +372,8 @@ Row selection: blocking findings behind the decision (rule ID, heading, severity
 
 Cross-cutting patterns, each owned by exactly one library from SDP §5 Table 6 — no screen invents its own variant.
 
+**Table 4. Core Interaction Patterns**
+
 | Pattern | Owner | Rule |
 |---|---|---|
 | Graph canvas | React Flow ^12.11 | Search/filter, zoom/pan, click-to-select → Inspector Panel, minimap always present. Below the node-count threshold (§6): full detail; above it: degraded LOD (labels hidden, edges simplified) until zoomed in. |
@@ -395,6 +391,8 @@ Cross-cutting patterns, each owned by exactly one library from SDP §5 Table 6 �
 ## 6. Performance Budget
 
 Concrete, testable targets, not a hope.
+
+**Table 5. Performance Budget**
 
 | Target | Budget |
 |---|---|
@@ -418,13 +416,15 @@ Concrete, testable targets, not a hope.
 
 ---
 
-## 8. Traceability
+## 8. Requirements Traceability
+
+**Table 6. Requirements Traceability**
 
 | UXD Section | VAE-01 SRS Reference |
 |---|---|
+| §1 Design Principles | VAE-01.1–2 *(CSU-wide role, SDD §3.6.1.1)* |
 | §4 Session & Authentication | VAE-01.3–4 |
-| §4 Sources (settings dialog) | VAE-01.7, MSD.7–8 *(cross-CSU, SRS Appendix A "Joint" convention: no VAE-01.x covers source config directly)* |
-| §4 Setup: Model Setup Data Workflow | VAE-01.5–6, 8 |
+| §4 Setup | VAE-01.5–8, MSD.7–8 *(cross-CSU, SRS Appendix A "Joint" convention: no VAE-01.x covers source config directly)* |
 | §4 Field Records | FRD.2–5 *(cross-CSU, same convention)*, VAE-01.10, 12, 15–16 |
 | §4 Scenario Generator | VAE-01.11, 13–16 |
 | §4 Working Model Editor | VAE-01.17 |
@@ -435,3 +435,5 @@ Concrete, testable targets, not a hope.
 | §4 Reports | VAE-01.26 |
 | §5 Background operations status pattern | VAE-01.16, 27 (status delivery, shared pattern) |
 | §7 Error-state convention | VAE-01.18 (conforming/non-conforming classification), SDD §1 decision 5 |
+
+**Coverage check:** all 27 VAE-01 SRS requirements appear at least once above.
