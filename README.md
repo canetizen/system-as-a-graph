@@ -67,6 +67,8 @@ LICENSE          # Apache License 2.0
 
 ## Getting started
 
+The API runs on http://localhost:8000 and the web app on http://localhost:3000, whether run locally or via Docker.
+
 ### Backend (Python 3.11+)
 
 ```bash
@@ -96,6 +98,29 @@ Run end-to-end tests and linting:
 ```bash
 npm run test:e2e
 npm run lint
+```
+
+### Docker
+
+Run the API and web app in containers, without installing Python or Node locally.
+
+**Development** — hot reload, with source bind-mounted into the containers:
+
+```bash
+docker compose -f docker-compose.dev.yml up --build
+```
+
+**Production** — standalone builds, no bind mounts:
+
+```bash
+docker compose up --build
+```
+
+Stop and remove containers:
+
+```bash
+docker compose -f docker-compose.dev.yml down   # dev
+docker compose down                             # prod
 ```
 
 ## License
