@@ -6,8 +6,8 @@ on:
   pull_request:
 
 jobs:
-  backend:
-    name: Backend (lint + test)
+  api:
+    name: API (lint + test)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28,7 +28,7 @@ jobs:
         run: pytest
 
   web:
-    name: Web (lint + build)
+    name: Web (lint + build + test)
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -45,7 +45,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Lint
+      - name: Lint (eslint)
         run: npm run lint
 
       - name: Build
@@ -54,11 +54,11 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
-      - name: Test (e2e)
+      - name: Test (playwright)
         run: npm run test:e2e
 
   docker:
-    name: Docker Compose build
+    name: Docker (compose build)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
