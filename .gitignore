@@ -216,3 +216,8 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# web/ is a Next.js project with its own .gitignore — don't let the
+# Python-oriented patterns above (lib/, build/, env/, etc.) reach into it
+!/web/
+!/web/**
