@@ -87,11 +87,11 @@ Increment 0 establishes the repository scaffolding, shared infrastructure, and d
 **Demo:** A clean checkout builds, lints, and brings up the full Docker Compose stack with no application logic, and every planned document has a placeholder under `docs/`.
 
 **Definition of Done:**
-- [ ] Repository scaffolded per §4 (per-CSC hexagonal layout, `web/`, `cli/`, `shared/`)
-- [ ] Base Docker Compose stack and CI pipeline stood up
-- [ ] `docs/` skeleton populated for every planned document
-- [ ] Scaffolding builds, lints, and deploys cleanly
-- [ ] Demo run end-to-end
+- [x] Repository scaffolded per §4 (per-CSC hexagonal layout, `web/`, `cli/`, `shared/`)
+- [x] Base Docker Compose stack and CI pipeline stood up
+- [x] `docs/` skeleton populated for every planned document
+- [x] Scaffolding builds, lints, and deploys cleanly
+- [x] Demo run end-to-end
 
 ### Increment 1: Model Setup Data Generation
 
