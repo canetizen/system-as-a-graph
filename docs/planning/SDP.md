@@ -1,6 +1,6 @@
 # Software Development Plan (SDP): System as a Graph (SaaG)
 
-**Definition:** This Software Development Plan (SDP) is the plan for performing the software development of the System as a Graph (SaaG) Computer Software Configuration Item (CSCI). It decomposes the work defined in the SRS into a Work Breakdown Structure (WBS) of functional deliverables, and sequences those deliverables into a series of incremental builds. Every WBS deliverable and every increment is traceable to the CSU-scoped requirements in the SRS, which are themselves traceable to the SSS via its own Appendix A.
+**Definition:** This Software Development Plan (SDP) is the plan for performing the software development of the System as a Graph (SaaG) Computer Software Configuration Item (CSCI). It decomposes the work defined in the SRS into a Work Breakdown Structure (WBS) of functional deliverables, and sequences those deliverables into a series of incremental builds. Every WBS deliverable and every increment is traceable to the CSU-scoped requirements in the SRS, which are themselves traceable to the SSS via the SRS's own §7.
 
 **Purpose:** The WBS (§1) establishes the full scope of development work, organized by Computer Software Component (CSC) and Computer Software Unit (CSU). The Incremental Development Plan (§2) sequences that work into a strictly serial series of builds — one increment at a time, in dependency-safe order. Each increment is scoped to one or more CSCs (their remaining CSUs) plus, where relevant, the corresponding slice of VAE-01 (Operations Panel), SaaG's front-door UI CSU, so that every increment produces an end-to-end, demonstrable capability.
 
@@ -87,11 +87,11 @@ Increment 0 establishes the repository scaffolding, shared infrastructure, and d
 **Demo:** A clean checkout builds, lints, and brings up the full Docker Compose stack with no application logic, and every planned document has a placeholder under `docs/`.
 
 **Definition of Done:**
-- [ ] Repository scaffolded per §4 (per-CSC hexagonal layout, `web/`, `cli/`, `deploy/`, `shared/`)
-- [ ] Base Docker Compose stack and CI pipeline stood up
-- [ ] `docs/` skeleton populated for every planned document
-- [ ] Scaffolding builds, lints, and deploys cleanly
-- [ ] Demo run end-to-end
+- [x] Repository scaffolded per §4 (per-CSC hexagonal layout, `web/`, `cli/`, `shared/`)
+- [x] Base Docker Compose stack and CI pipeline stood up
+- [x] `docs/` skeleton populated for every planned document
+- [x] Scaffolding builds, lints, and deploys cleanly
+- [x] Demo run end-to-end
 
 ### Increment 1: Model Setup Data Generation
 
@@ -401,42 +401,48 @@ system-as-a-graph/
 │   └── tests/
 │
 ├── csm/                               # CSC-5: Core System Model
-│   ├── src/
-│   │   ├── model_manager/             # CSM-01
+│   ├── model_manager/                 # CSM-01
+│   │   ├── src/
 │   │   │   ├── api/
 │   │   │   ├── use_cases/
 │   │   │   ├── model/
 │   │   │   ├── ports/
 │   │   │   └── adapters/
-│   │   └── data_binder/               # CSM-02
-│   │       ├── api/
-│   │       ├── use_cases/
-│   │       ├── model/
-│   │       ├── ports/
-│   │       └── adapters/
-│   └── tests/
+│   │   └── tests/
+│   └── data_binder/                   # CSM-02
+│       ├── src/
+│       │   ├── api/
+│       │   ├── use_cases/
+│       │   ├── model/
+│       │   ├── ports/
+│       │   └── adapters/
+│       └── tests/
 │
 ├── vae/                               # CSC-6: Verification, Analysis, Evaluation
-│   ├── src/
-│   │   ├── design_verifier/           # VAE-02
+│   ├── design_verifier/               # VAE-02
+│   │   ├── src/
 │   │   │   ├── api/
 │   │   │   ├── use_cases/
 │   │   │   ├── model/
 │   │   │   ├── ports/
 │   │   │   └── adapters/
-│   │   ├── design_analyzer/           # VAE-03
+│   │   └── tests/
+│   ├── design_analyzer/               # VAE-03
+│   │   ├── src/
 │   │   │   ├── api/
 │   │   │   ├── use_cases/
 │   │   │   ├── model/
 │   │   │   ├── ports/
 │   │   │   └── adapters/
-│   │   └── design_evaluator/          # VAE-04
-│   │       ├── api/
-│   │       ├── use_cases/
-│   │       ├── model/
-│   │       ├── ports/
-│   │       └── adapters/
-│   └── tests/
+│   │   └── tests/
+│   └── design_evaluator/              # VAE-04
+│       ├── src/
+│       │   ├── api/
+│       │   ├── use_cases/
+│       │   ├── model/
+│       │   ├── ports/
+│       │   └── adapters/
+│       └── tests/
 │
 ├── shared/
 │   ├── contracts/
@@ -444,13 +450,9 @@ system-as-a-graph/
 │   ├── errors/
 │   └── security/
 │
-├── tests/
-│   ├── integration/
-│   └── acceptance/
-│
-└── deploy/
-    ├── docker/
-    └── environments/
+└── tests/
+    ├── integration/
+    └── acceptance/
 ```
 
 **Table 4. Project Directory Mapping**
@@ -471,7 +473,6 @@ system-as-a-graph/
 | `shared/security/` | Cross-CSC authentication and authorization helpers |
 | `tests/integration/` | Cross-CSC and adapter integration tests |
 | `tests/acceptance/` | End-to-end requirement and increment demonstration tests |
-| `deploy/` | Docker deployment descriptors and environment-specific configuration |
 
 **Table 5. Standard Hexagonal Directory Meaning**
 
@@ -482,6 +483,7 @@ system-as-a-graph/
 | `model/` | Domain core: business objects, rules, and calculations owned by the CSU |
 | `ports/` | Outbound ports: interfaces required by use cases for databases, files, queues, or external systems |
 | `adapters/` | Outbound adapters: implementations of `ports/`, such as PostgreSQL, FalkorDB, LDAP, Git, REST, or file adapters |
+| `tests/` | Test suite scoped to the CSU (or the CSC directly, for CSCs not divided into CSUs) |
 
 ---
 
