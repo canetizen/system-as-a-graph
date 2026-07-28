@@ -96,6 +96,7 @@ npm run dev
 Run end-to-end tests and linting:
 
 ```bash
+npx playwright install --with-deps chromium # one-time browser download
 npm run test:e2e
 npm run lint
 ```
