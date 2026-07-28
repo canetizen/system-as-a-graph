@@ -113,14 +113,14 @@ docker compose -f docker-compose.dev.yml up --build
 **Production** — standalone builds, no bind mounts:
 
 ```bash
-docker compose up --build
+docker compose -f docker-compose.prod.yml up --build
 ```
 
 Stop and remove containers:
 
 ```bash
-docker compose -f docker-compose.dev.yml down   # dev
-docker compose down                             # prod
+docker compose -f docker-compose.dev.yml down    # dev
+docker compose -f docker-compose.prod.yml down   # prod
 ```
 
 ## License
