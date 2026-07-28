@@ -38,13 +38,13 @@ Each leaf bullet below cites the exact SRS requirement ID range it realizes.
     - **CSM-02: Analytical Data Binder** (CSM-02.1–6)
   - **SaaG-VAE**
     - **VAE-01: Operations Panel**
-      - Login & Model Setup Data Control (VAE-01.1–8)
-      - Model Building & Viewing (VAE-01.9, 19–20)
-      - Model Editing & Findings Display (VAE-01.17–18, 21–24)
-      - Analytical Data Source, Scenario & Production Setup (VAE-01.10–15)
-      - Analytical Data Binding Status (VAE-01.16)
-      - Simulation Scenario Recording (VAE-01.25)
-      - Reporting & CLI Automation (VAE-01.26–27)
+      - Logging In & Setting Up Model Data (VAE-01.1–8)
+      - Building & Viewing the Model (VAE-01.9, 19–20)
+      - Editing the Model & Viewing Findings (VAE-01.17–18, 21–24)
+      - Setting Up & Tracking Synthetic Data (VAE-01.11, 13–15)
+      - Selecting & Tracking Field Data (VAE-01.10, 12, 16)
+      - Recording Simulation Scenarios (VAE-01.25)
+      - Reporting & Automating via CLI (VAE-01.26–27)
     - **VAE-02: Design Verifier** (VAE-02.1–22)
     - **VAE-03: Design Analyzer** (VAE-03.1–21)
     - **VAE-04: Design Evaluator** (VAE-04.1–8)
@@ -98,7 +98,7 @@ Increment 0 establishes the repository scaffolding, shared infrastructure, and d
 | CSU | Deliverable |
 |---|---|
 | MSD *(complete)* | Model Setup Data Generation (MSD.1–23) |
-| VAE-01 *(ongoing)* | Login & Model Setup Data Control (VAE-01.1–8) |
+| VAE-01 *(ongoing)* | Logging In & Setting Up Model Data (VAE-01.1–8) |
 
 **Completes:** SaaG-MSD
 
@@ -124,7 +124,7 @@ Increment 0 establishes the repository scaffolding, shared infrastructure, and d
 | CSU | Deliverable |
 |---|---|
 | CSM-01 *(complete)* | Model Manager (CSM-01.1–31) |
-| VAE-01 *(ongoing)* | Model Building & Viewing (VAE-01.9, 19–20) |
+| VAE-01 *(ongoing)* | Building & Viewing the Model (VAE-01.9, 19–20) |
 
 **Design:** Model Manager (SRS CSM-01.1–31) and the model-build/browsing screen (VAE-01.9, 19–20) are fully designed. Biggest gap: the model's storage technology and schema aren't decided (CDR-29–30); concurrency limits and the VAE read protocol are also open (CDR-16, CDR-28).
 
@@ -148,7 +148,7 @@ Increment 0 establishes the repository scaffolding, shared infrastructure, and d
 | CSU | Deliverable |
 |---|---|
 | VAE-02 *(complete)* | Design Verifier (VAE-02.1–22) |
-| VAE-01 *(ongoing)* | Model Editing & Findings Display (VAE-01.17–18, 21–24) |
+| VAE-01 *(ongoing)* | Editing the Model & Viewing Findings (VAE-01.17–18, 21–24) |
 
 **Design:** Design Verifier (SRS VAE-02.1–22) and the model-editor/findings screen (VAE-01.17–18, 21–24) are laid out, but most of the actual pass/fail rules are undecided — the biggest design gap in this plan (CDR-01–08).
 
@@ -173,11 +173,11 @@ Increment 0 establishes the repository scaffolding, shared infrastructure, and d
 |---|---|
 | SCG *(complete)* | Scenario Generator (SCG.1–7) |
 | ADP *(ongoing)* | Synthetic-Path Data Preparation (ADP.1, 3, 4, 6) |
-| VAE-01 *(ongoing)* | Analytical Data Source, Scenario & Production Setup (VAE-01.10–15) |
+| VAE-01 *(ongoing)* | Setting Up & Tracking Synthetic Data (VAE-01.11, 13–15) |
 
 **Completes:** SaaG-SCG
 
-**Design:** Scenario Generator (SRS SCG.1–7) and the synthetic-data setup screen (VAE-01.10–15) are fully designed. Still open: what the synthetic data should simulate, the Analytical Evaluation Data format, and the SCG→ADP handoff (CDR-11, CDR-12, CDR-25).
+**Design:** Scenario Generator (SRS SCG.1–7) and the synthetic-data setup screen (VAE-01.11, 13–15) are fully designed. Still open: what the synthetic data should simulate, the Analytical Evaluation Data format, and the SCG→ADP handoff (CDR-11, CDR-12, CDR-25).
 
 **Development:** Build the Scenario Generator (capture inputs, produce and record traceable synthetic data) and the synthetic-intake half of Analytical Data Preparation. On the frontend: scenario input and production/status screens.
 
@@ -188,7 +188,7 @@ Increment 0 establishes the repository scaffolding, shared infrastructure, and d
 **Demo:** An operator defines scenario scope/type/interval/density/data types, triggers synthetic data production, and observes the produced data recorded and traceable to its inputs. The synthetic data is then prepared into Analytical Evaluation Data (AED), with production status tracked and any format/missing-field errors reported — completing SaaG-SCG.
 
 **Definition of Done:**
-- [ ] Scenario Generator (SCG.1–7) and setup screen (VAE-01.10–15) built and working
+- [ ] Scenario Generator (SCG.1–7) and setup screen (VAE-01.11, 13–15) built and working
 - [ ] CDR-11, CDR-12, CDR-25 resolved or deferred
 - [ ] Scenario Generator and synthetic-path tests pass
 - [ ] Both services deploy together
@@ -201,22 +201,22 @@ Increment 0 establishes the repository scaffolding, shared infrastructure, and d
 | CSM-02 *(complete)* | Analytical Data Binder (CSM-02.1–6) |
 | FRD *(complete)* | Field Records Database (FRD.1–5) |
 | ADP *(complete)* | Field-Path Data Preparation (ADP.2, 5) |
-| VAE-01 *(ongoing)* | Analytical Data Binding Status (VAE-01.16) |
+| VAE-01 *(ongoing)* | Selecting & Tracking Field Data (VAE-01.10, 12, 16) |
 
 **Completes:** SaaG-FRD, SaaG-ADP, SaaG-CSM
 
-**Design:** Analytical Data Binder (SRS CSM-02.1–6) and Field Records Database (FRD.1–5) are fully designed, as is the binding-status screen (VAE-01.16). Still open: field-record storage capacity, the FRD external interface protocol, the FRD→ADP and ADP→CSM-02 handoffs, and the carried-over AED format decision (CDR-15, CDR-21, CDR-26, CDR-27, CDR-12).
+**Design:** Analytical Data Binder (SRS CSM-02.1–6) and Field Records Database (FRD.1–5) are fully designed, as are the field-record source-selection and binding-status screens (VAE-01.10, 12, 16). Still open: field-record storage capacity, the FRD external interface protocol, the FRD→ADP and ADP→CSM-02 handoffs, and the carried-over AED format decision (CDR-15, CDR-21, CDR-26, CDR-27, CDR-12).
 
-**Development:** Build the Field Records Database (upload/catalog/search), the field-intake half of Analytical Data Preparation, and the Data Binder (attach behavioral data without altering the model). On the frontend: field-record upload/catalog and binding-status screens.
+**Development:** Build the Field Records Database (upload/catalog/search), the field-intake half of Analytical Data Preparation, and the Data Binder (attach behavioral data without altering the model). On the frontend: field-record source-selection, upload/catalog, and binding-status screens.
 
 **Test:** Verify records upload/catalog correctly, the field intake/assembly completes (never mixing with synthetic data), and binding matches data to the model without changing it — end-to-end, including a check that Increment 2's model is untouched.
 
 **Packaging:** Stand up the Field Records Database and Data Binder services with a time-series database for telemetry; raw uploads are discarded after parsing.
 
-**Demo:** The synthetic-sourced AED from Increment 4 is bound onto the Core System Model without altering its nodes/relationships, with binding status and provenance visible to the operator. The operator then uploads System Field Records (listing/searching/selecting them by project, platform, version, source, or upload time), and the resulting field-sourced AED is bound onto the model via the same source-agnostic binder — completing SaaG-FRD, SaaG-ADP (both the synthetic and field paths now work end-to-end), and SaaG-CSM.
+**Demo:** The synthetic-sourced AED from Increment 4 is bound onto the Core System Model without altering its nodes/relationships, with binding status and provenance visible to the operator. The operator then selects System Field Records as the Analytical Evaluation Data source, uploads System Field Records (listing/searching/selecting them by project, platform, version, source, or upload time), and the resulting field-sourced AED is bound onto the model via the same source-agnostic binder — completing SaaG-FRD, SaaG-ADP (both the synthetic and field paths now work end-to-end), and SaaG-CSM.
 
 **Definition of Done:**
-- [ ] Data Binder (CSM-02.1–6), FRD (FRD.1–5), and binding-status screen (VAE-01.16) built and working
+- [ ] Data Binder (CSM-02.1–6), FRD (FRD.1–5), and field-selection/binding-status screens (VAE-01.10, 12, 16) built and working
 - [ ] CDR-15, CDR-21, CDR-26, CDR-27, CDR-12 resolved or deferred
 - [ ] Field-records, binder, and field-path tests pass, completing Increment 4's
 - [ ] New services and telemetry database deploy together
@@ -227,7 +227,7 @@ Increment 0 establishes the repository scaffolding, shared infrastructure, and d
 | CSU | Deliverable |
 |---|---|
 | VAE-03 *(complete)* | Design Analyzer (VAE-03.1–21) |
-| VAE-01 *(ongoing)* | Simulation Scenario Recording (VAE-01.25) |
+| VAE-01 *(ongoing)* | Recording Simulation Scenarios (VAE-01.25) |
 
 **Design:** Design Analyzer (SRS VAE-03.1–21) and the simulation-recording screen (VAE-01.25) are fully designed. No item names it directly, but it depends on two carried-over decisions: the VAE read protocol and the model's storage/schema (CDR-28, CDR-29–30).
 
@@ -251,7 +251,7 @@ Increment 0 establishes the repository scaffolding, shared infrastructure, and d
 | CSU | Deliverable |
 |---|---|
 | VAE-04 *(complete)* | Design Evaluator (VAE-04.1–8) |
-| VAE-01 *(complete)* | Reporting & CLI Automation (VAE-01.26–27) |
+| VAE-01 *(complete)* | Reporting & Automating via CLI (VAE-01.26–27) |
 
 **Completes:** SaaG-VAE
 
@@ -327,13 +327,13 @@ gantt
     Analytical Data Binder CSM-02 (9d)                 :csm02, 2026-12-07, 2026-12-17
 
     section SaaG-VAE — Verification, Analysis, Evaluation
-    Login & Model Setup Data Control VAE-01 (4w)       :vae01a, 2026-08-03, 2026-08-28
-    Model Building & Viewing VAE-01 (5w)               :vae01b, 2026-08-31, 2026-10-02
-    Model Editing & Findings Display VAE-01 (5w)       :vae01c, 2026-10-05, 2026-11-06
-    Analytical Data Source, Scenario & Production Setup VAE-01 (4w) :vae01de, 2026-11-09, 2026-12-04
-    Analytical Data Binding Status VAE-01 (20d)         :vae01f, 2026-12-07, 2027-01-01
-    Simulation Scenario Recording VAE-01 (6w)           :vae01g, 2027-01-04, 2027-02-12
-    Reporting & CLI Automation VAE-01 (4w)             :vae01h, 2027-02-15, 2027-03-12
+    Logging In & Setting Up Model Data VAE-01 (4w)       :vae01a, 2026-08-03, 2026-08-28
+    Building & Viewing the Model VAE-01 (5w)               :vae01b, 2026-08-31, 2026-10-02
+    Editing the Model & Viewing Findings VAE-01 (5w)       :vae01c, 2026-10-05, 2026-11-06
+    Setting Up & Tracking Synthetic Data VAE-01 (4w) :vae01de, 2026-11-09, 2026-12-04
+    Selecting & Tracking Field Data VAE-01 (20d) :vae01f, 2026-12-07, 2027-01-01
+    Recording Simulation Scenarios VAE-01 (6w)           :vae01g, 2027-01-04, 2027-02-12
+    Reporting & Automating via CLI VAE-01 (4w)             :vae01h, 2027-02-15, 2027-03-12
     Design Verifier VAE-02 (5w)                        :vae02, 2026-10-05, 2026-11-06
     Inc 3 Demo (0d)                                    :milestone, demo3, after vae02, 0d
     Design Analyzer VAE-03 (6w)                         :vae03, 2027-01-04, 2027-02-12
