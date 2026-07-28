@@ -64,7 +64,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Build production images
-        run: docker compose -f docker-compose.prod.yml build
+        run: docker compose build
 
       - name: Build dev images
-        run: docker compose -f docker-compose.dev.yml build
+        run: docker compose -f compose.dev.yml build
