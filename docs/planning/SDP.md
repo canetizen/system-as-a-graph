@@ -301,42 +301,45 @@ gantt
     axisFormat %b %Y
     excludes weekends
 
-    section Inc 0 — Project Scaffolding
+    section Project Scaffolding
     Project Scaffolding (2w)      :scaffold1, 2026-07-20, 2026-07-31
+    Inc 0 Demo (0d)               :milestone, demo0, after scaffold1, 0d
 
-    section Inc 1 — Model Setup Data Generation
+    section SaaG-MSD — Model Setup Data Generation
     Model Setup Data Generation MSD (4w)               :msd, 2026-08-03, 2026-08-28
-    Login & Model Setup Data Control VAE-01 (4w)       :vae01a, 2026-08-03, 2026-08-28
+    Inc 1 Demo (0d)                                    :milestone, demo1, after msd, 0d
 
-    section Inc 2 — Model Manager
-    Model Manager CSM-01 (5w)                          :csm01, 2026-08-31, 2026-10-02
-    Model Building & Viewing VAE-01 (5w)               :vae01b, 2026-08-31, 2026-10-02
-
-    section Inc 3 — Design Verifier
-    Design Verifier VAE-02 (5w)                        :vae02, 2026-10-05, 2026-11-06
-    Model Editing & Findings Display VAE-01 (5w)       :vae01c, 2026-10-05, 2026-11-06
-
-    section Inc 4 — Synthetic Data Pipeline
+    section SaaG-SCG — Scenario Generator
     Scenario Generator SCG (10d)                       :scg, 2026-11-09, 2026-11-20
-    Synthetic-Path Data Preparation ADP (10d)          :adpa, 2026-11-23, 2026-12-04
-    Analytical Data Source, Scenario & Production Setup VAE-01 (4w) :vae01de, 2026-11-09, 2026-12-04
 
-    section Inc 5 — Field Data Pipeline
-    Analytical Data Binder CSM-02 (9d)                 :csm02, 2026-12-07, 2026-12-17
+    section SaaG-FRD — Field Records Database
     Field Records Database FRD (8d)                    :frd, 2026-12-18, 2026-12-29
+
+    section SaaG-ADP — Analytical Data Preparation
+    Synthetic-Path Data Preparation ADP (10d)          :adpa, 2026-11-23, 2026-12-04
+    Inc 4 Demo (0d)                                    :milestone, demo4, after adpa, 0d
     Field-Path Data Preparation ADP (3d)                :adpb, 2026-12-30, 2027-01-01
+    Inc 5 Demo (0d)                                    :milestone, demo5, after adpb, 0d
+
+    section SaaG-CSM — Core System Model
+    Model Manager CSM-01 (5w)                          :csm01, 2026-08-31, 2026-10-02
+    Inc 2 Demo (0d)                                    :milestone, demo2, after csm01, 0d
+    Analytical Data Binder CSM-02 (9d)                 :csm02, 2026-12-07, 2026-12-17
+
+    section SaaG-VAE — Verification, Analysis, Evaluation
+    Login & Model Setup Data Control VAE-01 (4w)       :vae01a, 2026-08-03, 2026-08-28
+    Model Building & Viewing VAE-01 (5w)               :vae01b, 2026-08-31, 2026-10-02
+    Model Editing & Findings Display VAE-01 (5w)       :vae01c, 2026-10-05, 2026-11-06
+    Analytical Data Source, Scenario & Production Setup VAE-01 (4w) :vae01de, 2026-11-09, 2026-12-04
     Analytical Data Binding Status VAE-01 (20d)         :vae01f, 2026-12-07, 2027-01-01
-
-    section Inc 6 — Design Analyzer
-    Design Analyzer VAE-03 (6w)                         :vae03, 2027-01-04, 2027-02-12
     Simulation Scenario Recording VAE-01 (6w)           :vae01g, 2027-01-04, 2027-02-12
-
-    section Inc 7 — Design Evaluator
-    Design Evaluator VAE-04 (4w)                       :vae04, 2027-02-15, 2027-03-12
     Reporting & CLI Automation VAE-01 (4w)             :vae01h, 2027-02-15, 2027-03-12
-
-    section Estimated Completion
-    Estimated Completion (0d)                           :milestone, completion, 2027-03-12, 0d
+    Design Verifier VAE-02 (5w)                        :vae02, 2026-10-05, 2026-11-06
+    Inc 3 Demo (0d)                                    :milestone, demo3, after vae02, 0d
+    Design Analyzer VAE-03 (6w)                         :vae03, 2027-01-04, 2027-02-12
+    Inc 6 Demo (0d)                                    :milestone, demo6, after vae03, 0d
+    Design Evaluator VAE-04 (4w)                       :vae04, 2027-02-15, 2027-03-12
+    Inc 7 Demo / Estimated Completion (0d)             :milestone, completion, after vae04, 0d
 ```
 
 ---
