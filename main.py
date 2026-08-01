@@ -9,6 +9,7 @@ from scg.src.api.routes import router as scg_router
 from vae.design_analyzer.src.api.routes import router as vae_design_analyzer_router
 from vae.design_evaluator.src.api.routes import router as vae_design_evaluator_router
 from vae.design_verifier.src.api.routes import router as vae_design_verifier_router
+from vae.operations_panel.src.api.routes import router as vae_operations_panel_router
 
 app = FastAPI(title="system-as-a-graph API")
 
@@ -24,6 +25,7 @@ app.include_router(frd_router)
 app.include_router(adp_router)
 app.include_router(csm_model_manager_router)
 app.include_router(csm_data_binder_router)
+app.include_router(vae_operations_panel_router)
 app.include_router(vae_design_verifier_router)
 app.include_router(vae_design_analyzer_router)
 app.include_router(vae_design_evaluator_router)
