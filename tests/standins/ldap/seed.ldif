@@ -1,0 +1,40 @@
+# Stand-in directory content (EXT-IF-06).
+#
+# Two operators and two groups. Group membership is the only thing SaaG reads:
+# authorizations are granted by the directory, never stored by SaaG, so
+# revoking one is a directory edit that takes effect at the next login.
+
+dn: ou=people,dc=saag,dc=local
+objectClass: organizationalUnit
+ou: people
+
+dn: ou=groups,dc=saag,dc=local
+objectClass: organizationalUnit
+ou: groups
+
+dn: uid=operator,ou=people,dc=saag,dc=local
+objectClass: inetOrgPerson
+uid: operator
+cn: operator
+sn: Operator
+displayName: Platform Operator
+userPassword: operator
+
+dn: uid=viewer,ou=people,dc=saag,dc=local
+objectClass: inetOrgPerson
+uid: viewer
+cn: viewer
+sn: Reviewer
+displayName: Read-only Reviewer
+userPassword: viewer
+
+dn: cn=saag-operators,ou=groups,dc=saag,dc=local
+objectClass: groupOfNames
+cn: saag-operators
+member: uid=operator,ou=people,dc=saag,dc=local
+
+dn: cn=saag-viewers,ou=groups,dc=saag,dc=local
+objectClass: groupOfNames
+cn: saag-viewers
+member: uid=operator,ou=people,dc=saag,dc=local
+member: uid=viewer,ou=people,dc=saag,dc=local

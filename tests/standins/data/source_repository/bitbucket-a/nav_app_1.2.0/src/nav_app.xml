@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<unit name="nav_app">
+  <topic name="NavState" role="pub"/>
+  <topic name="SensorReading" role="sub"/>
+  <topic name="DummyTopic" role="pub"/>
+</unit>
