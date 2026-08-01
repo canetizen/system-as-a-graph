@@ -11,6 +11,13 @@ dependencies = [
     "fastapi",
     "uvicorn",
     "httpx2",
+    "sqlalchemy",
+    "psycopg[binary]",
+    "pyjwt",
+    "procrastinate",
+    "pymysql",
+    "ldap3",
+    "pyyaml",
     "pytest",
     "ruff",
 ]
@@ -18,8 +25,24 @@ dependencies = [
 [tool.setuptools.packages.find]
 where = ["."]
 
+# Rule files and the fake data tree ship with the package: an air-gapped
+# deployment edits them in place instead of rebuilding the image.
+[tool.setuptools.package-data]
+msd = [
+    "src/adapters/*.json",
+    "src/adapters/fake/data/**/*",
+]
+"vae.operations_panel" = [
+    "src/adapters/fake/data/*.json",
+]
+
 [tool.ruff]
 target-version = "py311"
+
+[tool.ruff.lint.per-file-ignores]
+# FastAPI's dependency injection idiom is a call in the parameter default;
+# there is no non-call form of it.
+"*/api/routes.py" = ["B008"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests", "msd", "scg", "frd", "adp", "csm", "vae"]

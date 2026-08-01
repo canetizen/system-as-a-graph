@@ -4,6 +4,12 @@ WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
+# The source repository adapter drives the real git client, so the image
+# carries it. Everything else the adapters need is a Python package.
+RUN apt-get update \
+    && apt-get install --no-install-recommends -y git \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY pyproject.toml ./
 COPY main.py ./
 COPY msd ./msd
