@@ -84,65 +84,128 @@ The **Model Setup Data Generation (SaaG-MSD)** component ([SSS.md Section 1](fil
 
 SaaG-MSD executes mandatory schema and field verification checks on all ingested descriptors, tagging each dataset with explicit project ID, platform ID, and system release version numbers ([Req 1.5–1.18](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L37-L64)).
 
-### 2.2 Core System Model Graph Formalism (SaaG-CSM)
-The **Node-Relationship Based Core System Model (SaaG-CSM)** ([SSS.md Section 5](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L119-L180)) transforms the verified setup data into a multi-attributed directed graph $G = (V, E, A_V, A_E)$.
-
-#### Node Types ($V$)
-The node set $V$ models discrete system entities across hardware, runtime, and software layers ([Req 5.6](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L131-L144)):
-$$V = V_{\text{Sys}} \cup V_{\text{CSCI}} \cup V_{\text{CSC}} \cup V_{\text{CSU}} \cup V_{\text{Proc}} \cup V_{\text{Net}} \cup V_{\text{Mid}} \cup V_{\text{Topic}} \cup V_{\text{Msg}}$$
+### 2.2 Core System Model Formal Graph Definition (SaaG-CSM)
+The **Node-Relationship Based Core System Model (SaaG-CSM)** ([SSS.md Section 5](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L119-L180), [SDD.md Section 3.5.1](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/design/SDD.md#L209-L227)) transforms the ingested system topology into a multi-attributed, weighted directed graph:
+$$G = (V, E, \tau_V, \tau_E, w_V, w_E)$$
 
 where:
-* $V_{\text{CSCI}}, V_{\text{CSC}}, V_{\text{CSU}}$ represent Computer Software Configuration Items, Components, and Units.
-* $V_{\text{Proc}}$ represents Processor Units, Operator Consoles, and multi-core CPU hardware.
-* $V_{\text{Net}}$ represents network switches, interfaces, and routers.
-* $V_{\text{Mid}}, V_{\text{Topic}}, V_{\text{Msg}}$ represent middleware instances, message topics, and message definitions.
+* $V$ is the set of system vertices.
+* $E = E_{\text{structural}} \cup E_{\text{dependency}}$ is the union of imported structural edges and derived dependency edges.
+* $\tau_V : V \rightarrow \{\text{App}, \text{Broker}, \text{Topic}, \text{Node}, \text{Library}\}$ assigns vertex entity types.
+* $\tau_E : E \rightarrow \{\text{PUBLISHES\_TO}, \text{SUBSCRIBES\_TO}, \text{ROUTES}, \text{RUNS\_ON}, \text{CONNECTS\_TO}, \text{USES}, \text{DEPENDS\_ON}\}$ assigns edge types.
+* $w_V : V \rightarrow [0, 1]$ and $w_E : E \rightarrow [0, 1]$ specify QoS-derived vertex and edge criticality weights.
 
-#### Relationship Types ($E$)
-The directed edge set $E \subseteq V \times V$ models structural, operational, and data flow bindings ([Req 5.7](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L145-L152)):
-1. **Execution Binding:** $(v_{\text{CSU}}, v_{\text{Proc}}) \in E_{\text{RunOn}}$ — specifies that a software unit runs on a specific processor node.
-2. **Middleware Usage:** $(v_{\text{CSU}}, v_{\text{Mid}}) \in E_{\text{UsesMid}}$ — specifies dependency on a middleware communication service.
-3. **Publishing Relation:** $(v_{\text{CSU}}, v_{\text{Topic}}) \in E_{\text{Pub}}$ — specifies a publisher relationship to a topic.
-4. **Consuming Relation:** $(v_{\text{Topic}}, v_{\text{CSU}}) \in E_{\text{Sub}}$ — specifies a subscriber relationship to a topic.
-5. **Software Dependency:** $(v_{\text{CSU}_i}, v_{\text{CSU}_j}) \in E_{\text{Dep}}$ — specifies a library or structural software dependency.
+#### 1. Vertex Types ($V$)
+The vertex set $V$ models 5 core entity types across software, middleware, and infrastructure layers ([Req 5.6](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L131-L144)):
+$$V = V_{\text{app}} \cup V_{\text{broker}} \cup V_{\text{topic}} \cup V_{\text{node}} \cup V_{\text{lib}}$$
 
-#### Node & Relationship Attributes ($A_V, A_E$)
-Each node $v \in V$ and edge $e \in E$ carries queryable attribute maps ([Req 5.8](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L153-L154)):
-* $\text{Attr}(v_{\text{Proc}}) = \{\text{TotalCores}, \text{RAM\_MB}, \text{OS\_Version}\}$
-* $\text{Attr}(v_{\text{CSU}}) = \{\text{AllocatedCores}, \text{HeapMemory\_MB}, \text{ExecutionPriority}\}$
-* $\text{Attr}(v_{\text{Topic}}) = \{\text{Durability}, \text{Reliability}, \text{Lifespan}, \text{TransportPriority}\}$
+where:
+* **Applications ($V_{\text{app}}$):** Executable software units (CSCI/CSC/CSU) and microservices. Attributes include `role`, `app_type`, `version`, `criticality`, and code metrics ($\text{cm\_total\_loc}$, $\text{cm\_avg\_wmc}$, $\text{cm\_avg\_cbo}$, $\text{cm\_avg\_lcom}$).
+* **Brokers ($V_{\text{broker}}$):** Middleware message routers and DDS participants responsible for topic dispatch.
+* **Topics ($V_{\text{topic}}$):** Pub/Sub message channels. Attributes include `size`, `qos_reliability`, `qos_durability`, `qos_transport_priority`, `subscriber_count` (fan-out), and `publisher_count` (fan-in).
+* **Infrastructure Nodes ($V_{\text{node}}$):** Hardware multi-core CPU processors, operator consoles, and physical host servers.
+* **Libraries ($V_{\text{lib}}$):** Shared software code modules and static/dynamic libraries linked by applications.
 
-### 2.3 Process-Isolated Candidate Modeling
+#### 2. Structural Relationship Types ($E_{\text{structural}}$)
+Six explicit structural edge types are imported directly from system descriptors ([Req 5.7](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L145-L152)):
+1. `PUBLISHES_TO` $\subseteq (V_{\text{app}} \cup V_{\text{lib}}) \times V_{\text{topic}}$: Component sends messages to a topic.
+2. `SUBSCRIBES_TO` $\subseteq V_{\text{topic}} \times (V_{\text{app}} \cup V_{\text{lib}})$: Component receives messages from a topic.
+3. `ROUTES` $\subseteq V_{\text{broker}} \times V_{\text{topic}}$: Broker routes and dispatches message traffic for a topic.
+4. `RUNS_ON` $\subseteq (V_{\text{app}} \cup V_{\text{broker}}) \times V_{\text{node}}$: Software unit or broker is hosted on a physical node.
+5. `CONNECTS_TO` $\subseteq V_{\text{node}} \times V_{\text{node}}$: Physical or logical network link between infrastructure nodes.
+6. `USES` $\subseteq (V_{\text{app}} \cup V_{\text{lib}}) \times V_{\text{lib}}$: Application or library depends on a shared code module.
+
+#### 3. Two Dual Graph Views
+To guarantee methodological decoupling between failure simulation and pre-deployment analysis, SaaG maintains two complementary views:
+* **$G_{\text{structural}}$:** Contains all vertices and the 6 structural edge types ($E_{\text{structural}}$). Used by simulation engines to model physical message flow and cascade fault propagation.
+* **$G_{\text{analysis}}(l)$:** Contains layer-filtered vertices and derived `DEPENDS_ON` edges ($E_{\text{dependency}}$). Used by the static verification engine to compute structural centrality metrics, identify single points of failure, and enforce deployment gating.
+
+---
+
+### 2.3 Intrinsic QoS & Hierarchical Weight Propagation
+
+SaaG establishes quantitative criticality weights $w(v) \in [0, 1]$ across all entities using an Analytical Hierarchy Process (AHP)-justified QoS formula and upward propagation rules.
+
+#### 1. Intrinsic Topic Weight Formula
+For each topic $t \in V_{\text{topic}}$, its intrinsic weight $w(t)$ is computed from QoS policies and payload size:
+$$w(t) = \max\left(0.01, \; \beta \cdot \text{QoS\_score}(t) + (1 - \beta) \cdot \text{size\_norm}(t)\right)$$
+
+where $\beta = 0.85$, $\text{size\_norm}(t) = \min\left(\frac{\log_2(1 + \text{size\_kb})}{50}, \, 1.0\right)$, and
+$$\text{QoS\_score}(t) = 0.30 \cdot \text{reliability\_score} + 0.40 \cdot \text{durability\_score} + 0.30 \cdot \text{priority\_score}$$
+
+* **Reliability:** `RELIABLE` (1.0), `BEST_EFFORT` (0.0).
+* **Durability:** `PERSISTENT` (1.0), `TRANSIENT` (0.6), `TRANSIENT_LOCAL` (0.5), `VOLATILE` (0.0).
+* **Transport Priority:** `CRITICAL`/`URGENT`/`HIGHEST` (1.0), `HIGH` (0.66), `MEDIUM` (0.33), `LOW` (0.0).
+
+Structural edges (`PUBLISHES_TO`, `SUBSCRIBES_TO`, `ROUTES`) inherit the topic's scalar weight and QoS profile ($e.\text{weight} = w(t)$).
+
+#### 2. Upward Vertex Weight Propagation
+Once topic weights are established, component vertex weights are computed hierarchically:
+
+* **Application Weight:** Reflects worst-case stream criticality (0.80) and cumulative topic footprint (0.20):
+  $$w(a) = 0.80 \cdot \max_{t \in T(a)} w(t) + 0.20 \cdot \text{mean}_{t \in T(a)} w(t)$$
+  *(For applications communicating solely through shared libraries, a fallback pass sets $w(a) = \max_{l \in L(a)} w(l)$).*
+* **Broker Weight:** Reflects routing load and cumulative throughput exposure:
+  $$w(b) = 0.70 \cdot \max_{t \in T(b)} w(t) + 0.30 \cdot \text{mean}_{t \in T(b)} w(t)$$
+* **Library Weight (Fan-out Amplification):** Models simultaneous blast radius across consuming applications:
+  $$w(l) = \min\left(1.0, \; \text{base\_w} \cdot (1 + \gamma \cdot \log_2(1 + DG_{\text{in}}(l)))\right), \quad \gamma = 0.15$$
+  where $\text{base\_w} = \max\left(\max_{t} w(t), \, \max_{a \in \text{Consumers}} w(a)\right)$ and $DG_{\text{in}}(l)$ is the incoming dependency degree.
+* **Infrastructure Node Weight:** Bounded by hosted components:
+  $$w(n) = \max_{v \text{ RUNS\_ON } n} w(v)$$
+
+### 2.4 Process-Isolated Candidate Modeling
 During CI/CD pipeline execution, multiple developers may trigger concurrent builds. SaaG-CSM maintains multi-session read/write isolation ([Req 5.18–5.19](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L173-L176)). When evaluating candidate software unit version $u'$, SaaG-CSM constructs an isolated candidate graph $G_{u'} = (V', E')$ by substituting $u'$ for the existing version $u$ in the target system version model ([Req 5.20](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L177-L180)).
 
 ---
 
 ## 3. Verification & Analytical Overlay Engine
 
-The **Design Verification, Analysis and Evaluation (SaaG-VAE)** component ([SSS.md Section 6](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L181-L336)) executes rule-based audits, telemetry overlays, and simulation analyses on the candidate digital twin $G_{u'}$.
+The **Design Verification, Analysis and Evaluation (SaaG-VAE)** component ([SSS.md Section 6](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L181-L336)) executes dependency derivation, rule-based audits, telemetry overlays, and simulation analyses on candidate digital twins $G_{u'}$.
 
-### 3.1 Static Middleware & Resource Rule Audits
+### 3.1 Logical Dependency Derivation Engine
+Structural edges represent physical connections, but not logical failure propagation dependencies. SaaG automatically derives directed `DEPENDS_ON` edges ($E_{\text{dependency}}$) pointing from *dependent* to *dependency* (against message data flow):
+
+| Rule | `dependency_type` | Derivation Pattern | Edge Weight $w(e)$ |
+|---|---|---|---|
+| **1** | `app_to_app` | App/Lib `SUBSCRIBES_TO` $t \leftarrow$ `PUBLISHES_TO` App/Lib (including transitive `USES*1..3` library chains) | $\max_{t} w(t)$ over shared topics |
+| **2** | `app_to_broker` | App/Lib `PUBLISHES_TO` or `SUBSCRIBES_TO` $t \leftarrow$ `ROUTES` Broker | $\max_{t} w(t)$ over routed topics |
+| **3** | `node_to_node` | Lifted from `app_to_app` and `app_to_broker` edges between hosted apps | Lifted $\max(w)$ over matching edges |
+| **4** | `node_to_broker` | Lifted from `app_to_broker` when a hosted app relies on a broker | Lifted $\max(w)$ over matching edges |
+| **5** | `app_to_lib` | App/Lib `USES` $\rightarrow$ Library | Inherits $w(\text{app})$ |
+| **6** | `broker_to_broker` | Bidirectional colocation edge between Brokers sharing a physical Node | Inherits $w(\text{node})$ |
+
+**Multi-path Coupling Intensity:** When two components share multiple topics, a single `DEPENDS_ON` edge is created with weight $w(e) = \max_{t} w(t)$ and `path_count` equal to the number of shared topics, quantifying coupling intensity without violating $w \in [0, 1]$.
+
+### 3.2 Layer Projections
+SaaG projects $G_{\text{analysis}}(l)$ onto four architectural concerns:
+1. **Application Layer (`app`):** Vertices ($V_{\text{app}} \cup V_{\text{lib}}$), edges (`app_to_app`, `app_to_lib`).
+2. **Infrastructure Layer (`infra`):** Vertices ($V_{\text{node}}$), edges (`node_to_node`).
+3. **Middleware Layer (`mw`):** Vertices ($V_{\text{app}} \cup V_{\text{broker}} \cup V_{\text{node}}$), edges (`app_to_broker`, `node_to_broker`, `broker_to_broker`).
+4. **System Layer (`system`):** All 5 vertex types and 6 `DEPENDS_ON` edge types.
+
+### 3.3 Static Middleware & Resource Rule Audits
 
 #### 1. Middleware Topic QoS Conformance ([Req 6.20](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L220-L228))
-For every topic node $v_t \in V_{\text{Topic}}$, publishers $P(v_t) = \{ u \mid (u, v_t) \in E_{\text{Pub}} \}$ and subscribers $S(v_t) = \{ u \mid (v_t, u) \in E_{\text{Sub}} \}$ are audited for QoS parameter compatibility:
-* **Durability Matching:** A subscriber requiring `Transient-Local` durability must not be bound to a publisher configured with `Volatile` durability.
-* **Reliability Matching:** A subscriber requiring `Reliable` transport cannot receive data from a publisher configured solely for `Best-Effort`.
+For every topic node $v_t \in V_{\text{topic}}$, publishers $P(v_t) = \{ u \mid (u, v_t) \in E_{\text{Pub}} \}$ and subscribers $S(v_t) = \{ u \mid (v_t, u) \in E_{\text{Sub}} \}$ are audited for QoS parameter compatibility:
+* **Durability Matching:** A subscriber requiring `TRANSIENT_LOCAL` durability must not be bound to a publisher configured with `VOLATILE` durability.
+* **Reliability Matching:** A subscriber requiring `RELIABLE` transport cannot receive data from a publisher configured solely for `BEST_EFFORT`.
 * **Transport Priority Conformance:** High-priority mission topics must have transport priority values conforming to system-wide priority bounds.
 
 #### 2. Publisher/Consumer Match & Schema Consistency ([Req 6.21](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L229-L234))
 SaaG-VAE flags structural defects:
-* **Orphaned Topics:** $\forall v_t \in V_{\text{Topic}}$, if $|P(v_t)| = 0$ (no publisher) or $|S(v_t)| = 0$ (no consumer), an incompatibility finding is logged.
+* **Orphaned Topics:** $\forall v_t \in V_{\text{topic}}$, if $|P(v_t)| = 0$ (no publisher) or $|S(v_t)| = 0$ (no consumer), an incompatibility finding is logged.
 * **Schema Discord:** If two topics share identical topic name strings but define incompatible message payload structures, a critical incompatibility is raised.
 
 #### 3. Processor Core Pinning & Hardware Contention ([Req 6.24](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L238-L242))
-For each processor node $v_p \in V_{\text{Proc}}$ with core capacity $C(v_p)$, let $U(v_p) = \{ u \mid (u, v_p) \in E_{\text{RunOn}} \}$ be the hosted software units:
+For each processor node $v_p \in V_{\text{node}}$ with core capacity $C(v_p)$, let $U(v_p) = \{ u \mid (u, v_p) \in E_{\text{RunOn}} \}$ be hosted software units:
 * **Core Capacity Violation:** $\sum_{u \in U(v_p)} |\text{Cores}(u)| \le C(v_p)$. If total allocated cores exceed physical capacity $C(v_p)$, an over-subscription violation is raised.
 * **Conflicting Core Assignments:** $\forall u_i, u_j \in U(v_p) \, (i \neq j)$, $\text{Cores}(u_i) \cap \text{Cores}(u_j) = \emptyset$, unless explicit core-sharing policies are enabled.
 * **Dedicated High-Performance Cores:** Critical software units flagged as high-performance must possess dedicated, non-overlapping core sets.
 
 #### 4. Circular Dependencies & Structural Topology ([Req 6.28–6.29](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L248-L252))
-SaaG-VAE executes Cycle Detection Algorithms (e.g., Tarjan's Strongly Connected Components) on the software dependency subgraph $G_{\text{Dep}} = (V_{\text{CSU}}, E_{\text{Dep}})$ to ensure no cyclic package dependencies exist.
+SaaG-VAE executes Cycle Detection Algorithms (e.g., Tarjan's Strongly Connected Components) on the software dependency subgraph $G_{\text{Dep}} = (V_{\text{app}}, E_{\text{Dep}})$ to ensure no cyclic package dependencies exist.
 
-### 3.2 Field Telemetry Overlay & Architectural Drift Detection
+### 3.4 Field Telemetry Overlay & Architectural Drift Detection
 In addition to static checks, SaaG integrates operational field records stored in the **Field Records Database (SaaG-FRD)** ([SSS.md Section 3](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L87-L101)). The **Analytical Data Preparation (SaaG-ADP)** component ([SSS.md Section 4](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L103-L118)) binds runtime telemetry (CPU/memory usage, message volumes, communication latencies, error logs) directly to graph nodes and edges ([Req 5.11](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L159-L160)).
 
 **Architectural Drift Analysis** ([Req 6.39](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L279-L284)): SaaG-VAE compares static model setup edges $E_{\text{Designed}}$ against runtime observed communication edges $E_{\text{Observed}}$:
@@ -150,8 +213,9 @@ $$\text{Drift}_{\text{Undeclared}} = E_{\text{Observed}} \setminus E_{\text{Desi
 $$\text{Drift}_{\text{Missing}} = E_{\text{Designed}} \setminus E_{\text{Observed}}$$
 Undeclared runtime connections represent security or architectural violations, while missing connections indicate non-functional or dead code paths.
 
-### 3.3 Synthetic Scenario Simulation & Fault Propagation
-Using the **Scenario Generator (SaaG-SCG)** ([SSS.md Section 2](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L69-L85)), SaaG simulates hypothetical load spikes, node failures, or bandwidth restrictions without deploying code ([Req 6.31–6.35](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L255-L266)). The propagation path of a simulated failure is computed along the directed dependency and consumer edges, identifying secondary and tertiary affected software units before physical deployment.
+### 3.5 Synthetic Scenario Simulation & Fault Propagation
+Using the **Scenario Generator (SaaG-SCG)** ([SSS.md Section 2](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L69-L85)), SaaG simulates hypothetical load spikes, node failures, or bandwidth restrictions without deploying code ([Req 6.31–6.35](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L255-L266)). The propagation path of a simulated failure is computed along directed dependency and consumer edges in $G_{\text{structural}}$, identifying secondary and tertiary affected software units before physical deployment.
+
 
 ---
 
