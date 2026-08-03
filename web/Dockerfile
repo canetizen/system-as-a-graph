@@ -1,10 +1,15 @@
 FROM node:20-alpine AS deps
 
 WORKDIR /app
+ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
 COPY package.json package-lock.json ./
 RUN npm ci
 
 FROM deps AS dev
+
+RUN apk add --no-cache chromium
+
+ENV PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 COPY . .
 EXPOSE 3000
