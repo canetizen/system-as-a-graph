@@ -221,3 +221,6 @@ __marimo__/
 # Python-oriented patterns above (lib/, build/, env/, etc.) reach into it
 !/web/
 !/web/**
+
+!msd/src/adapters/build/
+!msd/src/adapters/build/**
