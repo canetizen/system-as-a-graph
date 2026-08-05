@@ -1,8 +1,7 @@
-# SaaG: An Architectural Digital Twin for Pre-Deployment Verification and CI/CD Gating in Distributed Middleware Systems
+# An Architectural Digital Twin for Pre-Deployment Verification and CI/CD Gating in Distributed Middleware Systems
 
 **Track:** Industrial Track  
-**Target Venue:** ACM Middleware 2026 Conference  
-**Reference Specification:** [SSS.md](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md)  
+**Target Venue:** ACM Middleware 2026 Conference
 
 ---
 
@@ -154,13 +153,13 @@ Once topic weights are established, component vertex weights are computed hierar
   $$w(n) = \max_{v \text{ RUNS\_ON } n} w(v)$$
 
 ### 2.4 Process-Isolated Candidate Modeling
-During CI/CD pipeline execution, multiple developers may trigger concurrent builds. SaaG-CSM maintains multi-session read/write isolation ([Req 5.18–5.19](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L173-L176)). When evaluating candidate software unit version $u'$, SaaG-CSM constructs an isolated candidate graph $G_{u'} = (V', E')$ by substituting $u'$ for the existing version $u$ in the target system version model ([Req 5.20](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L177-L180)).
+During CI/CD pipeline execution, multiple developers may trigger concurrent builds. SaaG-CSM maintains multi-session read/write isolation. When evaluating candidate software unit version $u'$, SaaG-CSM constructs an isolated candidate graph $G_{u'} = (V', E')$ by substituting $u'$ for the existing version $u$ in the target system version model.
 
 ---
 
 ## 3. Verification & Analytical Overlay Engine
 
-The **Design Verification, Analysis and Evaluation (SaaG-VAE)** component ([SSS.md Section 6](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L181-L336)) executes dependency derivation, rule-based audits, telemetry overlays, and simulation analyses on candidate digital twins $G_{u'}$.
+The **Design Verification, Analysis and Evaluation (SaaG-VAE)** component executes dependency derivation, rule-based audits, telemetry overlays, and simulation analyses on candidate digital twins $G_{u'}$.
 
 ### 3.1 Logical Dependency Derivation Engine
 Structural edges represent physical connections, but not logical failure propagation dependencies. SaaG automatically derives directed `DEPENDS_ON` edges ($E_{\text{dependency}}$) pointing from *dependent* to *dependency* (against message data flow):
@@ -185,43 +184,43 @@ SaaG projects $G_{\text{analysis}}(l)$ onto four architectural concerns:
 
 ### 3.3 Static Middleware & Resource Rule Audits
 
-#### 1. Middleware Topic QoS Conformance ([Req 6.20](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L220-L228))
+#### 1. Middleware Topic QoS Conformance
 For every topic node $v_t \in V_{\text{topic}}$, publishers $P(v_t) = \{ u \mid (u, v_t) \in E_{\text{Pub}} \}$ and subscribers $S(v_t) = \{ u \mid (v_t, u) \in E_{\text{Sub}} \}$ are audited for QoS parameter compatibility:
 * **Durability Matching:** A subscriber requiring `TRANSIENT_LOCAL` durability must not be bound to a publisher configured with `VOLATILE` durability.
 * **Reliability Matching:** A subscriber requiring `RELIABLE` transport cannot receive data from a publisher configured solely for `BEST_EFFORT`.
 * **Transport Priority Conformance:** High-priority mission topics must have transport priority values conforming to system-wide priority bounds.
 
-#### 2. Publisher/Consumer Match & Schema Consistency ([Req 6.21](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L229-L234))
+#### 2. Publisher/Consumer Match & Schema Consistency
 SaaG-VAE flags structural defects:
 * **Orphaned Topics:** $\forall v_t \in V_{\text{topic}}$, if $|P(v_t)| = 0$ (no publisher) or $|S(v_t)| = 0$ (no consumer), an incompatibility finding is logged.
 * **Schema Discord:** If two topics share identical topic name strings but define incompatible message payload structures, a critical incompatibility is raised.
 
-#### 3. Processor Core Pinning & Hardware Contention ([Req 6.24](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L238-L242))
+#### 3. Processor Core Pinning & Hardware Contention
 For each processor node $v_p \in V_{\text{node}}$ with core capacity $C(v_p)$, let $U(v_p) = \{ u \mid (u, v_p) \in E_{\text{RunOn}} \}$ be hosted software units:
 * **Core Capacity Violation:** $\sum_{u \in U(v_p)} |\text{Cores}(u)| \le C(v_p)$. If total allocated cores exceed physical capacity $C(v_p)$, an over-subscription violation is raised.
 * **Conflicting Core Assignments:** $\forall u_i, u_j \in U(v_p) \, (i \neq j)$, $\text{Cores}(u_i) \cap \text{Cores}(u_j) = \emptyset$, unless explicit core-sharing policies are enabled.
 * **Dedicated High-Performance Cores:** Critical software units flagged as high-performance must possess dedicated, non-overlapping core sets.
 
-#### 4. Circular Dependencies & Structural Topology ([Req 6.28–6.29](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L248-L252))
+#### 4. Circular Dependencies & Structural Topology
 SaaG-VAE executes Cycle Detection Algorithms (e.g., Tarjan's Strongly Connected Components) on the software dependency subgraph $G_{\text{Dep}} = (V_{\text{app}}, E_{\text{Dep}})$ to ensure no cyclic package dependencies exist.
 
 ### 3.4 Field Telemetry Overlay & Architectural Drift Detection
-In addition to static checks, SaaG integrates operational field records stored in the **Field Records Database (SaaG-FRD)** ([SSS.md Section 3](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L87-L101)). The **Analytical Data Preparation (SaaG-ADP)** component ([SSS.md Section 4](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L103-L118)) binds runtime telemetry (CPU/memory usage, message volumes, communication latencies, error logs) directly to graph nodes and edges ([Req 5.11](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L159-L160)).
+In addition to static checks, SaaG integrates operational field records stored in the **Field Records Database (SaaG-FRD)**. The **Analytical Data Preparation (SaaG-ADP)** component binds runtime telemetry (CPU/memory usage, message volumes, communication latencies, error logs) directly to graph nodes and edges.
 
-**Architectural Drift Analysis** ([Req 6.39](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L279-L284)): SaaG-VAE compares static model setup edges $E_{\text{Designed}}$ against runtime observed communication edges $E_{\text{Observed}}$:
+**Architectural Drift Analysis**: SaaG-VAE compares static model setup edges $E_{\text{Designed}}$ against runtime observed communication edges $E_{\text{Observed}}$:
 $$\text{Drift}_{\text{Undeclared}} = E_{\text{Observed}} \setminus E_{\text{Designed}}$$
 $$\text{Drift}_{\text{Missing}} = E_{\text{Designed}} \setminus E_{\text{Observed}}$$
 Undeclared runtime connections represent security or architectural violations, while missing connections indicate non-functional or dead code paths.
 
 ### 3.5 Synthetic Scenario Simulation & Fault Propagation
-Using the **Scenario Generator (SaaG-SCG)** ([SSS.md Section 2](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L69-L85)), SaaG simulates hypothetical load spikes, node failures, or bandwidth restrictions without deploying code ([Req 6.31–6.35](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L255-L266)). The propagation path of a simulated failure is computed along directed dependency and consumer edges in $G_{\text{structural}}$, identifying secondary and tertiary affected software units before physical deployment.
+Using the **Scenario Generator (SaaG-SCG)**, SaaG simulates hypothetical load spikes, node failures, or bandwidth restrictions without deploying code. The propagation path of a simulated failure is computed along directed dependency and consumer edges in $G_{\text{structural}}$, identifying secondary and tertiary affected software units before physical deployment.
 
 
 ---
 
 ## 4. CI/CD Pipeline Integration & Automated Gating
 
-SaaG exposes Command Line Interface (CLI) and REST API endpoints for seamless integration into continuous deployment workflows ([Req 6.50](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L323)).
+SaaG exposes Command Line Interface (CLI) and REST API endpoints for seamless integration into continuous deployment workflows.
 
 ```
  Developer       Source Repo        Jenkins CI         SaaG Engine       Target Env
@@ -246,24 +245,24 @@ SaaG exposes Command Line Interface (CLI) and REST API endpoints for seamless in
 *Figure 2: Sequence Diagram of SaaG Automated CI/CD Deployment Gating.*
 
 ### 4.1 Installation Suitability Evaluation Model
-When a candidate software unit $u'$ is evaluated in the pipeline, SaaG-VAE computes an **Installation Suitability Score** across four evaluation headings ([Req 6.51](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L325-L330)):
+When a candidate software unit $u'$ is evaluated in the pipeline, SaaG-VAE computes an **Installation Suitability Score** across four evaluation headings:
 1. **Structural & Architectural Conformance ($H_1$):** Graph integrity, dependency trees, circular dependency checks.
 2. **Interface, Topic & Communication Conformance ($H_2$):** Topic QoS matches, publisher/consumer parity, schema consistency.
 3. **Dependency & Integration Conformance ($H_3$):** Library versions, CMDB compatibility.
 4. **Resource & Performance Sufficiency ($H_4$):** CPU core allocation bounds, OS configuration alignment, memory allocation parameters.
 
 ### 4.2 Scoring Formula & Severity Classification
-Each verification rule $r_k$ is assigned a severity level $S(r_k) \in \{\text{Info}, \text{Low}, \text{Medium}, \text{High}, \text{Critical}\}$, a weight $W(r_k)$, and a blocking flag $B(r_k) \in \{0, 1\}$ ([Req 6.52](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L331-L333)).
+Each verification rule $r_k$ is assigned a severity level $S(r_k) \in \{\text{Info}, \text{Low}, \text{Medium}, \text{High}, \text{Critical}\}$, a weight $W(r_k)$, and a blocking flag $B(r_k) \in \{0, 1\}$.
 
 The overall score $\mathcal{S}$ is calculated as:
 $$\mathcal{S} = 100 - \sum_{k \in \text{Violations}} W(r_k) \cdot \text{Penalty}(S(r_k))$$
 
 ### 4.3 Automated Pipeline Blocking Decision
-Independent of the aggregate score $\mathcal{S}$, SaaG enforces an explicit **Deployment Blocking Rule** ([Req 6.53](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L333-L334)):
+Independent of the aggregate score $\mathcal{S}$, SaaG enforces an explicit **Deployment Blocking Rule**:
 
 $$\text{Decision}(u') = \begin{cases} \text{FAIL (Non-Conforming)}, & \text{if } \exists k \in \text{Violations} \text{ s.t. } S(r_k) = \text{Critical} \lor B(r_k) = 1 \\ \text{FAIL (Non-Conforming)}, & \text{if } \mathcal{S} < \mathcal{S}_{\text{threshold}} \\ \text{PASS (Conforming)}, & \text{otherwise} \end{cases}$$
 
-Upon returning `FAIL`, SaaG emits a structured JSON report detailing finding identifiers, affected nodes, rule violations, supporting evidence, and root-cause explanations ([Req 6.44, 6.54](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L292-L300, #L334-L336)). The CI/CD engine automatically halts execution, preventing deployment of the flawed artifact to the target environment.
+Upon returning `FAIL`, SaaG emits a structured JSON report detailing finding identifiers, affected nodes, rule violations, supporting evidence, and root-cause explanations. The CI/CD engine automatically halts execution, preventing deployment of the flawed artifact to the target environment.
 
 ---
 
@@ -284,10 +283,10 @@ A critical requirement for CI/CD adoption is low verification latency. We measur
 
 | Processing Stage | Mean Latency (ms) | P95 Latency (ms) | Max Latency (ms) |
 |---|---|---|---|
-| Model Setup Data Extraction (MSD) | 120 ms | 185 ms | 240 ms |
-| Candidate Graph Construction (CSM) | 45 ms | 62 ms | 88 ms |
-| Static Rule Auditing (VAE) | 210 ms | 315 ms | 420 ms |
-| Report Generation & Pipeline Return | 15 ms | 22 ms | 35 ms |
+| Model Data Generation | 120 ms | 185 ms | 240 ms |
+| Graph Modeling | 45 ms | 62 ms | 88 ms |
+| Analysis | 210 ms | 315 ms | 420 ms |
+| Reporting | 15 ms | 22 ms | 35 ms |
 | **Total Audit Latency** | **390 ms** | **584 ms** | **783 ms** |
 
 *Result:* SaaG completes full architectural verification in **under 800 ms** at P95, adding negligible overhead to standard multi-minute build pipelines.
@@ -310,14 +309,14 @@ Over a 6-month trial period, SaaG evaluated **1,240 candidate builds** in the CI
 *Key Finding:* 38% of detected defects involved CPU core contention or over-subscription on multi-core processor nodes—bugs that are notoriously difficult to reproduce in single-node test environments but cause immediate latency spikes in production.
 
 #### 3. Impact on Production Reliability
-Following the introduction of SaaG automated gating, post-deployment middleware-related incidents in the target staging/production environment dropped by **74%**, while the average time required to diagnose architectural configuration errors was reduced from hours to seconds due to SaaG's root-cause evidence reports ([Req 6.44–6.45](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L292-L304)).
+Following the introduction of SaaG automated gating, post-deployment middleware-related incidents in the target staging/production environment dropped by **74%**, while the average time required to diagnose architectural configuration errors was reduced from hours to seconds due to SaaG's root-cause evidence reports.
 
 ---
 
 ## 6. Related Work
 
 ### Architectural Description Languages (ADLs) & Model-Driven Engineering
-Formal ADLs such as AADL (Architecture Analysis & Design Language) and SysML allow developers to model hardware/software interactions. However, traditional ADLs require manual model creation and maintenance, which rapidly diverges from implementation code. SaaG automates model setup data extraction directly from CMDBs, source repositories, and network manifests ([SSS.md Section 1](file:///home/onuralpyigit/Workspace/system-as-a-graph/docs/requirements/SSS.md#L21-L67)), creating a zero-maintenance digital twin.
+Formal ADLs such as AADL (Architecture Analysis & Design Language) and SysML allow developers to model hardware/software interactions. However, traditional ADLs require manual model creation and maintenance, which rapidly diverges from implementation code. SaaG automates model setup data extraction directly from CMDBs, source repositories, and network manifests, creating a zero-maintenance digital twin.
 
 ### Static Code Analysis Tools
 Tools like SonarQube, Coverity, or Checkstyle analyze source code syntax and local control-flow graphs for memory leaks or security vulnerabilities. However, they lack awareness of system-level topology, multi-core CPU bindings, middleware DDS topic QoS policies, and network node configurations. SaaG operates at the architectural system boundary, complementing static code analyzers.
