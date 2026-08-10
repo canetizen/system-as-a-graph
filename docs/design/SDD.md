@@ -13,6 +13,7 @@
 3. **Concurrency-safe shared model access**: Multiple user sessions, and multiple concurrent production-pipeline/analysis/simulation operations, read and write the same Core System Model without compromising model integrity or result consistency (SRS §5.1 CSM-01.29–30).
 4. **Non-destructive experimentation**: Structural "what-if" changes (adding/removing nodes or relationships, altering attributes) are performed only on a working model derived from the Core System Model, never on the Core System Model itself (SRS §6.1 VAE-01.17).
 5. **Common validation-and-error-recording pattern**: Every data-acquisition path in the CSCI (configuration data, source repository files, field records, synthetic data, Model Setup Data) performs format/integrity/mandatory-field checks and records failures with a consistent set of attributes (source, reason, time), rather than each CSC inventing its own error model (SRS §1.1 MSD.16, 20, 22; §3.1 FRD.5; §4.1 ADP.5–6).
+6. **Dynamic component composition**: Each CSU is an independently built and independently installable software component. The CSCI runs as a single component-framework process into which the installed CSUs are loaded at startup, and a CSU reaches its peers only by looking up a published service specification in the framework's registry — never by importing another CSU. Consequently no CSU depends on another CSU, the set of installed CSUs is a deployment decision rather than a build-time one, and the CSCI is operable with any subset of them installed, which is what makes SDP §2's incremental delivery a supported configuration rather than a temporary state. The CSCI's external REST surface is provided by the framework host, which assembles it from the endpoints the installed CSUs publish (§2.3.1).
 
 ---
 
@@ -78,13 +79,17 @@ SaaG has 12 interfaces: 7 external interfaces connecting the CSCI to systems out
 
 **Table 2. Internal Interfaces**
 
-| ID | Interface | Direction | SRS Reference |
-|---|---|---|---|
-| INT-IF-01 | Model Setup Data Handoff | MSD → CSM-01 | MSD.23 / CSM-01.2 |
-| INT-IF-02 | Synthetic Data Handoff | SCG → ADP | SCG.7 / ADP.3 |
-| INT-IF-03 | Field Records Handoff | FRD → ADP | FRD.4 / ADP.2 |
-| INT-IF-04 | Analytical Evaluation Data Handoff | ADP → CSM-02 | ADP.4 / CSM-02.2 |
-| INT-IF-05 | Core System Model Access (read-only) | CSM → VAE | CSM-01.27–28 / VAE-02.3, VAE-03.10 |
+Every internal interface is realized as a service specification published in the component framework's registry, under the name in the *Specification* column; §2.3.1 states the mechanism.
+
+| ID | Interface | Direction | SRS Reference | Specification |
+|---|---|---|---|---|
+| INT-IF-01 | Model Setup Data Handoff | MSD → CSM-01 | MSD.23 / CSM-01.2 | `saag.int-if-01.model-setup-data-provisioning` |
+| INT-IF-02 | Synthetic Data Handoff | SCG → ADP | SCG.7 / ADP.3 | `saag.int-if-02.synthetic-data-handoff` |
+| INT-IF-03 | Field Records Handoff | FRD → ADP | FRD.4 / ADP.2 | `saag.int-if-03.field-records-handoff` |
+| INT-IF-04 | Analytical Evaluation Data Handoff | ADP → CSM-02 | ADP.4 / CSM-02.2 | `saag.int-if-04.analytical-data-handoff` |
+| INT-IF-05 | Core System Model Access (read-only) | CSM → VAE | CSM-01.27–28 / VAE-02.3, VAE-03.10 | `saag.int-if-05.core-system-model-access` |
+
+INT-IF-01 has two consumers rather than one: CSM-01 selects and ingests the produced Model Setup Data files, and VAE-01 drives production and reports on its outcome (§2.2 step 6). Both consume the same specification, so one provided interface serves both without VAE-01 gaining an interface of its own.
 
 **Figure 2. External and Internal Interface Topology**
 
@@ -123,7 +128,25 @@ flowchart LR
     CSM02 -->|"INT-IF-05"| VAE01
 ```
 
-Every data-acquisition interface reports its own deficiency/access/format/integrity errors back through itself, consistent with the CSCI-wide validation pattern (§1, decision 5). The communication method and protocol for every interface listed above, and the choice between automatic and manual acquisition for EXT-IF-04, are to be determined during the critical design phase (tracked in CDR §1.4).
+Every data-acquisition interface reports its own deficiency/access/format/integrity errors back through itself, consistent with the CSCI-wide validation pattern (§1, decision 5). The communication method and protocol for each **external** interface, and the choice between automatic and manual acquisition for EXT-IF-04, are to be determined during the critical design phase (tracked in CDR §1.4). The internal interfaces are settled in §2.3.1.
+
+#### 2.3.1 Internal Interface Realization
+
+Per §1 decision 6, the CSCI is one component-framework process holding the installed CSUs. An internal interface is therefore a **registry-mediated service call within that process**:
+
+1. The providing CSU registers an object under the interface's specification name, carrying the service property `saag.contract.version`.
+2. The consuming CSU declares a requirement on that name and is injected with whatever object is registered under it.
+3. Neither side names the other. A consumer is not built, packaged, or configured against a particular provider — only against the specification, which is owned by neither and versioned independently of both.
+
+Three consequences are design commitments rather than side effects:
+
+- **Late and repeatable binding.** A consumer becomes operable when its provider appears and inoperable when the provider goes away, at runtime. A CSU whose provider is absent either reports the interface as unavailable or stands down, but never fails at startup because a peer is missing — this is what lets a partially installed CSCI run (§1 decision 6).
+- **Contract versioning without renaming.** A provider advertises which contract version it implements; a consumer may accept any version or restrict itself to one. An interface can therefore evolve through a period where both versions are registered, rather than through a coordinated release of both CSUs.
+- **The single-process assumption is not baked into the consumers.** Should a CSU ever have to run in its own process, the same specification can be exported to a remote registry and imported by the consumer unchanged: the lookup, the injection, and the call site are identical. Only the framework host's configuration changes. No such need exists in this design and none is planned (CDR §1.4).
+
+The specification names in Table 2 are the registry's vocabulary, so they, the interface IDs, and the SRS requirements they realize stay one-to-one. Alongside them the framework host publishes two specifications of its own, which are not CSCI interfaces but the mechanism by which a CSU reaches the process-wide surfaces it must not own: `saag.platform.api-router-provider`, through which a CSU contributes its endpoints to the CSCI's single external REST surface, and `saag.platform.task-provider` with `saag.platform.job-queue`, through which a CSU contributes and defers long-running operations.
+
+**Realization status.** INT-IF-01's call interface is defined, because both of its consumers are known. INT-IF-02 to INT-IF-05 have their specification names reserved and their mechanism fixed by this section, but their call interfaces are defined in the increment that builds each provider (SDP §2, Increments 4 to 6): their payloads depend on decisions the design has deliberately deferred — the Analytical Evaluation Data format (CDR-12) and what the system-wide simulation processes consume (CDR-11) — and defining them earlier would fix those decisions by accident.
 
 ### 2.4 Database Design
 
