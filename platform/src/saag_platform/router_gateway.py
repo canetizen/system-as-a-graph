@@ -32,11 +32,14 @@ class RouterGateway:
     registry, which is not the thread serving requests, so every mutation of the
     application's route table is serialised here.
 
-    Uses two pieces of FastAPI's internals — the objects ``include_router``
-    appends, and the private call that invalidates its route caches. Both are
-    confined to ``_mount`` and ``_unmount`` so a FastAPI upgrade breaks two
-    methods rather than the design, and the framework-composition test exercises
-    removal specifically so such a break fails loudly.
+    Unmounting has no public API: FastAPI offers no counterpart to
+    ``include_router``, so the gateway remembers the entries that call appended
+    and removes exactly those. Nothing else is reached into — the generated
+    schema follows the route table on its own, because FastAPI regenerates it
+    whenever the table's version changes and removing an entry changes it. That
+    assumption is what the framework-composition test pins down, asserting both
+    the withdrawn route and the withdrawn schema path, so a FastAPI upgrade that
+    breaks either fails loudly instead of leaving a dead route documented.
     """
 
     def __init__(self, app: FastAPI) -> None:
@@ -104,7 +107,6 @@ class RouterGateway:
             before = len(self._app.router.routes)
             self._app.include_router(router)
             self._mounted[service_id] = self._app.router.routes[before:]
-            self._invalidate_schema()
             _LOGGER.info("Mounted router %r from service %s", router.prefix, service_id)
 
     def _unmount_by_id(self, service_id: int) -> None:
@@ -115,14 +117,4 @@ class RouterGateway:
             for route in mounted:
                 if route in self._app.router.routes:
                     self._app.router.routes.remove(route)
-            # include_router() bumps the route table's version itself; removing
-            # entries by hand does not, and stale caches would keep serving a
-            # route whose CSU is gone.
-            self._app.router._mark_routes_changed()
-            self._invalidate_schema()
             _LOGGER.info("Unmounted router from service %s", service_id)
-
-    def _invalidate_schema(self) -> None:
-        # The schema is generated once and cached; dropping it makes the next
-        # request regenerate it against the routes actually mounted now.
-        self._app.openapi_schema = None

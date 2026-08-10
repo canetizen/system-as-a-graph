@@ -26,6 +26,87 @@ jobs:
       - name: Test (pytest)
         run: uv run pytest
 
+      # A CSU may import its own package and the shared contracts, nothing else.
+      # The isolation job below catches this too, but only for code some test
+      # reaches; this catches it everywhere.
+      - name: No cross-CSU imports
+        run: |
+          packages=$(find . -type d -name 'saag_*' -not -name '*.egg-info' -path '*/src/*' \
+                     -exec basename {} \; | sort -u)
+          violations=0
+          for dir in $(find . -type d -name 'saag_*' -not -name '*.egg-info' -path '*/src/*'); do
+            own=$(basename "$dir")
+            for package in $packages; do
+              case "$package" in "$own"|saag_contracts) continue ;; esac
+              if grep -rn --include='*.py' "\b$package\b" "$dir"; then
+                echo "::error::$own imports $package"
+                violations=1
+              fi
+            done
+          done
+          exit $violations
+
+  isolation:
+    name: Isolation (${{ matrix.member }})
+    runs-on: ubuntu-latest
+    # Installs one CSU and the shared contracts, then runs that CSU's own tests.
+    # This is what mechanically enforces that no CSU depends on another: a stray
+    # import fails here as a missing module rather than surviving until the CSUs
+    # are split into separate repositories.
+    strategy:
+      fail-fast: false
+      matrix:
+        member:
+          - contracts
+          - platform
+          - msd
+          - scg
+          - frd
+          - adp
+          - csm/model_manager
+          - csm/data_binder
+          - vae/operations_panel
+          - vae/design_verifier
+          - vae/design_analyzer
+          - vae/design_evaluator
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Install only this member
+        run: |
+          uv venv --python 3.11
+          uv pip install -e ./contracts -e "./${{ matrix.member }}[dev]"
+
+      # The install above should be able to satisfy itself from the shared
+      # contracts alone. A third saag- distribution means this member declares a
+      # dependency on a sibling CSU.
+      - name: Verify no sibling member came along
+        run: |
+          uv pip list --format json > installed.json
+          python - <<'PY'
+          import json, pathlib
+
+          installed = sorted(
+              package["name"]
+              for package in json.loads(pathlib.Path("installed.json").read_text())
+              if package["name"].startswith("saag-")
+          )
+          print("installed:", installed)
+          assert "saag-contracts" in installed, installed
+          assert len(installed) <= 2, f"a sibling member was pulled in: {installed}"
+          PY
+
+      # Run from the member's own directory so its own pytest configuration is
+      # what applies: working standalone is the property that lets it move to its
+      # own repository.
+      - name: Test this member standalone
+        working-directory: ${{ matrix.member }}
+        run: $GITHUB_WORKSPACE/.venv/bin/python -m pytest
+
   web:
     name: Web (lint + build + test)
     runs-on: ubuntu-latest

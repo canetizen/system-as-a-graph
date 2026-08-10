@@ -1,0 +1,156 @@
+"""
+Description: Tests that the CSCI composes itself from the installed CSUs and follows them at runtime.
+Created by: Mustafa Can Caliskan
+Date: 2026-08-10
+"""
+
+from __future__ import annotations
+
+from collections.abc import Iterator
+
+import pytest
+from fastapi.testclient import TestClient
+from pelix.constants import OBJECTCLASS
+from pelix.framework import Bundle, BundleContext
+
+from saag_contracts.specs.api import API_ROUTER_PROVIDER, ApiRouterProvider
+from saag_platform.app import app
+from saag_platform.discovery import (
+    BUNDLES_ENV_VAR,
+    BUNDLES_EXCLUDE_ENV_VAR,
+    CORE_BUNDLE,
+    discover_bundles,
+)
+
+# Cross-CSU by nature: these assert what the CSCI becomes once its CSUs are
+# installed, which is why they live here rather than with the platform, whose own
+# tests must pass with no CSU installed at all.
+#
+# The framework factory holds one framework per process, so these tests must run
+# one at a time and each must leave the factory empty. Entering the application's
+# lifespan starts a framework and leaving it stops and deletes one, which is why
+# every test below owns its client rather than sharing a session-wide one.
+
+
+@pytest.fixture
+def client() -> Iterator[TestClient]:
+    """Serve the application with its framework started, then shut both down."""
+    with TestClient(app) as running:
+        yield running
+
+
+def _context() -> BundleContext:
+    return app.state.framework.get_bundle_context()
+
+
+def _router_providers() -> list:
+    return list(_context().get_all_service_references(ApiRouterProvider, None) or [])
+
+
+def test_every_declared_bundle_is_installed_and_active(client: TestClient) -> None:
+    """A CSU that fails to install or start is skipped rather than fatal, so the
+    composition has to be asserted instead of inferred from the process being up."""
+    reported = {entry["name"]: entry["state"] for entry in client.get("/platform/bundles").json()["bundles"]}
+
+    for module in discover_bundles():
+        assert reported.get(module) == "active", f"{module} is {reported.get(module)}"
+
+
+def test_the_platform_names_no_csu(client: TestClient) -> None:
+    """Discovery is by installed metadata; if the platform ever hardcoded a CSU
+    this would still pass by luck, so it asserts the converse: everything running
+    was discovered, and nothing discovered is missing."""
+    running = {
+        bundle.get_symbolic_name()
+        for bundle in _context().get_bundles()
+        if bundle.get_symbolic_name().startswith("saag_")
+    }
+
+    assert running == {module for module in discover_bundles() if module != CORE_BUNDLE}
+
+
+def test_each_csu_publishes_exactly_one_router(client: TestClient) -> None:
+    """Two routers from one CSU would mean two mount points for one component
+    lifetime, which the gateway's bookkeeping is not built for."""
+    providers = _router_providers()
+    owners = [reference.get_bundle().get_symbolic_name() for reference in providers]
+
+    assert len(owners) == len(set(owners))
+    for reference in providers:
+        assert API_ROUTER_PROVIDER in reference.get_property(OBJECTCLASS)
+
+
+def test_every_registered_router_is_reachable_and_documented(client: TestClient) -> None:
+    """The REST surface is assembled from the registry, so the registry and the
+    served surface must agree — asserted without naming a single CSU."""
+    documented = client.get("/openapi.json").json()["paths"]
+
+    for reference in _router_providers():
+        prefix = _context().get_service(reference).router().prefix
+        assert client.get(f"{prefix}/health").status_code == 200
+        assert any(path.startswith(prefix) for path in documented), prefix
+
+
+def test_stopping_one_csu_withdraws_only_its_endpoints(client: TestClient) -> None:
+    """The justification for the whole arrangement: a CSU can go away and come
+    back at runtime without the rest of the CSCI noticing.
+
+    Also the regression guard for the two pieces of FastAPI internals the gateway
+    uses — if an upgrade breaks route removal, this fails rather than the surface
+    silently keeping a dead route.
+    """
+    providers = _router_providers()
+    assert len(providers) >= 2, "needs two installed CSUs to tell isolation from luck"
+
+    target, other = providers[0], providers[1]
+    target_prefix = _context().get_service(target).router().prefix
+    other_prefix = _context().get_service(other).router().prefix
+    bundle: Bundle = target.get_bundle()
+
+    bundle.stop()
+
+    assert client.get(f"{target_prefix}/health").status_code == 404
+    assert client.get(f"{other_prefix}/health").status_code == 200
+    assert not any(
+        path.startswith(target_prefix) for path in client.get("/openapi.json").json()["paths"]
+    )
+
+    bundle.start()
+
+    assert client.get(f"{target_prefix}/health").status_code == 200
+    assert any(
+        path.startswith(target_prefix) for path in client.get("/openapi.json").json()["paths"]
+    )
+
+
+def test_the_csci_serves_with_a_single_csu_installed(monkeypatch: pytest.MonkeyPatch) -> None:
+    """SDP §2 delivers the CSUs one increment at a time, so a reduced composition
+    is a supported configuration and not a broken installation."""
+    monkeypatch.setenv(BUNDLES_ENV_VAR, "saag_scg.bundle")
+
+    with TestClient(app) as reduced:
+        installed = [
+            entry["name"]
+            for entry in reduced.get("/platform/bundles").json()["bundles"]
+            if entry["name"].startswith("saag_")
+        ]
+
+        assert installed == ["saag_scg.bundle"]
+        assert reduced.get("/health").status_code == 200
+        assert reduced.get("/scg/health").status_code == 200
+        assert reduced.get("/msd/health").status_code == 404
+        assert reduced.get("/openapi.json").status_code == 200
+
+
+def test_discovery_honours_the_exclusion_list(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Leaving a CSU out is a deployment decision, expressed by entry-point name
+    rather than module path so it reads as the CSU identifier the documents use."""
+    monkeypatch.delenv(BUNDLES_ENV_VAR, raising=False)
+    monkeypatch.setenv(BUNDLES_EXCLUDE_ENV_VAR, "vae-02,vae-03,vae-04")
+
+    remaining = discover_bundles()
+
+    assert "saag_vae_design_verifier.bundle" not in remaining
+    assert "saag_vae_design_analyzer.bundle" not in remaining
+    assert "saag_vae_design_evaluator.bundle" not in remaining
+    assert "saag_msd.bundle" in remaining
