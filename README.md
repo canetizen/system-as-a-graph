@@ -115,7 +115,17 @@ LICENSE
 
 ## Getting started
 
-The API runs on http://localhost:8000 and the web app on http://localhost:3000, whether run locally or via Docker.
+This is the only repository you clone. It declares which CSU distributions make up
+the deployment, and the resolver fetches them from theirs:
+
+```bash
+git clone https://github.com/canetizen/system-as-a-graph.git
+cd system-as-a-graph
+```
+
+The API then runs on http://localhost:8000. The web application runs on
+http://localhost:3000 in the production stack and on http://localhost:3001 in the
+development stack, which leaves 3000 free for a locally run one.
 
 ### The CSCI (Python 3.11+)
 
@@ -152,9 +162,6 @@ The seeding step takes the unit trees it serves from `saag-msd`'s published test
 data rather than from this repository, since that is where they live; `up
 gitea-seed` brings up the step that extracts them.
 
-```bash
-```
-
 To run a reduced CSCI — the state every SDP increment before the last is in — name
 the bundles to install or the CSUs to leave out:
 
@@ -185,8 +192,9 @@ The dev stack below brings it up alongside the CSCI.
 Run the CSCI, the worker and the web application in containers, without installing
 Python or Node locally.
 
-**Development** — hot reload, the stand-in external systems, and the tests
-bind-mounted in:
+**Development** — the stand-in external systems, the tests bind-mounted in, and
+hot reload for the CSCI. The web application is built from its own repository, so
+it does not reload from here; develop it there against this stack's API:
 
 ```bash
 docker compose -f compose.dev.yml up --build
