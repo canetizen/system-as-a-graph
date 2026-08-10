@@ -8,6 +8,8 @@ version = "0.1.0"
 description = "SaaG-VAE: Design Verifier (CSU VAE-02)"
 requires-python = ">=3.11"
 dependencies = [
+    "saag-contracts",
+    "iPOPO>=3.2,<4",
     "fastapi",
 ]
 
@@ -18,8 +20,14 @@ dev = [
     "ruff",
 ]
 
+[project.entry-points."saag.bundles"]
+vae-02 = "saag_vae_design_verifier.bundle"
+
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.uv.sources]
+saag-contracts = { workspace = true }
