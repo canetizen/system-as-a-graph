@@ -20,6 +20,10 @@ services:
       # screen or a seed file mounted alongside.
       MSD_SOURCE_SEED_FILE: ${MSD_SOURCE_SEED_FILE:-}
       MSD_RULES_FILE: ${MSD_RULES_FILE:-}
+      # Without this the CSCI answers no browser, so the web application below
+      # cannot call it. Named by the deployment because it is the origin the
+      # panel is actually served from.
+      WEB_ORIGINS: ${WEB_ORIGINS:?name the origin the web application is served from}
       VAE_JWT_SECRET: ${VAE_JWT_SECRET:?set a signing secret in .env}
       VAE_SESSION_MINUTES: ${VAE_SESSION_MINUTES:-480}
       VAE_SOURCE_STREAM_SECONDS: ${VAE_SOURCE_STREAM_SECONDS:-15}

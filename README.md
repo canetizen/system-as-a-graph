@@ -31,7 +31,7 @@ Per the SRS, SaaG is organized into six Computer Software Components (CSCs) and 
 
 Implementation has begun. The CSCI is assembled from fourteen repositories — one per CSU, one for the shared contracts, one for the framework host, one for the web application, and this one. All ten CSUs are installed and served as components.
 
-**MSD** and **VAE-01** are implemented, which is SDP Increment 1: an operator authenticates against a directory service, selects a project, platform and system version, reaches the four external data sources, and produces a Model Setup Data file through a background worker. `tests/acceptance/` runs that scenario end to end against the stand-in external systems. The remaining eight CSUs publish only a health endpoint so far.
+**MSD** and **VAE-01** are implemented, which is SDP Increment 1: an operator authenticates against a directory service, selects a project, platform and system version, reaches the four external data sources, and produces a Model Setup Data file through a background worker. The operator's web application is wired to the same surface, so that scenario is also performed through screens rather than only through the API. `tests/acceptance/` runs it end to end against the stand-in external systems, and the web application's own end-to-end tests run it through a browser. The remaining eight CSUs publish only a health endpoint so far.
 
 ## Documentation
 
@@ -123,9 +123,8 @@ git clone https://github.com/canetizen/system-as-a-graph.git
 cd system-as-a-graph
 ```
 
-The API then runs on http://localhost:8000. The web application runs on
-http://localhost:3000 in the production stack and on http://localhost:3001 in the
-development stack, which leaves 3000 free for a locally run one.
+The API then runs on http://localhost:8000 and the web application on
+http://localhost:3000, in either stack.
 
 ### The CSCI (Python 3.11+)
 
@@ -136,6 +135,13 @@ nothing but git and network access:
 uv sync
 uv run uvicorn saag_platform.app:app --reload
 ```
+
+Every endpoint but the liveness probes needs an authenticated session, so a
+deployment needs the directory settings and a signing secret before it serves
+anything — `.env` carries values for the stand-in directory, and `docker compose`
+reads them. Running the API on its own for the web application to call also needs
+`WEB_ORIGINS` to name where that application is served from; without it the CSCI
+answers no browser at all.
 
 That installs the twelve distributions this repository declares and starts the
 framework host, which discovers whichever of them are present. Run the tests and

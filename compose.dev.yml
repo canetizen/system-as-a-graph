@@ -18,6 +18,7 @@ services:
       MSD_OUTPUT_DIR: /var/lib/saag/msd
       MSD_WORKSPACE_DIR: /var/lib/saag/workspace
       MSD_SOURCE_SEED_FILE: /app/tests/standins/sources.json
+      WEB_ORIGINS: ${WEB_ORIGINS:-http://localhost:3000}
       VAE_JWT_SECRET: ${VAE_JWT_SECRET:-development-only-secret-replace-via-dotenv}
       VAE_SOURCE_STREAM_SECONDS: ${VAE_SOURCE_STREAM_SECONDS:-15}
       LDAP_URL: ldap://openldap:389
@@ -225,7 +226,7 @@ services:
     image: saag-web:dev
     container_name: saag-web-dev
     ports:
-      - "3001:3000"
+      - "3000:3000"
 
 volumes:
   standin-units:

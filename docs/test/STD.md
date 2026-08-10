@@ -37,6 +37,20 @@ Procedure:
 
 Expected Result: the CSCI composes itself from whatever CSUs are installed, the internal interfaces bind through the registry, and a CSU appearing or going away at runtime affects only itself and its consumers. A reduced or partially broken composition runs and reports itself as such, which is what makes the partially delivered CSCI of SDP §2 a supported configuration.
 
+**TC-PLT-02: Edge Authentication of the Whole Surface**
+Traces to: SRS VAE-01.3 *(the realization is the framework host's; the requirement it satisfies is VAE-01's)*
+
+Procedure:
+1. Start the CSCI with every CSU distribution installed and no credential presented. For every endpoint the generated API schema declares, verify the CSCI refuses the request — except the liveness probes and the one path the panel declares as its login path.
+2. Authenticate with valid directory credentials and verify the same endpoints answer.
+3. Verify an endpoint whose operation needs an authorization the operator does not hold is refused as unauthorized rather than unauthenticated, so the two are distinguishable to the operator and to the log.
+4. Present an expired session and a credential the CSCI did not issue, and verify both are refused without the answer revealing which of the two it was.
+5. Verify the accessibility stream is reachable with the credential carried as a query parameter, since a browser's event source cannot send a header.
+6. Start the CSCI without the CSU that provides the authenticator and verify every endpoint but the liveness probes is refused, and that the CSCI still starts and reports its composition as reduced.
+7. From a browser origin the deployment has not named, verify the CSCI does not permit the call; from the named origin, verify the preflight is answered without a credential.
+
+Expected Result: no endpoint on the CSCI's single external surface is reachable without an authenticated session, whichever CSU contributed it and whether or not that CSU knows authentication exists. The decision is made once at the edge, the authorization check stays with the operation, and a CSCI that cannot authenticate anyone serves nothing rather than everything.
+
 ---
 
 ## 1. MSD — Model Setup Data Generation (SaaG-MSD)
@@ -491,6 +505,7 @@ Expected Result: Concurrent multi-unit evaluation produces correctly-isolated pe
 | Test Case | Design Element | SRS Req ID Range |
 |---|---|---|
 | TC-PLT-01 | SDD §2.5 Component Packaging and Composition | — *(realization mechanism)* |
+| TC-PLT-02 | SDD §2.3.1 Edge authentication *(realizes §3.6.1.2 for the whole surface)* | VAE-01.3 |
 | TC-MSD-01 | Data Source Connector & Configuration Manager | MSD.2–8 |
 | TC-MSD-02 | Configuration Data Acquisition | MSD.9–13, 16 |
 | TC-MSD-03 | Software Unit Version Inventory Manager | MSD.14–15 |
@@ -532,4 +547,4 @@ Expected Result: Concurrent multi-unit evaluation produces correctly-isolated pe
 | TC-VAE04-02 | Blocking Decision Engine | VAE-04.7 |
 | TC-VAE04-03 | Concurrent Evaluation Orchestrator | VAE-04.8 |
 
-**Coverage check:** all 40 SDD §3 design elements have exactly one test case above, and all 156 SRS requirements are covered through their owning design element, consistent with SDD §4. TC-PLT-01 is the one case that traces to no design element and no SRS requirement: it verifies the composition mechanism of SDD §2.5, which realizes the design rather than adding to it. Test cases TC-ADP-03, TC-CSM01-04, TC-VAE01-06, TC-VAE02-02, TC-VAE02-04, TC-VAE02-05, TC-VAE02-06, and TC-VAE04-01 carry acceptance criteria pending CDR-01 through CDR-08, CDR-12, CDR-14, and CDR-16 resolution (see the CDR).
+**Coverage check:** all 40 SDD §3 design elements have exactly one test case above, and all 156 SRS requirements are covered through their owning design element, consistent with SDD §4. Two cases trace to no design element, because both verify a realization mechanism rather than an addition to the design: TC-PLT-01 covers the composition mechanism of SDD §2.5 and traces to no SRS requirement either, and TC-PLT-02 covers the framework host enforcing §3.6.1.2's authentication decision across the whole external surface, which is where VAE-01.3's "access to the system" is actually decided. TC-VAE01-01 remains the case for the design element itself — that the directory service admits the right operators — and TC-PLT-02 is the case for no unauthenticated request reaching any CSU. Test cases TC-ADP-03, TC-CSM01-04, TC-VAE01-06, TC-VAE02-02, TC-VAE02-04, TC-VAE02-05, TC-VAE02-06, and TC-VAE04-01 carry acceptance criteria pending CDR-01 through CDR-08, CDR-12, CDR-14, and CDR-16 resolution (see the CDR).
