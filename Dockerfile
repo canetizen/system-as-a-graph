@@ -2,8 +2,9 @@ FROM python:3.11-slim AS base
 
 COPY --from=ghcr.io/astral-sh/uv:0.12.3 /uv /uvx /bin/
 
-# MSD's source repository adapter drives the real git client, so the image
-# carries it. Everything else the CSUs need is a Python package.
+# git is needed twice over: MSD's source repository adapter drives the real client,
+# and the CSU distributions are themselves resolved from repositories until there
+# is an index to publish them to (CDR-31).
 RUN apt-get update \
     && apt-get install --no-install-recommends -y git \
     && rm -rf /var/lib/apt/lists/*
@@ -15,24 +16,20 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     UV_LINK_MODE=copy \
     UV_PROJECT_ENVIRONMENT=/usr/local
 
-# The workspace root plus every member's own distribution metadata and sources.
-# Each member is installed as a separate distribution, so this list is the only
-# place the image knows which CSUs exist.
+# Only this repository is copied. Which CSUs the image contains is decided by the
+# lock file, not by what happens to be on the build host.
 COPY pyproject.toml uv.lock .python-version ./
-COPY contracts ./contracts
-COPY platform_host ./platform_host
-COPY msd ./msd
-COPY scg ./scg
-COPY frd ./frd
-COPY adp ./adp
-COPY csm ./csm
-COPY vae ./vae
 
 FROM base AS dev
 
-# Editable installs so the bind-mounted source in compose.dev.yml is the source
-# of truth: each member's .pth entry points at /app/<member>/src.
-RUN uv sync --frozen --inexact
+# The CSU repositories are private, so resolving them needs a credential. It
+# arrives as a build secret and is exported only for this command: written into a
+# git configuration file it would persist in the layer.
+RUN --mount=type=secret,id=github_token \
+    GIT_CONFIG_COUNT=1 \
+    GIT_CONFIG_KEY_0="url.https://x-access-token:$(cat /run/secrets/github_token)@github.com/.insteadOf" \
+    GIT_CONFIG_VALUE_0="https://github.com/" \
+    uv sync --frozen --inexact
 
 COPY tests ./tests
 
@@ -40,7 +37,11 @@ CMD ["uvicorn", "saag_platform.app:app", "--host", "0.0.0.0", "--port", "8000", 
 
 FROM base AS prod
 
-RUN uv sync --frozen --inexact --no-dev --no-editable
+RUN --mount=type=secret,id=github_token \
+    GIT_CONFIG_COUNT=1 \
+    GIT_CONFIG_KEY_0="url.https://x-access-token:$(cat /run/secrets/github_token)@github.com/.insteadOf" \
+    GIT_CONFIG_VALUE_0="https://github.com/" \
+    uv sync --frozen --inexact --no-dev --no-editable
 
 RUN useradd --create-home appuser
 USER appuser

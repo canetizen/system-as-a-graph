@@ -69,7 +69,7 @@ Opened by the decision that resolved CDR-24 to CDR-28: making each CSU a separat
 
 | ID | Item | Source | Status |
 |---|---|---|---|
-| CDR-31 | Distribution index and per-CSU release process — where the CSU distributions are published and how their versions are selected once each CSU lives in its own repository. The distributions themselves are ready: each builds, lints and tests standalone against a published `saag-contracts` wheel with no file edited (SDP §4 Table 4a) | SDD §2.5 | Open |
+| CDR-31 | Distribution index and per-CSU release process — where the CSU distributions are published and how their versions are selected. Each CSU now lives in its own repository and builds, lints and tests there against the published contracts (SDP §4 Table 4a); until an index exists the integration repository resolves each from its repository and pins the exact commit | SDD §2.5 | Open |
 | CDR-32 | Transport for a CSU that must run outside the framework process, should one ever need to. Not required by the current design, which is single-process; recorded because SDD §2.3.1 deliberately keeps the option open | SDD §2.3.1 | Deferred — no such requirement exists; to be reopened only if one appears |
 
 ---
@@ -81,4 +81,4 @@ Opened by the decision that resolved CDR-24 to CDR-28: making each CSU a separat
 - **CDR-17–23** block finalizing SDD §2.3 for the 7 external interfaces and any future integration testing across them. They are unaffected by the resolution of CDR-24–28: each is a protocol choice against a system outside the CSCI boundary, which the CSCI's internal composition does not touch.
 - **CDR-24–28** are **Resolved** (SDD §2.3.1). The internal interfaces no longer block SDD §2.3, and STD TC-PLT-01 verifies the mechanism. What remains open for four of the five is the *content* they carry, not the method: their call interfaces are defined alongside their providers, gated on CDR-11 and CDR-12.
 - **CDR-29–30** block finalizing SDD §2.4's physical schema and any future performance/capacity testing.
-- **CDR-31** is the only thing left blocking the move of each CSU to its own repository: the distributions are already independently buildable and testable, but there is nowhere to publish them and no rule for choosing the versions the consumers would then depend on. Until it is closed they are built from one repository, which the design supports but does not intend as the end state.
+- **CDR-31** no longer blocks the split, which has happened: what it leaves open is versioning. With no index there is nowhere to publish a release, so a deployment pins a commit rather than a version, and a consumer cannot express which contract version it needs beyond the bound in its own file. Every distribution is buildable and testable on its own already.

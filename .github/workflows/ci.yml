@@ -5,219 +5,39 @@ on:
     branches: [main]
   pull_request:
 
+# The CSU distributions live in their own private repositories, so every job that
+# resolves them needs a credential that may read those repositories. Each CSU's own
+# lint, test and build run in its own repository's workflow; what runs here is only
+# what needs the CSUs assembled.
+env:
+  UV_GIT_LFS: "0"
+
 jobs:
-  api:
-    name: API (lint + test)
+  csci:
+    name: CSCI (lint + composition tests)
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:16-alpine
-        env:
-          POSTGRES_USER: saag
-          POSTGRES_PASSWORD: saag
-          POSTGRES_DB: saag
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U saag -d saag"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 10
-      # Stand-in configuration management database, so the SQL adapter is
-      # exercised against a real server rather than only a double.
-      cmdb:
-        image: mysql:8
-        env:
-          MYSQL_ROOT_PASSWORD: saag-root
-          MYSQL_DATABASE: cmdb
-          MYSQL_USER: saag
-          MYSQL_PASSWORD: saag
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd "mysqladmin ping -h 127.0.0.1 -u saag -psaag"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 20
-    env:
-      DATABASE_URL: postgresql+psycopg://saag:saag@localhost:5432/saag
-      STANDIN_CMDB_URL: mysql+pymysql://saag:saag@127.0.0.1:3306/cmdb
     steps:
       - uses: actions/checkout@v4
-
-      # Service containers cannot mount the init scripts, so the stand-in
-      # database is loaded here instead.
-      - name: Seed the stand-in configuration management database
-        run: |
-          mysql -h 127.0.0.1 -u saag -psaag cmdb < tests/standins/cmdb/01-schema.sql
-          mysql -h 127.0.0.1 -u saag -psaag cmdb < tests/standins/cmdb/02-seed.sql
 
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
-          cache-dependency-glob: "**/uv.lock"
+          cache-dependency-glob: uv.lock
 
-      - name: Install workspace
+      - name: Allow the CSU repositories to be read
+        run: |
+          git config --global url."https://x-access-token:${{ secrets.CSU_READ_TOKEN }}@github.com/".insteadOf "https://github.com/"
+
+      - name: Assemble the CSCI
         run: uv sync --frozen
 
-      - name: Lint (ruff)
+      - name: Lint
         run: uv run ruff check .
 
-      - name: Test (pytest)
+      # Asserts the deployed composition is the one this repository declares, and
+      # that the CSCI it composes serves what its CSUs publish.
+      - name: Test
         run: uv run pytest
-
-      # A CSU may import its own package and the shared contracts, nothing else.
-      # The isolation job below catches this too, but only for code some test
-      # reaches; this catches it everywhere.
-      - name: No cross-CSU imports
-        run: |
-          packages=$(find . -type d -name 'saag_*' -not -name '*.egg-info' -path '*/src/*' \
-                     -exec basename {} \; | sort -u)
-          violations=0
-          for dir in $(find . -type d -name 'saag_*' -not -name '*.egg-info' -path '*/src/*'); do
-            own=$(basename "$dir")
-            for package in $packages; do
-              case "$package" in "$own"|saag_contracts) continue ;; esac
-              if grep -rn --include='*.py' "\b$package\b" "$dir"; then
-                echo "::error::$own imports $package"
-                violations=1
-              fi
-            done
-          done
-          exit $violations
-
-  isolation:
-    name: Isolation (${{ matrix.member }})
-    runs-on: ubuntu-latest
-    # Installs one CSU and the shared contracts, then runs that CSU's own tests.
-    # This is what mechanically enforces that no CSU depends on another: a stray
-    # import fails here as a missing module rather than surviving until the CSUs
-    # are split into separate repositories.
-    strategy:
-      fail-fast: false
-      matrix:
-        member:
-          - contracts
-          - platform_host
-          - msd
-          - scg
-          - frd
-          - adp
-          - csm/model_manager
-          - csm/data_binder
-          - vae/operations_panel
-          - vae/design_verifier
-          - vae/design_analyzer
-          - vae/design_evaluator
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: astral-sh/setup-uv@v5
-        with:
-          enable-cache: true
-
-      - name: Install only this member
-        run: |
-          uv venv --python 3.11
-          uv pip install -e ./contracts -e "./${{ matrix.member }}[dev]"
-
-      # A member's own file must state only what is true of it in any repository,
-      # so that moving it to one needs no edit. A workspace source is the usual
-      # way that breaks: it makes the member uninstallable outside this tree.
-      - name: Verify the member does not depend on being in a workspace
-        run: |
-          python - <<'PY'
-          import pathlib, tomllib
-          member = pathlib.Path("${{ matrix.member }}")
-          declared = tomllib.loads((member / "pyproject.toml").read_text())
-          sources = declared.get("tool", {}).get("uv", {}).get("sources", {})
-          assert not sources, f"{member} declares tool.uv.sources: {sources}"
-          project = declared["project"]
-          for field in ("license", "urls"):
-              assert field in project, f"{member} declares no {field}"
-          for requirement in project.get("dependencies", []):
-              if requirement.startswith("saag-"):
-                  assert any(c in requirement for c in "<>=~"), (
-                      f"{member} depends on {requirement!r} with no version bound"
-                  )
-          PY
-
-      # Building the wheel outside the workspace is the actual property: a member
-      # that only installs from this tree is not ready to be its own repository.
-      - name: Build the member outside the workspace
-        run: |
-          cp -r "${{ matrix.member }}" "$RUNNER_TEMP/standalone"
-          rm -rf "$RUNNER_TEMP/standalone"/src/*.egg-info
-          cd "$RUNNER_TEMP/standalone"
-          uv build --wheel -o dist
-
-      # The install above should be able to satisfy itself from the shared
-      # contracts alone. A third saag- distribution means this member declares a
-      # dependency on a sibling CSU.
-      - name: Verify no sibling member came along
-        run: |
-          uv pip list --format json > installed.json
-          python - <<'PY'
-          import json, pathlib
-
-          installed = sorted(
-              package["name"]
-              for package in json.loads(pathlib.Path("installed.json").read_text())
-              if package["name"].startswith("saag-")
-          )
-          print("installed:", installed)
-          assert "saag-contracts" in installed, installed
-          assert len(installed) <= 2, f"a sibling member was pulled in: {installed}"
-          PY
-
-      # Run from the member's own directory so its own pytest configuration is
-      # what applies: working standalone is the property that lets it move to its
-      # own repository.
-      - name: Test this member standalone
-        working-directory: ${{ matrix.member }}
-        run: $GITHUB_WORKSPACE/.venv/bin/python -m pytest
-
-  web:
-    name: Web (lint + build + test)
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: web
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: "npm"
-          cache-dependency-path: web/package-lock.json
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Lint (eslint)
-        run: npm run lint
-
-      - name: Build
-        run: npm run build
-
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
-
-      - name: Test (playwright)
-        run: npm run test:e2e
-
-  docker:
-    name: Docker (compose build)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Build production images
-        run: docker compose build
-
-      - name: Build dev images
-        run: docker compose -f compose.dev.yml build
 
   acceptance:
     name: Acceptance (Increment 1 demo)
@@ -225,6 +45,8 @@ jobs:
     # The demo needs all four external systems and the directory, so it runs
     # against the stand-in stack rather than against service containers: the point
     # is to exercise the assembled CSCI the way an operator meets it.
+    env:
+      GITHUB_TOKEN: ${{ secrets.CSU_READ_TOKEN }}
     steps:
       - uses: actions/checkout@v4
 
@@ -234,8 +56,6 @@ jobs:
       - name: Seed the stand-in git server
         run: docker compose -f compose.dev.yml up gitea-seed
 
-      # The stand-in addresses come from the service's own environment, so this
-      # is the command the README documents, unchanged.
       - name: Run the demo
         run: docker compose -f compose.dev.yml exec -T api python -m pytest tests/acceptance -v
 
@@ -248,3 +68,17 @@ jobs:
       - name: Tear down
         if: always()
         run: docker compose -f compose.dev.yml down -v
+
+  images:
+    name: Images (compose build)
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.CSU_READ_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build production images
+        run: docker compose build
+
+      - name: Build development images
+        run: docker compose -f compose.dev.yml build

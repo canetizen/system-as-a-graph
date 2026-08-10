@@ -86,10 +86,10 @@ Increment 0 establishes the repository scaffolding, shared infrastructure, and d
 
 **Demo:** A clean checkout builds, lints, and brings up the full Docker Compose stack with no application logic, and every planned document has a placeholder under `docs/`.
 
-**Architecture rebaseline (after Increment 0, before Increment 1):** the CSCI was rebaselined onto separately installable components — SDD §1 decision 6, §2.3.1 and §2.5 — which resolved CDR-24 to CDR-28 and opened CDR-31 and CDR-32. The scaffolding delivered here became twelve distributions in a uv workspace (§4 Table 4a), and the aggregating application module was replaced by the framework host. No SRS requirement changed: this is a realization decision, and every requirement still traces to the same SDD §3 design element.
+**Architecture rebaseline (after Increment 0, before Increment 1):** the CSCI was rebaselined onto separately installable components — SDD §1 decision 6, §2.3.1 and §2.5 — which resolved CDR-24 to CDR-28 and opened CDR-31 and CDR-32. The scaffolding delivered here became twelve distributions, since split into a repository each (§4 Table 4a), and the aggregating application module was replaced by the framework host. No SRS requirement changed: this is a realization decision, and every requirement still traces to the same SDD §3 design element.
 
 **Definition of Done:**
-- [x] Repository scaffolded per §4 (per-CSU hexagonal layout, `web/`, `cli/`, `contracts/`, `platform_host/`)
+- [x] Repository scaffolded per §4 (per-CSU hexagonal layout, later split into a repository each)
 - [x] Base Docker Compose stack and CI pipeline stood up
 - [x] `docs/` skeleton populated for every planned document
 - [x] Scaffolding builds, lints, and deploys cleanly
@@ -360,132 +360,114 @@ gantt
 
 ## 4. Project Structure
 
-The implementation shall use a shallow repository structure in which every backend directory is **one separately built distribution**: the ten CSUs, the shared contracts package, and the framework host (SDD §1 decision 6, §2.5). The `web/` and `cli/` directories implement the VAE-01 user-facing applications. Each CSU owns its own hexagonal boundary — inbound adapters, application use cases, domain model, outbound ports, outbound adapters — plus one bundle module through which the framework composes it.
+The CSCI is **fourteen repositories**, not one. Each CSU is a separately built and
+separately installable distribution living in its own repository (SDD §1 decision 6,
+§2.5); the shared contracts, the framework host and the operator's web application
+are three more; and one repository integrates them.
 
-Each distribution carries its own `pyproject.toml`, sources under `src/saag_<csu>/`, and its own test suite runnable on its own. That is what makes the target of Table 4a reachable without code changes: a CSU moves to its own repository by moving its directory.
+Which version of each distribution makes up a deployment is decided in exactly one
+place — the integration repository's `pyproject.toml`. Nothing else in the CSCI
+names a version of anything.
+
+**Table 4a. Repository Map**
+
+| Repository | Distribution | Import package | What it is |
+|---|---|---|---|
+| `saag` | — | — | Integration: the composition, the documents, the deployment stack, and the tests that need the CSCI assembled |
+| `saag_contracts` | `saag-contracts` | `saag_contracts` | Shared types, error model, document schemas, service specifications |
+| `saag_platform` | `saag-platform` | `saag_platform` | Framework host, REST edge, background worker. Not a CSU |
+| `saag_msd` | `saag-msd` | `saag_msd` | MSD |
+| `saag_scg` | `saag-scg` | `saag_scg` | SCG |
+| `saag_frd` | `saag-frd` | `saag_frd` | FRD |
+| `saag_adp` | `saag-adp` | `saag_adp` | ADP |
+| `saag_csm_model_manager` | `saag-csm-model-manager` | `saag_csm_model_manager` | CSM-01 |
+| `saag_csm_data_binder` | `saag-csm-data-binder` | `saag_csm_data_binder` | CSM-02 |
+| `saag_vae_operations_panel` | `saag-vae-operations-panel` | `saag_vae_operations_panel` | VAE-01 |
+| `saag_vae_design_verifier` | `saag-vae-design-verifier` | `saag_vae_design_verifier` | VAE-02 |
+| `saag_vae_design_analyzer` | `saag-vae-design-analyzer` | `saag_vae_design_analyzer` | VAE-03 |
+| `saag_vae_design_evaluator` | `saag-vae-design-evaluator` | `saag_vae_design_evaluator` | VAE-04 |
+| `saag_web` | — | — | The operator's web application. A REST client, not a CSU |
+
+Every distribution depends on `saag-contracts` and on **no other CSU**, so the
+dependency graph is one level deep and the repositories can be built, released and
+worked on independently. It is enforced mechanically in each repository's own
+continuous integration: the distribution is installed with the contracts and
+nothing else, its tests run, and its wheel is built — a dependency on a sibling CSU
+fails there as a missing module.
+
+`saag_web` and the future command-line client sit outside the CSCI: both are clients
+of its external REST surface, the CLI on the far side of EXT-IF-07 exactly as the
+browser is on the far side of the web application. Neither is installed as a
+component and neither appears in the CSCI's composition.
+
+### 4.1 The integration repository
 
 ```text
-system-as-a-graph/
+saag/
 ├── README.md
-├── pyproject.toml                     # workspace root; not a distribution
-├── uv.lock                            # one resolution for every distribution
-├── .python-version                    # interpreter the workspace is built against
-├── Dockerfile                         # one image, every distribution installed
-├── compose.yml / compose.dev.yml      # deployment and development stacks
-├── .env.example / .env                # settings template, and the dev values
+├── pyproject.toml                     # the composition: which distributions, which versions
+├── uv.lock                            # the exact commits a deployment was built from
+├── .python-version
+├── Dockerfile                         # one image, every declared distribution installed
+├── compose.yml / compose.dev.yml      # deployment stack, and the same plus stand-ins
+├── .env.example / .env                # settings template, and the development values
 ├── .github/                           # continuous integration
 ├── docs/
 │   ├── requirements/                  # SSS, SRS (+ .tr translations)
 │   ├── planning/                      # SDP (+ .tr)
 │   ├── design/                        # SDD, UXD, CDR
 │   └── test/                          # STD
-│
-├── web/                               # VAE-01 web application, a REST client
-├── cli/                               # VAE-01 command-line application, a REST client
-│
-├── contracts/                         # saag-contracts: shared across CSUs
-│   ├── pyproject.toml
-│   ├── src/saag_contracts/
-│   │   ├── types/                     # project/platform/version identifiers
-│   │   ├── errors/                    # common acquisition error model
-│   │   ├── documents/                 # file schemas handed between CSUs
-│   │   └── specs/                     # service specifications (SDD §2.3.1)
-│   └── tests/
-│
-├── platform_host/                     # saag-platform: framework host
-│   ├── pyproject.toml
-│   ├── src/saag_platform/
-│   │   ├── discovery.py               # which CSUs are installed
-│   │   ├── bootstrap.py               # framework lifecycle and settings
-│   │   ├── router_gateway.py          # the CSCI's REST surface
-│   │   ├── tasks.py                   # the CSCI's background operations
-│   │   ├── app.py / cli.py            # API process entry points
-│   │   └── worker.py                  # worker process entry point
-│   └── tests/
-│
-├── msd/                               # CSC-1: Model Setup Data Generation
-│   ├── pyproject.toml
-│   ├── src/saag_msd/
-│   │   ├── bundle.py                  # the CSU's component
-│   │   ├── composition.py             # the CSU's wiring
-│   │   ├── api/                       # inbound adapters
-│   │   ├── use_cases/
-│   │   ├── model/
-│   │   ├── ports/
-│   │   ├── adapters/                  # outbound adapters
-│   │   └── testing/                   # published test support + fixture data
-│   └── tests/
-│       └── integration/               # against real external systems
-│
-├── scg/                               # CSC-2: Scenario Generator
-├── frd/                               # CSC-3: Field Records Database
-├── adp/                               # CSC-4: Analytical Data Preparation
-│                                      #   (each laid out exactly as msd/)
-│
-├── csm/                               # CSC-5: Core System Model
-│   ├── model_manager/                 # CSM-01, laid out as msd/
-│   └── data_binder/                   # CSM-02, laid out as msd/
-│
-├── vae/                               # CSC-6: Verification, Analysis, Evaluation
-│   ├── operations_panel/              # VAE-01, laid out as msd/
-│   ├── design_verifier/               # VAE-02
-│   ├── design_analyzer/               # VAE-03
-│   └── design_evaluator/              # VAE-04
-│
+├── cli/                               # VAE-01 command-line client, Increment 7
 └── tests/
-    ├── integration/                   # cross-CSU tests, incl. CSCI composition
-    ├── acceptance/                    # end-to-end increment demonstrations
+    ├── integration/                   # what the CSCI becomes once its CSUs are installed
+    ├── acceptance/                    # the increments' demo scenarios
     └── standins/                      # stand-in external systems for development
 ```
 
-**Table 4. Project Directory Mapping**
+The documents are one set in one repository on purpose: SSS to SRS to SDP to SDD to
+STD traceability is by identifier across documents, and splitting them per CSU would
+leave every coverage check in this document set unverifiable.
 
-| Directory | Scope |
-|---|---|
-| `web/` | VAE-01 web application for operators |
-| `cli/` | VAE-01 command-line application for automation clients |
-| `contracts/` | Distribution every CSU depends on and no CSU owns: shared identifiers, the common error model, inter-CSU document schemas, and the service specifications of SDD §2.3.1 |
-| `platform_host/` | Framework host: starts the framework, installs the discovered CSUs, owns the CSCI's external REST application and its background worker. Not a CSU; satisfies no SRS requirement |
-| `msd/` | SaaG-MSD CSC; contains `MSD` |
-| `scg/` | SaaG-SCG CSC; contains `SCG` |
-| `frd/` | SaaG-FRD CSC; contains `FRD` |
-| `adp/` | SaaG-ADP CSC; contains `ADP` |
-| `csm/` | SaaG-CSM CSC; contains `CSM-01` and `CSM-02` |
-| `vae/` | SaaG-VAE backend CSC; contains `VAE-01`, `VAE-02`, `VAE-03`, and `VAE-04` |
-| `tests/integration/` | Cross-CSU tests, including the CSCI composition test |
-| `tests/acceptance/` | End-to-end requirement and increment demonstration tests |
-| `tests/standins/` | Stand-in external systems the CSCI is developed and demonstrated against: a configuration management database, a git server, a package registry, a network topology tree, a directory service. Deployment fixtures, not any CSU's — a CSU's own test data ships inside its distribution |
+`tests/standins/` are the *deployment's* fixtures — a configuration management
+database, a git server, a package registry, a topology tree, a directory service. A
+CSU's own test data ships inside that CSU's distribution instead, so its tests need
+nothing from here.
 
-`csm/` and `vae/` are grouping directories rather than distributions or Python packages; their CSUs are the distributions, and the grouping disappears when those CSUs move to their own repositories.
+### 4.2 A CSU repository
 
-`web/` and `cli/` sit outside the CSCI. Both are clients of its external REST surface — the CLI is on the far side of EXT-IF-07, exactly as the web application is on the far side of the operator's browser — so neither is a CSU, neither is installed as a component, and neither appears in the CSCI's composition. `platform_host/` cannot be named `platform/`: a directory of that name at the repository root shadows Python's standard-library `platform` module for anything run from there.
+Every CSU repository has the same shape, and `saag_contracts` and `saag_platform`
+differ only in having no `bundle.py`:
 
-**Table 4a. Distributions and Target Repositories**
+```text
+saag_msd/
+├── README.md
+├── LICENSE
+├── pyproject.toml                     # this distribution alone
+├── .github/                           # its own lint, test and wheel build
+└── src/saag_msd/
+    ├── bundle.py                      # the CSU's component
+    ├── composition.py                 # the CSU's wiring
+    ├── api/                           # inbound adapters
+    ├── use_cases/
+    ├── model/
+    ├── ports/
+    ├── adapters/                      # outbound adapters
+    └── testing/                       # published test support + fixture data
+└── tests/
+    └── integration/                   # against real external systems
+```
 
-| Directory | Distribution | Import package | Target repository |
-|---|---|---|---|
-| `contracts/` | `saag-contracts` | `saag_contracts` | saag-contracts |
-| `platform_host/` | `saag-platform` | `saag_platform` | saag-platform |
-| `msd/` | `saag-msd` | `saag_msd` | saag-msd |
-| `scg/` | `saag-scg` | `saag_scg` | saag-scg |
-| `frd/` | `saag-frd` | `saag_frd` | saag-frd |
-| `adp/` | `saag-adp` | `saag_adp` | saag-adp |
-| `csm/model_manager/` | `saag-csm-model-manager` | `saag_csm_model_manager` | saag-csm-model-manager |
-| `csm/data_binder/` | `saag-csm-data-binder` | `saag_csm_data_binder` | saag-csm-data-binder |
-| `vae/operations_panel/` | `saag-vae-operations-panel` | `saag_vae_operations_panel` | saag-vae-operations-panel |
-| `vae/design_verifier/` | `saag-vae-design-verifier` | `saag_vae_design_verifier` | saag-vae-design-verifier |
-| `vae/design_analyzer/` | `saag-vae-design-analyzer` | `saag_vae_design_analyzer` | saag-vae-design-analyzer |
-| `vae/design_evaluator/` | `saag-vae-design-evaluator` | `saag_vae_design_evaluator` | saag-vae-design-evaluator |
+A member's `pyproject.toml` states only what is true of it in any repository — its
+own metadata and a versioned dependency on the contracts. Three things that would
+otherwise have to be edited when it moved were deliberately kept out of it: any
+mention of a workspace, an unbounded dependency, and a licence declared somewhere
+above it. The contracts sort as a third-party dependency of every CSU, because they
+are one.
 
-Every distribution depends on `saag-contracts` and on **no other CSU**, which is the property that makes the repository column a move rather than a rewrite. It is enforced mechanically: each distribution is installed alone with the contracts in continuous integration and its tests run there, so a dependency on a sibling CSU fails as a missing module.
-
-A member's `pyproject.toml` states only what is true of it in **any** repository — its own metadata and a versioned dependency on the contracts. Three things that would otherwise have to be edited at split time are therefore kept out of it:
-
-- The workspace-local resolution of that dependency is declared once at the workspace root, not per member, so a member's file does not mention a workspace it will not be in.
-- The contracts sort as a third-party dependency of every CSU, here as well as after the split, because they *are* one. `contracts/` carries its own lint configuration for the converse reason: inside it, its package is first-party.
-- Each member declares its own licence and repository, so a built distribution is acceptable to an index without further edits.
-
-What a split still needs is not in the member: somewhere to publish the distributions and a rule for choosing their versions, which is CDR-31, and a copy of the licence text in the new repository, which belongs to the repository rather than to the distribution.
+What the split still leaves open is where the distributions are published and how
+their versions are chosen, which is CDR-31. Until it is closed the integration
+repository resolves each from its repository, and swapping a `git` entry for an
+index version is the whole of that migration.
 
 **Table 5. Standard Hexagonal Directory Meaning**
 
@@ -514,7 +496,7 @@ The technology choices below implement the WBS deliverables (§1) and are tracea
 | **Composition & Packaging** | | |
 | Component framework | Pelix / iPOPO ~3.2 | Installs the CSUs as components in one process and mediates the internal interfaces INT-IF-01–05 through its service registry (SDD §1 decision 6, §2.3.1) |
 | Distribution format | One wheel per CSU, discovered through a `saag.bundles` entry point | Installing a distribution is the whole act of adding a CSU (SDD §2.5) |
-| Dependency management | uv workspace, single lock file | Twelve distributions built from one repository today, each releasable on its own (SDP §4 Table 4a, CDR-31) |
+| Dependency management | uv, one lock file per repository | The integration repository's lock records the exact commit of every distribution a deployment was built from (SDP §4 Table 4a, CDR-31) |
 | **Backend & API** | | |
 | Backend language/runtime | Python | The CSUs and the framework host |
 | External API | FastAPI (REST, JSON over HTTP) | The CSCI's single external surface, assembled at runtime from the endpoints the installed CSUs publish; Operations Panel and CLI/Jenkins integration (VAE-01.27) |

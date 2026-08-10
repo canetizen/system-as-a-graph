@@ -15,7 +15,6 @@ from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
-
 from saag_platform.app import app
 
 # SDP Increment 1's demo, as one run: an operator authenticates, selects a scope,

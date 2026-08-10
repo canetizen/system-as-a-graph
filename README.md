@@ -29,7 +29,7 @@ Per the SRS, SaaG is organized into six Computer Software Components (CSCs) and 
 
 ## Current status
 
-Implementation has begun. The repository has the full documentation set, the component platform that hosts the CSUs, and a scaffolded Next.js frontend ([`web/`](web/)). All ten CSUs are installed and served as components.
+Implementation has begun. The CSCI is assembled from fourteen repositories — one per CSU, one for the shared contracts, one for the framework host, one for the web application, and this one. All ten CSUs are installed and served as components.
 
 **MSD** and **VAE-01** are implemented, which is SDP Increment 1: an operator authenticates against a directory service, selects a project, platform and system version, reaches the four external data sources, and produces a Model Setup Data file through a background worker. `tests/acceptance/` runs that scenario end to end against the stand-in external systems. The remaining eight CSUs publish only a health endpoint so far.
 
@@ -49,108 +49,150 @@ The document set is fully traceable across documents.
 
 ## One framework, many components
 
-Each CSU is a **separately built and separately installable distribution**, loaded at startup as a component into a single framework process (SDD §1 decision 6). A CSU reaches its peers only by looking up a published service specification in the framework's registry — never by importing another CSU — so no CSU depends on another and the installed set is a deployment decision.
+Each CSU is a **separately built and separately installable distribution**, living
+in its own repository, loaded at startup as a component into a single framework
+process (SDD §1 decision 6). A CSU reaches its peers only by looking up a published
+service specification in the framework's registry — never by importing another CSU
+— so no CSU depends on another and the installed set is a deployment decision.
 
 Three things follow, and they are the point of the arrangement:
 
-- Adding a CSU to the CSCI is `pip install`; removing it is `pip uninstall`. The platform names no CSU: it discovers them through the `saag.bundles` entry point each distribution declares.
-- The CSCI runs with any subset installed, which is what makes the SDP's partially built CSCI a supported configuration rather than a temporary state. `GET /platform/bundles` and `GET /platform/services` report what is actually running.
-- The external REST surface is assembled at runtime from the endpoints the installed CSUs publish, so it follows a CSU appearing or going away rather than being fixed at import time.
+- Adding a CSU to the CSCI is `pip install`; removing it is `pip uninstall`. The
+  framework host names no CSU: it discovers them through the `saag.bundles` entry
+  point each distribution declares.
+- The CSCI runs with any subset installed, which is what makes the SDP's partially
+  built CSCI a supported configuration rather than a temporary state.
+  `GET /platform/bundles`, `/platform/components` and `/platform/services` report
+  what is actually running.
+- The external REST surface is assembled at runtime from the endpoints the
+  installed CSUs publish, so it follows a CSU appearing or going away rather than
+  being fixed at import time.
 
-Each CSU will eventually live in its own repository; the directories below are already independent distributions, so that move changes no code.
+## This repository, and the others
 
-## Repository layout
+This repository is the CSCI's **integration** repository. It publishes no
+distribution: it says which versions of the CSU distributions make up a deployment,
+holds the documents and the deployment stack, and carries the tests that can only
+be run against the assembled CSCI.
 
-Every CSU is one distribution and owns its own hexagonal boundary (`api/`, `use_cases/`, `model/`, `ports/`, `adapters/`) under `src/saag_*/`, plus a `bundle.py` through which the framework composes it. `web/` and `cli/` are clients of the CSCI's REST surface rather than parts of it. See [Table 4 in the SDP](docs/planning/SDP.md#4-project-structure) for the full directory mapping.
+| Repository | What it is |
+|---|---|
+| [`saag_contracts`](https://github.com/canetizen/saag_contracts) | Shared types, error model, document schemas, service specifications. Every CSU depends on it; it depends on no CSU |
+| [`saag_platform`](https://github.com/canetizen/saag_platform) | Framework host, REST edge, background worker. Not a CSU |
+| [`saag_msd`](https://github.com/canetizen/saag_msd) | MSD — Model Setup Data Generation |
+| [`saag_scg`](https://github.com/canetizen/saag_scg) | SCG — Scenario Generator |
+| [`saag_frd`](https://github.com/canetizen/saag_frd) | FRD — Field Records Database |
+| [`saag_adp`](https://github.com/canetizen/saag_adp) | ADP — Analytical Data Preparation |
+| [`saag_csm_model_manager`](https://github.com/canetizen/saag_csm_model_manager) | CSM-01 — Model Manager |
+| [`saag_csm_data_binder`](https://github.com/canetizen/saag_csm_data_binder) | CSM-02 — Analytical Data Binder |
+| [`saag_vae_operations_panel`](https://github.com/canetizen/saag_vae_operations_panel) | VAE-01 — Operations Panel |
+| [`saag_vae_design_verifier`](https://github.com/canetizen/saag_vae_design_verifier) | VAE-02 — Design Verifier |
+| [`saag_vae_design_analyzer`](https://github.com/canetizen/saag_vae_design_analyzer) | VAE-03 — Design Analyzer |
+| [`saag_vae_design_evaluator`](https://github.com/canetizen/saag_vae_design_evaluator) | VAE-04 — Design Evaluator |
+| [`saag_web`](https://github.com/canetizen/saag_web) | The operator's web application — a REST client, not a CSU |
+
+Which version of each is deployed is decided in one place: this repository's
+`pyproject.toml`. Until there is a package index to publish to (CDR-31), each is
+resolved from its repository, and swapping a `git` entry for an index version is
+the whole of that migration.
+
+## Layout
 
 ```
-docs/            # SSS, SRS, SDP, SDD, UXD, CDR, STD
-web/             # VAE-01 web application — a REST client, not a CSU
-cli/             # VAE-01 command-line application — likewise (EXT-IF-07)
-contracts/       # saag-contracts: shared types, error model, document and service specifications
-platform_host/   # saag-platform: framework host, REST edge, background worker
-msd/             # MSD: Model Setup Data Generation
-scg/             # SCG: Scenario Generator
-frd/             # FRD: Field Records Database
-adp/             # ADP: Analytical Data Preparation
-csm/             # CSM: Node-Relationship Based Core System Model (CSM-01 model_manager, CSM-02 data_binder)
-vae/             # VAE: Design Verification, Analysis and Evaluation (VAE-01 operations_panel, VAE-02 design_verifier, VAE-03 design_analyzer, VAE-04 design_evaluator)
-tests/           # cross-CSU integration, acceptance, and the stand-in external systems
-LICENSE          # Apache License 2.0
+docs/            # SSS, SRS, SDP, SDD, UXD, CDR, STD — one traceable set
+pyproject.toml   # the composition: which distributions, at which versions
+uv.lock          # the exact commits a deployment was built from
+Dockerfile       # one image, every declared distribution installed
+compose.yml      # deployment stack
+compose.dev.yml  # the same plus the stand-in external systems
+tests/
+├── integration/ # the CSCI's composition: what it becomes once its CSUs are installed
+├── acceptance/  # the SDP increments' demo scenarios
+└── standins/    # stand-in external systems the CSCI is developed against
+cli/             # VAE-01 command-line client, SDP Increment 7
+LICENSE
 ```
-
-`platform_host/` is not called `platform/`: a directory of that name at the repository root shadows Python's standard-library `platform` module for anything run from there. The distribution and import package are still `saag-platform` and `saag_platform`.
 
 ## Getting started
 
 The API runs on http://localhost:8000 and the web app on http://localhost:3000, whether run locally or via Docker.
 
-### Backend (Python 3.11+)
+### The CSCI (Python 3.11+)
 
-The twelve distributions form a [uv](https://docs.astral.sh/uv/) workspace, so one command installs them all editable into one environment:
+The CSU distributions are resolved from their repositories, which are private, so
+git needs a credential that may read them — `gh auth login` is enough:
 
 ```bash
 uv sync
 uv run uvicorn saag_platform.app:app --reload
 ```
 
-Run tests and linting:
+That installs the twelve distributions this repository declares and starts the
+framework host, which discovers whichever of them are present. Run the tests and
+the linter:
 
 ```bash
 uv run pytest
 uv run ruff check .
 ```
 
-Each distribution is also testable on its own — the property that lets it move to its own repository:
+Each CSU's own tests live in its own repository and run there; what runs here is
+what needs the CSCI assembled.
+
+To run the whole stack against the stand-in external systems, and the Increment 1
+demo against it:
 
 ```bash
-cd msd && uv run pytest
-```
-
-To run the CSCI against the stand-in external systems, and the Increment 1 demo against it:
-
-```bash
+export GITHUB_TOKEN=$(gh auth token)     # the image build resolves the CSU repositories
 docker compose -f compose.dev.yml up -d --wait
 docker compose -f compose.dev.yml up gitea-seed          # one-time repository seeding
 docker compose -f compose.dev.yml exec api python -m pytest tests/acceptance
 ```
 
-To run a reduced CSCI, name the bundles to install or the CSUs to leave out:
+To run a reduced CSCI — the state every SDP increment before the last is in — name
+the bundles to install or the CSUs to leave out:
 
 ```bash
 SAAG_BUNDLES="saag_msd.bundle" uv run uvicorn saag_platform.app:app
 SAAG_BUNDLES_EXCLUDE="vae-02,vae-03,vae-04" uv run uvicorn saag_platform.app:app
 ```
 
-Bundles are discovered from *installed* distribution metadata, so a newly added CSU appears only after `uv sync`, not on saving a file.
+### Working on a CSU
+
+Point its entry in `[tool.uv.sources]` at a local checkout and `uv sync`:
+
+```toml
+saag-msd = { path = "../saag_msd", editable = true }
+```
+
+Its own repository is where its tests, lint and wheel build run; this one is where
+you see it composed with the others.
 
 ### Web app (Next.js)
 
-```bash
-cd web
-npm install
-npm run dev
-```
-
-Run end-to-end tests and linting:
-
-```bash
-npx playwright install --with-deps chromium # one-time browser download
-npm run test:e2e
-npm run lint
-```
+The operator's web application lives in its own repository,
+[`saag_web`](https://github.com/canetizen/saag_web), and is built and tested there.
+The dev stack below brings it up alongside the CSCI.
 
 ### Docker
 
-Run the API and web app in containers, without installing Python or Node locally.
+Run the CSCI, the worker and the web application in containers, without installing
+Python or Node locally. The image resolves the CSU repositories, so the build needs
+a credential that may read them:
 
-**Development** — hot reload, with source bind-mounted into the containers:
+```bash
+export GITHUB_TOKEN=$(gh auth token)
+```
+
+**Development** — hot reload, the stand-in external systems, and the tests
+bind-mounted in:
 
 ```bash
 docker compose -f compose.dev.yml up --build
 ```
 
-**Production** — standalone builds, no bind mounts:
+**Production** — the declared distributions installed non-editable, no bind mounts,
+no stand-ins:
 
 ```bash
 docker compose up --build

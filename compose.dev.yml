@@ -3,6 +3,8 @@ services:
     build:
       context: .
       target: dev
+      secrets:
+        - github_token
     image: saag-api:dev
     container_name: saag-api-dev
     depends_on:
@@ -45,6 +47,8 @@ services:
     build:
       context: .
       target: dev
+      secrets:
+        - github_token
     image: saag-api:dev
     container_name: saag-worker-dev
     depends_on:
@@ -176,6 +180,8 @@ services:
     build:
       context: .
       target: dev
+      secrets:
+        - github_token
     image: saag-api:dev
     container_name: saag-package-registry-dev
     environment:
@@ -214,3 +220,8 @@ volumes:
   msd-workspace-dev:
   cmdb-data-dev:
   gitea-data-dev:
+
+secrets:
+  github_token:
+    # A token that may read the CSU repositories. Only the image build sees it.
+    environment: GITHUB_TOKEN

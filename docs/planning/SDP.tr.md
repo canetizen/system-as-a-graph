@@ -86,10 +86,10 @@ Artım 0, depo iskeletini, paylaşılan altyapıyı ve dokümantasyon iskeletini
 
 **Demo:** Temiz bir checkout, herhangi bir uygulama mantığı olmadan derlenir, lint kontrolünden geçer ve tam Docker Compose yığınını ayağa kaldırır; planlanan her doküman için `docs/` altında bir yer tutucu bulunur.
 
-**Mimari yeniden temellendirme (Artım 0'dan sonra, Artım 1'den önce):** CSCI, ayrı ayrı kurulabilir bileşenler üzerine yeniden temellendirildi — SDD §1 karar 6, §2.3.1 ve §2.5 — bu da CDR-24 ile CDR-28'i çözümledi ve CDR-31 ile CDR-32'yi açtı. Burada teslim edilen iskelet, bir uv çalışma alanı (workspace) içinde on iki dağıtıma dönüştü (§4 Tablo 4a) ve router'ları toplayan uygulama modülünün yerini çerçeve barındırıcısı aldı. Hiçbir SRS isteri değişmedi: bu bir gerçekleştirim kararıdır ve her ister hâlâ aynı SDD §3 tasarım elemanına izlenir.
+**Mimari yeniden temellendirme (Artım 0'dan sonra, Artım 1'den önce):** CSCI, ayrı ayrı kurulabilir bileşenler üzerine yeniden temellendirildi — SDD §1 karar 6, §2.3.1 ve §2.5 — bu da CDR-24 ile CDR-28'i çözümledi ve CDR-31 ile CDR-32'yi açtı. Burada teslim edilen iskelet on iki dağıtıma dönüştü ve sonra her biri kendi deposuna bölündü (§4 Tablo 4a) ve router'ları toplayan uygulama modülünün yerini çerçeve barındırıcısı aldı. Hiçbir SRS isteri değişmedi: bu bir gerçekleştirim kararıdır ve her ister hâlâ aynı SDD §3 tasarım elemanına izlenir.
 
 **Tamamlanma Tanımı:**
-- [x] Depo §4'e göre iskeletlendirildi (CSU başına altıgen yerleşim, `web/`, `cli/`, `contracts/`, `platform_host/`)
+- [x] Depo §4'e göre iskeletlendirildi (CSU başına altıgen yerleşim, sonradan her biri kendi deposuna bölündü)
 - [x] Temel Docker Compose yığını ve CI hattı ayağa kaldırıldı
 - [x] `docs/` iskeleti planlanan her doküman için dolduruldu
 - [x] İskelet temiz şekilde derleniyor, lint kontrolünden geçiyor ve dağıtılıyor
@@ -360,18 +360,56 @@ gantt
 
 ## 4. Proje Yapısı
 
-Gerçekleştirim, her arka uç dizininin **ayrı ayrı derlenen bir dağıtım (distribution)** olduğu sığ (shallow) bir depo yapısı kullanacaktır: on CSU, paylaşılan sözleşme (contracts) paketi ve çerçeve barındırıcısı (SDD §1 karar 6, §2.5). `web/` ve `cli/` dizinleri, DAD-01 kullanıcıya açık uygulamalarını gerçekleştirir. Her CSU kendi altıgen sınırına sahiptir — gelen (inbound) adaptörler, uygulama kullanım senaryoları (use case), alan (domain) modeli, giden (outbound) portlar, giden adaptörler — artı çerçevenin onu kompoze ettiği bir bundle modülü.
+CSCI **on dört depodur**, bir tane değil. Her CSU, kendi deposunda yaşayan ayrı
+ayrı derlenen ve ayrı ayrı kurulabilen bir dağıtımdır (SDD §1 karar 6, §2.5);
+paylaşılan sözleşmeler, çerçeve barındırıcısı ve operatörün web uygulaması üç depo
+daha; ve bir depo hepsini entegre eder.
 
-Her dağıtım kendi `pyproject.toml`'unu, `src/saag_<csu>/` altındaki kaynaklarını ve tek başına çalıştırılabilen kendi test paketini taşır. Tablo 4a'daki hedefi kod değişikliği olmadan ulaşılabilir kılan budur: bir CSU, dizini taşınarak kendi deposuna geçer.
+Bir dağıtımın hangi sürümünün bir dağıtıma (deployment) girdiği tam olarak tek bir
+yerde kararlaştırılır: entegrasyon deposunun `pyproject.toml`'u. CSCI'ın başka
+hiçbir yeri hiçbir şeyin sürümünü adlandırmaz.
+
+**Tablo 4a. Depo Haritası**
+
+| Depo | Dağıtım | İçe alma paketi | Nedir |
+|---|---|---|---|
+| `saag` | — | — | Entegrasyon: kompozisyon, dokümanlar, dağıtım yığını ve CSCI'ın birleşmiş olmasını gerektiren testler |
+| `saag_contracts` | `saag-contracts` | `saag_contracts` | Paylaşılan tipler, hata modeli, doküman şemaları, servis belirtimleri |
+| `saag_platform` | `saag-platform` | `saag_platform` | Çerçeve barındırıcısı, REST kenarı, arka plan işçisi. CSU değildir |
+| `saag_msd` | `saag-msd` | `saag_msd` | MKV |
+| `saag_scg` | `saag-scg` | `saag_scg` | SUR |
+| `saag_frd` | `saag-frd` | `saag_frd` | SKV |
+| `saag_adp` | `saag-adp` | `saag_adp` | AVH |
+| `saag_csm_model_manager` | `saag-csm-model-manager` | `saag_csm_model_manager` | CSM-01 |
+| `saag_csm_data_binder` | `saag-csm-data-binder` | `saag_csm_data_binder` | CSM-02 |
+| `saag_vae_operations_panel` | `saag-vae-operations-panel` | `saag_vae_operations_panel` | DAD-01 |
+| `saag_vae_design_verifier` | `saag-vae-design-verifier` | `saag_vae_design_verifier` | DAD-02 |
+| `saag_vae_design_analyzer` | `saag-vae-design-analyzer` | `saag_vae_design_analyzer` | DAD-03 |
+| `saag_vae_design_evaluator` | `saag-vae-design-evaluator` | `saag_vae_design_evaluator` | DAD-04 |
+| `saag_web` | — | — | Operatörün web uygulaması. Bir REST istemcisidir, CSU değildir |
+
+Her dağıtım `saag-contracts`'a ve **başka hiçbir CSU'ya** bağımlı değildir; bu
+sayede bağımlılık grafiği tek katmanlıdır ve depolar bağımsız olarak derlenebilir,
+yayımlanabilir ve üzerinde çalışılabilir. Her deponun kendi sürekli
+entegrasyonunda mekanik olarak zorlanır: dağıtım yalnızca sözleşmelerle kurulur,
+testleri koşar ve wheel'i derlenir — kardeş bir CSU'ya bağımlılık orada eksik
+modül olarak başarısız olur.
+
+`saag_web` ve gelecekteki komut satırı istemcisi CSCI'ın dışındadır: ikisi de dış
+REST yüzeyinin istemcisidir; CLI, tam olarak tarayıcının web uygulamasının öte
+yanında olduğu gibi EXT-IF-07'nin öte yanındadır. Hiçbiri bileşen olarak kurulmaz
+ve hiçbiri CSCI'ın kompozisyonunda görünmez.
+
+### 4.1 Entegrasyon deposu
 
 ```text
-system-as-a-graph/
+saag/
 ├── README.md
-├── pyproject.toml                     # çalışma alanı kökü; dağıtım değil
-├── uv.lock                            # her dağıtım için tek çözümleme
-├── .python-version                    # çalışma alanının derlendiği yorumlayıcı
-├── Dockerfile                         # tek imaj, her dağıtım kurulu
-├── compose.yml / compose.dev.yml      # dağıtım ve geliştirme yığınları
+├── pyproject.toml                     # kompozisyon: hangi dağıtımlar, hangi sürümler
+├── uv.lock                            # bir dağıtımın derlendiği tam commit'ler
+├── .python-version
+├── Dockerfile                         # tek imaj, bildirilen her dağıtım kurulu
+├── compose.yml / compose.dev.yml      # dağıtım yığını ve aynısı artı stand-in'ler
 ├── .env.example / .env                # ayar şablonu ve geliştirme değerleri
 ├── .github/                           # sürekli entegrasyon
 ├── docs/
@@ -379,113 +417,57 @@ system-as-a-graph/
 │   ├── planning/                      # SDP (+ .tr)
 │   ├── design/                        # SDD, UXD, CDR
 │   └── test/                          # STD
-│
-├── web/                               # DAD-01 web uygulaması, bir REST istemcisi
-├── cli/                               # DAD-01 komut satırı uygulaması, bir REST istemcisi
-│
-├── contracts/                         # saag-contracts: CSU'lar arasında paylaşılan
-│   ├── pyproject.toml
-│   ├── src/saag_contracts/
-│   │   ├── types/                     # proje/platform/sürüm tanımlayıcıları
-│   │   ├── errors/                    # ortak veri edinme hata modeli
-│   │   ├── documents/                 # CSU'lar arasında aktarılan dosya şemaları
-│   │   └── specs/                     # servis belirtimleri (SDD §2.3.1)
-│   └── tests/
-│
-├── platform_host/                     # saag-platform: çerçeve barındırıcısı
-│   ├── pyproject.toml
-│   ├── src/saag_platform/
-│   │   ├── discovery.py               # hangi CSU'ların kurulu olduğu
-│   │   ├── bootstrap.py               # çerçeve yaşam döngüsü ve ayarlar
-│   │   ├── router_gateway.py          # CSCI'nin REST yüzeyi
-│   │   ├── tasks.py                   # CSCI'nin arka plan işlemleri
-│   │   ├── app.py / cli.py            # API süreci giriş noktaları
-│   │   └── worker.py                  # işçi süreci giriş noktası
-│   └── tests/
-│
-├── msd/                               # CSC-1: Model Kurulum Verisi Üretimi
-│   ├── pyproject.toml
-│   ├── src/saag_msd/
-│   │   ├── bundle.py                  # CSU'nun bileşeni
-│   │   ├── composition.py             # CSU'nun bağlantıları
-│   │   ├── api/                       # gelen adaptörler
-│   │   ├── use_cases/
-│   │   ├── model/
-│   │   ├── ports/
-│   │   ├── adapters/                  # giden adaptörler
-│   │   └── testing/                   # yayımlanan test desteği + sabit veri
-│   └── tests/
-│       └── integration/               # gerçek dış sistemlere karşı
-│
-├── scg/                               # CSC-2: Senaryo Üreteci
-├── frd/                               # CSC-3: Saha Kayıtları Veritabanı
-├── adp/                               # CSC-4: Analitik Veri Hazırlama
-│                                      #   (her biri tam olarak msd/ gibi yerleşir)
-│
-├── csm/                               # CSC-5: Çekirdek Sistem Modeli
-│   ├── model_manager/                 # CSM-01, msd/ gibi yerleşir
-│   └── data_binder/                   # CSM-02, msd/ gibi yerleşir
-│
-├── vae/                               # CSC-6: Doğrulama, Analiz, Değerlendirme
-│   ├── operations_panel/              # DAD-01, msd/ gibi yerleşir
-│   ├── design_verifier/               # DAD-02
-│   ├── design_analyzer/               # DAD-03
-│   └── design_evaluator/              # DAD-04
-│
+├── cli/                               # DAD-01 komut satırı istemcisi, Artım 7
 └── tests/
-    ├── integration/                   # CSU'lar arası testler, CSCI kompozisyonu dâhil
-    ├── acceptance/                    # uçtan uca artım gösterimleri
+    ├── integration/                   # CSU'ları kurulduğunda CSCI'ın ne olduğu
+    ├── acceptance/                    # artımların demo senaryoları
     └── standins/                      # geliştirme için stand-in dış sistemler
 ```
 
-**Tablo 4. Proje Dizini Eşlemesi**
+Dokümanlar bilinçli olarak tek depoda tek bir kümedir: SSS'den SRS'ye, SDP'ye,
+SDD'ye ve STD'ye izlenebilirlik ID bazlıdır ve CSU başına bölünmeleri bu doküman
+kümesindeki her kapsam kontrolünü doğrulanamaz hâle getirirdi.
 
-| Dizin | Kapsam |
-|---|---|
-| `web/` | Operatörler için DAD-01 web uygulaması |
-| `cli/` | Otomasyon istemcileri için DAD-01 komut satırı uygulaması |
-| `contracts/` | Her CSU'nun bağımlı olduğu, hiçbir CSU'nun sahibi olmadığı dağıtım: paylaşılan tanımlayıcılar, ortak hata modeli, CSU'lar arası doküman şemaları ve SDD §2.3.1'in servis belirtimleri |
-| `platform_host/` | Çerçeve barındırıcısı: çerçeveyi başlatır, keşfedilen CSU'ları kurar, CSCI'nin dış REST uygulaması ile arka plan işçisinin sahibidir. Bir CSU değildir; hiçbir SRS isterini karşılamaz |
-| `msd/` | SaaG-MKV CSC'si; MKV'yi içerir |
-| `scg/` | SaaG-SUR CSC'si; SUR'u içerir |
-| `frd/` | SaaG-SKV CSC'si; SKV'yi içerir |
-| `adp/` | SaaG-AVH CSC'si; AVH'yi içerir |
-| `csm/` | SaaG-CSM CSC'si; CSM-01 ve CSM-02'yi içerir |
-| `vae/` | SaaG-DAD arka uç CSC'si; DAD-01, DAD-02, DAD-03 ve DAD-04'ü içerir |
-| `tests/integration/` | CSU'lar arası testler, CSCI kompozisyon testi dâhil |
-| `tests/acceptance/` | Uçtan uca ister ve artım gösterim testleri |
-| `tests/standins/` | CSCI'ın geliştirildiği ve gösterildiği stand-in dış sistemler: yapılandırma yönetimi veritabanı, git sunucusu, paket kayıt defteri, ağ topolojisi ağacı, dizin servisi. Bunlar dağıtım sabitleridir, herhangi bir CSU'nun değil — bir CSU'nun kendi test verisi kendi dağıtımıyla gelir |
+`tests/standins/` *dağıtımın* sabitleridir — yapılandırma yönetimi veritabanı, git
+sunucusu, paket kayıt defteri, topoloji ağacı, dizin servisi. Bir CSU'nun kendi
+test verisi ise o CSU'nun dağıtımıyla gelir, dolayısıyla testleri buradan hiçbir
+şeye ihtiyaç duymaz.
 
-`csm/` ve `vae/`, dağıtım ya da Python paketi değil, gruplama dizinleridir; dağıtımlar onların CSU'larıdır ve bu CSU'lar kendi depolarına taşındığında gruplama ortadan kalkar.
+### 4.2 Bir CSU deposu
 
-`web/` ve `cli/` CSCI'ın dışındadır. İkisi de dış REST yüzeyinin istemcisidir — CLI, tam olarak web uygulamasının operatörün tarayıcısının öte yanında olduğu gibi, EXT-IF-07'nin öte yanındadır — dolayısıyla hiçbiri CSU değildir, hiçbiri bileşen olarak kurulmaz ve hiçbiri CSCI'ın kompozisyonunda görünmez. `platform_host/` dizini `platform/` olarak adlandırılamaz: depo kökünde bu adı taşıyan bir dizin, oradan çalıştırılan her şey için Python'un standart kütüphanesindeki `platform` modülünü gölgeler.
+Her CSU deposu aynı şekle sahiptir; `saag_contracts` ve `saag_platform` yalnızca
+`bundle.py` taşımamalarıyla ayrılır:
 
-**Tablo 4a. Dağıtımlar ve Hedef Depolar**
+```text
+saag_msd/
+├── README.md
+├── LICENSE
+├── pyproject.toml                     # yalnızca bu dağıtım
+├── .github/                           # kendi lint, test ve wheel derlemesi
+└── src/saag_msd/
+    ├── bundle.py                      # CSU'nun bileşeni
+    ├── composition.py                 # CSU'nun bağlantıları
+    ├── api/                           # gelen adaptörler
+    ├── use_cases/
+    ├── model/
+    ├── ports/
+    ├── adapters/                      # giden adaptörler
+    └── testing/                       # yayımlanan test desteği + sabit veri
+└── tests/
+    └── integration/                   # gerçek dış sistemlere karşı
+```
 
-| Dizin | Dağıtım | İçe alma paketi | Hedef depo |
-|---|---|---|---|
-| `contracts/` | `saag-contracts` | `saag_contracts` | saag-contracts |
-| `platform_host/` | `saag-platform` | `saag_platform` | saag-platform |
-| `msd/` | `saag-msd` | `saag_msd` | saag-msd |
-| `scg/` | `saag-scg` | `saag_scg` | saag-scg |
-| `frd/` | `saag-frd` | `saag_frd` | saag-frd |
-| `adp/` | `saag-adp` | `saag_adp` | saag-adp |
-| `csm/model_manager/` | `saag-csm-model-manager` | `saag_csm_model_manager` | saag-csm-model-manager |
-| `csm/data_binder/` | `saag-csm-data-binder` | `saag_csm_data_binder` | saag-csm-data-binder |
-| `vae/operations_panel/` | `saag-vae-operations-panel` | `saag_vae_operations_panel` | saag-vae-operations-panel |
-| `vae/design_verifier/` | `saag-vae-design-verifier` | `saag_vae_design_verifier` | saag-vae-design-verifier |
-| `vae/design_analyzer/` | `saag-vae-design-analyzer` | `saag_vae_design_analyzer` | saag-vae-design-analyzer |
-| `vae/design_evaluator/` | `saag-vae-design-evaluator` | `saag_vae_design_evaluator` | saag-vae-design-evaluator |
+Bir üyenin `pyproject.toml`'u yalnızca her depoda kendisi için doğru olanı
+bildirir: kendi meta verisi ve sözleşmelere sürüm sınırlı bir bağımlılık. Taşındığı
+anda düzenlenmesi gerekecek üç şey bilinçli olarak dışarıda tutulmuştur: bir
+çalışma alanına yapılan herhangi bir atıf, sınırsız bir bağımlılık ve kendisinin
+üstünde bir yerde bildirilmiş bir lisans. Sözleşmeler her CSU için üçüncü taraf
+bağımlılık olarak sıralanır, çünkü gerçekten öyledir.
 
-Her dağıtım `saag-contracts`'a ve **başka hiçbir CSU'ya** bağımlı değildir; depo kolonunu bir yeniden yazım değil bir taşıma yapan özellik budur. Bu, mekanik olarak zorlanır: sürekli entegrasyonda her dağıtım yalnızca sözleşmelerle birlikte kurulup testleri orada koşturulur, dolayısıyla kardeş bir CSU'ya bağımlılık eksik modül olarak başarısız olur.
-
-Bir üyenin `pyproject.toml`'u yalnızca **her** depoda kendisi için doğru olanı bildirir: kendi meta verisi ve sözleşmelere sürüm sınırlı bir bağımlılık. Aksi hâlde bölünme anında düzenlenmesi gerekecek üç şey böylece dosyanın dışında tutulur:
-
-- Bu bağımlılığın çalışma alanı içindeki yerel çözümü, üye başına değil çalışma alanı kökünde bir kez bildirilir; böylece üyenin dosyası, içinde olmayacağı bir çalışma alanından söz etmez.
-- Sözleşmeler her CSU için üçüncü taraf bağımlılık olarak sıralanır — burada da bölünmeden sonra da — çünkü gerçekten öyledir. `contracts/` kendi lint yapılandırmasını tam tersi nedenle taşır: kendi içinde, kendi paketi birinci taraftır.
-- Her üye kendi lisansını ve deposunu bildirir; böylece derlenen dağıtım, ek düzenleme olmadan bir index tarafından kabul edilir.
-
-Bölünmenin hâlâ ihtiyaç duyduğu şeyler üyenin içinde değildir: dağıtımların yayımlanacağı bir yer ve sürümlerinin seçilmesi için bir kural — bu CDR-31'dir — ve yeni depoda lisans metninin bir kopyası; o, dağıtıma değil depoya aittir.
+Bölünmenin hâlâ açık bıraktığı şey, dağıtımların nereye yayımlandığı ve
+sürümlerinin nasıl seçildiğidir; bu CDR-31'dir. O kapanana kadar entegrasyon
+deposu her birini kendi deposundan çözer ve bir `git` girdisini bir index sürümüyle
+değiştirmek o göçün tamamıdır.
 
 **Tablo 5. Standart Altıgen Dizin Anlamları**
 
@@ -514,7 +496,7 @@ Aşağıdaki teknoloji seçimleri, WBS teslimatlarını (§1) gerçekleştirir v
 | **Kompozisyon ve Paketleme** | | |
 | Bileşen çerçevesi | Pelix / iPOPO ~3.2 | CSU'ları tek bir süreçte bileşen olarak kurar ve INT-IF-01–05 iç arayüzlerini servis kayıt defteri üzerinden aracılar (SDD §1 karar 6, §2.3.1) |
 | Dağıtım biçimi | CSU başına bir wheel, `saag.bundles` entry point'i ile keşfedilir | Bir dağıtımı kurmak, bir CSU'yu eklemenin tamamıdır (SDD §2.5) |
-| Bağımlılık yönetimi | uv çalışma alanı, tek kilit dosyası | Bugün tek depodan derlenen, her biri ayrı yayımlanabilir on iki dağıtım (SDP §4 Tablo 4a, CDR-31) |
+| Bağımlılık yönetimi | uv, depo başına bir kilit dosyası | Entegrasyon deposunun kilidi, bir dağıtımın derlendiği her dağıtımın tam commit'ini kaydeder (SDP §4 Tablo 4a, CDR-31) |
 | **Arka Uç ve API** | | |
 | Arka uç dili/çalışma zamanı | Python | CSU'lar ve çerçeve barındırıcısı |
 | Dış API | FastAPI (REST, JSON over HTTP) | CSCI'nin tek dış yüzeyi; kurulu CSU'ların yayımladığı uç noktalardan çalışma zamanında birleştirilir; İşlem Paneli ve CLI/Jenkins entegrasyonu (DAD-01.27) |

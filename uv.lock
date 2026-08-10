@@ -6,29 +6,6 @@ resolution-markers = [
     "python_full_version < '3.12' or sys_platform != 'emscripten'",
 ]
 
-[manifest]
-members = [
-    "saag-adp",
-    "saag-contracts",
-    "saag-csm-data-binder",
-    "saag-csm-model-manager",
-    "saag-frd",
-    "saag-msd",
-    "saag-platform",
-    "saag-scg",
-    "saag-vae-design-analyzer",
-    "saag-vae-design-evaluator",
-    "saag-vae-design-verifier",
-    "saag-vae-operations-panel",
-]
-
-[manifest.dependency-groups]
-dev = [
-    { name = "httpx2" },
-    { name = "pytest" },
-    { name = "ruff" },
-]
-
 [[package]]
 name = "annotated-doc"
 version = "0.0.5"
@@ -723,16 +700,25 @@ wheels = [
 ]
 
 [[package]]
-name = "saag-adp"
+name = "saag"
 version = "0.1.0"
-source = { editable = "adp" }
+source = { virtual = "." }
 dependencies = [
-    { name = "fastapi" },
-    { name = "ipopo" },
+    { name = "saag-adp" },
     { name = "saag-contracts" },
+    { name = "saag-csm-data-binder" },
+    { name = "saag-csm-model-manager" },
+    { name = "saag-frd" },
+    { name = "saag-msd" },
+    { name = "saag-platform" },
+    { name = "saag-scg" },
+    { name = "saag-vae-design-analyzer" },
+    { name = "saag-vae-design-evaluator" },
+    { name = "saag-vae-design-verifier" },
+    { name = "saag-vae-operations-panel" },
 ]
 
-[package.optional-dependencies]
+[package.dev-dependencies]
 dev = [
     { name = "httpx2" },
     { name = "pytest" },
@@ -741,125 +727,79 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "fastapi" },
-    { name = "httpx2", marker = "extra == 'dev'" },
-    { name = "ipopo", specifier = ">=3.2,<4" },
-    { name = "pytest", marker = "extra == 'dev'" },
-    { name = "ruff", marker = "extra == 'dev'" },
-    { name = "saag-contracts", editable = "contracts" },
+    { name = "saag-adp", git = "https://github.com/canetizen/saag_adp.git?branch=main" },
+    { name = "saag-contracts", git = "https://github.com/canetizen/saag_contracts.git?branch=main" },
+    { name = "saag-csm-data-binder", git = "https://github.com/canetizen/saag_csm_data_binder.git?branch=main" },
+    { name = "saag-csm-model-manager", git = "https://github.com/canetizen/saag_csm_model_manager.git?branch=main" },
+    { name = "saag-frd", git = "https://github.com/canetizen/saag_frd.git?branch=main" },
+    { name = "saag-msd", git = "https://github.com/canetizen/saag_msd.git?branch=main" },
+    { name = "saag-platform", git = "https://github.com/canetizen/saag_platform.git?branch=main" },
+    { name = "saag-scg", git = "https://github.com/canetizen/saag_scg.git?branch=main" },
+    { name = "saag-vae-design-analyzer", git = "https://github.com/canetizen/saag_vae_design_analyzer.git?branch=main" },
+    { name = "saag-vae-design-evaluator", git = "https://github.com/canetizen/saag_vae_design_evaluator.git?branch=main" },
+    { name = "saag-vae-design-verifier", git = "https://github.com/canetizen/saag_vae_design_verifier.git?branch=main" },
+    { name = "saag-vae-operations-panel", git = "https://github.com/canetizen/saag_vae_operations_panel.git?branch=main" },
 ]
-provides-extras = ["dev"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "httpx2" },
+    { name = "pytest" },
+    { name = "ruff" },
+]
+
+[[package]]
+name = "saag-adp"
+version = "0.1.0"
+source = { git = "https://github.com/canetizen/saag_adp.git?branch=main#3d923468aead0b0908367d916ecb419f960370b5" }
+dependencies = [
+    { name = "fastapi" },
+    { name = "ipopo" },
+    { name = "saag-contracts" },
+]
 
 [[package]]
 name = "saag-contracts"
 version = "0.1.0"
-source = { editable = "contracts" }
+source = { git = "https://github.com/canetizen/saag_contracts.git?branch=main#8880efcd7e2e60e14ef5a899152504f33c154444" }
 dependencies = [
     { name = "ipopo" },
 ]
-
-[package.optional-dependencies]
-dev = [
-    { name = "pytest" },
-    { name = "ruff" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "ipopo", specifier = ">=3.2,<4" },
-    { name = "pytest", marker = "extra == 'dev'" },
-    { name = "ruff", marker = "extra == 'dev'" },
-]
-provides-extras = ["dev"]
 
 [[package]]
 name = "saag-csm-data-binder"
 version = "0.1.0"
-source = { editable = "csm/data_binder" }
+source = { git = "https://github.com/canetizen/saag_csm_data_binder.git?branch=main#135d26674ae4d744653fea91998387cef7a4bd98" }
 dependencies = [
     { name = "fastapi" },
     { name = "ipopo" },
     { name = "saag-contracts" },
 ]
-
-[package.optional-dependencies]
-dev = [
-    { name = "httpx2" },
-    { name = "pytest" },
-    { name = "ruff" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "fastapi" },
-    { name = "httpx2", marker = "extra == 'dev'" },
-    { name = "ipopo", specifier = ">=3.2,<4" },
-    { name = "pytest", marker = "extra == 'dev'" },
-    { name = "ruff", marker = "extra == 'dev'" },
-    { name = "saag-contracts", editable = "contracts" },
-]
-provides-extras = ["dev"]
 
 [[package]]
 name = "saag-csm-model-manager"
 version = "0.1.0"
-source = { editable = "csm/model_manager" }
+source = { git = "https://github.com/canetizen/saag_csm_model_manager.git?branch=main#ed3a94ad54055178166c4d5329d29955b3d4921d" }
 dependencies = [
     { name = "fastapi" },
     { name = "ipopo" },
     { name = "saag-contracts" },
 ]
-
-[package.optional-dependencies]
-dev = [
-    { name = "httpx2" },
-    { name = "pytest" },
-    { name = "ruff" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "fastapi" },
-    { name = "httpx2", marker = "extra == 'dev'" },
-    { name = "ipopo", specifier = ">=3.2,<4" },
-    { name = "pytest", marker = "extra == 'dev'" },
-    { name = "ruff", marker = "extra == 'dev'" },
-    { name = "saag-contracts", editable = "contracts" },
-]
-provides-extras = ["dev"]
 
 [[package]]
 name = "saag-frd"
 version = "0.1.0"
-source = { editable = "frd" }
+source = { git = "https://github.com/canetizen/saag_frd.git?branch=main#7b917fe7bf082b7d6df8c0028a7b86b4539e3f5c" }
 dependencies = [
     { name = "fastapi" },
     { name = "ipopo" },
     { name = "saag-contracts" },
 ]
 
-[package.optional-dependencies]
-dev = [
-    { name = "httpx2" },
-    { name = "pytest" },
-    { name = "ruff" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "fastapi" },
-    { name = "httpx2", marker = "extra == 'dev'" },
-    { name = "ipopo", specifier = ">=3.2,<4" },
-    { name = "pytest", marker = "extra == 'dev'" },
-    { name = "ruff", marker = "extra == 'dev'" },
-    { name = "saag-contracts", editable = "contracts" },
-]
-provides-extras = ["dev"]
-
 [[package]]
 name = "saag-msd"
 version = "0.1.0"
-source = { editable = "msd" }
+source = { git = "https://github.com/canetizen/saag_msd.git?branch=main#add63cb50e4d14b61f5a224bdf6f0407f59aade0" }
 dependencies = [
     { name = "fastapi" },
     { name = "ipopo" },
@@ -870,32 +810,10 @@ dependencies = [
     { name = "sqlalchemy" },
 ]
 
-[package.optional-dependencies]
-dev = [
-    { name = "httpx2" },
-    { name = "pytest" },
-    { name = "ruff" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "fastapi" },
-    { name = "httpx2", marker = "extra == 'dev'" },
-    { name = "ipopo", specifier = ">=3.2,<4" },
-    { name = "psycopg", extras = ["binary"] },
-    { name = "pymysql" },
-    { name = "pytest", marker = "extra == 'dev'" },
-    { name = "pyyaml" },
-    { name = "ruff", marker = "extra == 'dev'" },
-    { name = "saag-contracts", editable = "contracts" },
-    { name = "sqlalchemy" },
-]
-provides-extras = ["dev"]
-
 [[package]]
 name = "saag-platform"
 version = "0.1.0"
-source = { editable = "platform_host" }
+source = { git = "https://github.com/canetizen/saag_platform.git?branch=main#2d4222ff1d465f552bca2676f9bc88a0a7a8f73c" }
 dependencies = [
     { name = "fastapi" },
     { name = "ipopo" },
@@ -906,144 +824,50 @@ dependencies = [
     { name = "uvicorn", extra = ["standard"] },
 ]
 
-[package.optional-dependencies]
-dev = [
-    { name = "httpx2" },
-    { name = "pytest" },
-    { name = "ruff" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "fastapi", specifier = "~=0.141" },
-    { name = "httpx2", marker = "extra == 'dev'" },
-    { name = "ipopo", specifier = ">=3.2,<4" },
-    { name = "procrastinate" },
-    { name = "psycopg", extras = ["binary"] },
-    { name = "pytest", marker = "extra == 'dev'" },
-    { name = "ruff", marker = "extra == 'dev'" },
-    { name = "saag-contracts", editable = "contracts" },
-    { name = "sqlalchemy" },
-    { name = "uvicorn", extras = ["standard"] },
-]
-provides-extras = ["dev"]
-
 [[package]]
 name = "saag-scg"
 version = "0.1.0"
-source = { editable = "scg" }
+source = { git = "https://github.com/canetizen/saag_scg.git?branch=main#773c63974a471d76761332e4899989ced46851fc" }
 dependencies = [
     { name = "fastapi" },
     { name = "ipopo" },
     { name = "saag-contracts" },
 ]
-
-[package.optional-dependencies]
-dev = [
-    { name = "httpx2" },
-    { name = "pytest" },
-    { name = "ruff" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "fastapi" },
-    { name = "httpx2", marker = "extra == 'dev'" },
-    { name = "ipopo", specifier = ">=3.2,<4" },
-    { name = "pytest", marker = "extra == 'dev'" },
-    { name = "ruff", marker = "extra == 'dev'" },
-    { name = "saag-contracts", editable = "contracts" },
-]
-provides-extras = ["dev"]
 
 [[package]]
 name = "saag-vae-design-analyzer"
 version = "0.1.0"
-source = { editable = "vae/design_analyzer" }
+source = { git = "https://github.com/canetizen/saag_vae_design_analyzer.git?branch=main#3ebb4a04b41ec9112f30ab9ce0c69df83ac2c1a1" }
 dependencies = [
     { name = "fastapi" },
     { name = "ipopo" },
     { name = "saag-contracts" },
 ]
-
-[package.optional-dependencies]
-dev = [
-    { name = "httpx2" },
-    { name = "pytest" },
-    { name = "ruff" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "fastapi" },
-    { name = "httpx2", marker = "extra == 'dev'" },
-    { name = "ipopo", specifier = ">=3.2,<4" },
-    { name = "pytest", marker = "extra == 'dev'" },
-    { name = "ruff", marker = "extra == 'dev'" },
-    { name = "saag-contracts", editable = "contracts" },
-]
-provides-extras = ["dev"]
 
 [[package]]
 name = "saag-vae-design-evaluator"
 version = "0.1.0"
-source = { editable = "vae/design_evaluator" }
+source = { git = "https://github.com/canetizen/saag_vae_design_evaluator.git?branch=main#5db53cd69581d69d5d23c604ee3aabbd11818cb5" }
 dependencies = [
     { name = "fastapi" },
     { name = "ipopo" },
     { name = "saag-contracts" },
 ]
-
-[package.optional-dependencies]
-dev = [
-    { name = "httpx2" },
-    { name = "pytest" },
-    { name = "ruff" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "fastapi" },
-    { name = "httpx2", marker = "extra == 'dev'" },
-    { name = "ipopo", specifier = ">=3.2,<4" },
-    { name = "pytest", marker = "extra == 'dev'" },
-    { name = "ruff", marker = "extra == 'dev'" },
-    { name = "saag-contracts", editable = "contracts" },
-]
-provides-extras = ["dev"]
 
 [[package]]
 name = "saag-vae-design-verifier"
 version = "0.1.0"
-source = { editable = "vae/design_verifier" }
+source = { git = "https://github.com/canetizen/saag_vae_design_verifier.git?branch=main#554fafd3184ac52d6d9800f21610d6437e16c978" }
 dependencies = [
     { name = "fastapi" },
     { name = "ipopo" },
     { name = "saag-contracts" },
 ]
 
-[package.optional-dependencies]
-dev = [
-    { name = "httpx2" },
-    { name = "pytest" },
-    { name = "ruff" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "fastapi" },
-    { name = "httpx2", marker = "extra == 'dev'" },
-    { name = "ipopo", specifier = ">=3.2,<4" },
-    { name = "pytest", marker = "extra == 'dev'" },
-    { name = "ruff", marker = "extra == 'dev'" },
-    { name = "saag-contracts", editable = "contracts" },
-]
-provides-extras = ["dev"]
-
 [[package]]
 name = "saag-vae-operations-panel"
 version = "0.1.0"
-source = { editable = "vae/operations_panel" }
+source = { git = "https://github.com/canetizen/saag_vae_operations_panel.git?branch=main#d6f743d58ceb00fa7800bc6187f77301d557e1b6" }
 dependencies = [
     { name = "fastapi" },
     { name = "ipopo" },
@@ -1053,28 +877,6 @@ dependencies = [
     { name = "saag-contracts" },
     { name = "sqlalchemy" },
 ]
-
-[package.optional-dependencies]
-dev = [
-    { name = "httpx2" },
-    { name = "pytest" },
-    { name = "ruff" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "fastapi" },
-    { name = "httpx2", marker = "extra == 'dev'" },
-    { name = "ipopo", specifier = ">=3.2,<4" },
-    { name = "ldap3" },
-    { name = "psycopg", extras = ["binary"] },
-    { name = "pyjwt" },
-    { name = "pytest", marker = "extra == 'dev'" },
-    { name = "ruff", marker = "extra == 'dev'" },
-    { name = "saag-contracts", editable = "contracts" },
-    { name = "sqlalchemy" },
-]
-provides-extras = ["dev"]
 
 [[package]]
 name = "six"
@@ -1166,14 +968,14 @@ wheels = [
 
 [[package]]
 name = "typing-inspection"
-version = "0.4.2"
+version = "0.4.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/55/e3/70399cb7dd41c10ac53367ae42139cf4b1ca5f36bb3dc6c9d33acdb43655/typing_inspection-0.4.2.tar.gz", hash = "sha256:ba561c48a67c5958007083d386c3295464928b01faa735ab8547c5692e87f464", size = 75949, upload-time = "2025-10-01T02:14:41.687Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/6d/bc/4eae18cd40c65798a16267572ba346c11f599d44b01603dbd843342042bc/typing_inspection-0.4.3.tar.gz", hash = "sha256:c5f9ec1530b5c1e2c9bc34a84d9a3466ed1b2f3f2fa9f901368d9c5596210e4d", size = 76711, upload-time = "2026-08-10T09:39:18.063Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/dc/9b/47798a6c91d8bdb567fe2698fe81e0c6b7cb7ef4d13da4114b41d239f65d/typing_inspection-0.4.2-py3-none-any.whl", hash = "sha256:4ed1cacbdc298c220f1bd249ed5287caa16f34d44ef4e9c3d0cbad5b521545e7", size = 14611, upload-time = "2025-10-01T02:14:40.154Z" },
+    { url = "https://files.pythonhosted.org/packages/42/f7/7a3935abdebd5cf18705a5f0335dd6a3a18bef3baa7cb9edc3b6b9922cc8/typing_inspection-0.4.3-py3-none-any.whl", hash = "sha256:5f42b23858a91e0b4ef521f5418f03a0da3c9216fd2995ef5e73463100e676cd", size = 14693, upload-time = "2026-08-10T09:39:16.693Z" },
 ]
 
 [[package]]

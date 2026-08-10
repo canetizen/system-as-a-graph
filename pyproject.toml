@@ -1,27 +1,34 @@
-# Workspace root. This is deliberately not a distribution: every CSU, the shared
-# contracts package and the platform host are separate distributions, listed as
-# workspace members below, so each one can move to its own repository unchanged.
-[tool.uv.workspace]
-members = [
-    "contracts",
-    "platform_host",
-    "msd",
-    "scg",
-    "frd",
-    "adp",
-    "csm/model_manager",
-    "csm/data_binder",
-    "vae/operations_panel",
-    "vae/design_verifier",
-    "vae/design_analyzer",
-    "vae/design_evaluator",
+# The SaaG CSCI's integration repository. It publishes no distribution of its own:
+# it says which versions of the CSU distributions make up a deployment, holds the
+# documents and the deployment stack, and carries the tests that can only be run
+# against the assembled CSCI.
+[project]
+name = "saag"
+version = "0.1.0"
+description = "System as a Graph — CSCI integration, deployment and documentation"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+
+# The composition. Installing these is what makes a CSCI: the framework host
+# discovers whichever of them are present through their `saag.bundles` entry
+# points, so this list *is* the deployed set of CSUs (SDD §2.5).
+dependencies = [
+    "saag-contracts>=0.1,<1",
+    "saag-platform>=0.1,<1",
+    "saag-msd>=0.1,<1",
+    "saag-scg>=0.1,<1",
+    "saag-frd>=0.1,<1",
+    "saag-adp>=0.1,<1",
+    "saag-csm-model-manager>=0.1,<1",
+    "saag-csm-data-binder>=0.1,<1",
+    "saag-vae-operations-panel>=0.1,<1",
+    "saag-vae-design-verifier>=0.1,<1",
+    "saag-vae-design-analyzer>=0.1,<1",
+    "saag-vae-design-evaluator>=0.1,<1",
 ]
 
-# Resolves the members' dependency on the shared contracts locally. Declared here
-# rather than in each member so a member's own file states only what is true of it
-# in any repository — which is what lets it move to one unchanged.
-[tool.uv.sources]
-saag-contracts = { workspace = true }
+[project.urls]
+Repository = "https://github.com/canetizen/saag"
 
 [dependency-groups]
 dev = [
@@ -30,48 +37,33 @@ dev = [
     "ruff",
 ]
 
+# Where each distribution comes from. Until there is a package index to publish to
+# (CDR-31), each is resolved from its own repository — which is also what keeps
+# this file the single place a deployment's composition is decided. Replacing a
+# `git` entry with an index version is the whole of that migration.
+#
+# To work on a CSU alongside the CSCI, point its entry at a local checkout:
+#   saag-msd = { path = "../saag_msd", editable = true }
+[tool.uv.sources]
+saag-contracts = { git = "https://github.com/canetizen/saag_contracts.git", branch = "main" }
+saag-platform = { git = "https://github.com/canetizen/saag_platform.git", branch = "main" }
+saag-msd = { git = "https://github.com/canetizen/saag_msd.git", branch = "main" }
+saag-scg = { git = "https://github.com/canetizen/saag_scg.git", branch = "main" }
+saag-frd = { git = "https://github.com/canetizen/saag_frd.git", branch = "main" }
+saag-adp = { git = "https://github.com/canetizen/saag_adp.git", branch = "main" }
+saag-csm-model-manager = { git = "https://github.com/canetizen/saag_csm_model_manager.git", branch = "main" }
+saag-csm-data-binder = { git = "https://github.com/canetizen/saag_csm_data_binder.git", branch = "main" }
+saag-vae-operations-panel = { git = "https://github.com/canetizen/saag_vae_operations_panel.git", branch = "main" }
+saag-vae-design-verifier = { git = "https://github.com/canetizen/saag_vae_design_verifier.git", branch = "main" }
+saag-vae-design-analyzer = { git = "https://github.com/canetizen/saag_vae_design_analyzer.git", branch = "main" }
+saag-vae-design-evaluator = { git = "https://github.com/canetizen/saag_vae_design_evaluator.git", branch = "main" }
+
 [tool.ruff]
 target-version = "py311"
-# Members use a src layout, so first-party packages are not directly under the
-# repository root; without this, import sorting would treat a member's own package
-# as a third-party dependency.
-#
-# `contracts/src` is deliberately absent: the shared contracts are a dependency of
-# every CSU rather than part of one, so they must sort as third-party here exactly
-# as they will once a CSU is a repository of its own. `contracts/` carries its own
-# [tool.ruff] table for the same reason — inside it, they are first-party.
-src = [
-    "platform_host/src",
-    "msd/src",
-    "scg/src",
-    "frd/src",
-    "adp/src",
-    "csm/model_manager/src",
-    "csm/data_binder/src",
-    "vae/operations_panel/src",
-    "vae/design_verifier/src",
-    "vae/design_analyzer/src",
-    "vae/design_evaluator/src",
-]
 
-# Members carry their own testpaths so `cd <member> && pytest` works standalone;
-# this root list is the whole-repository run. importlib import mode keeps the
-# identically named per-member test modules from colliding.
 [tool.pytest.ini_options]
 addopts = "--import-mode=importlib"
-consider_namespace_packages = true
-testpaths = [
-    "tests",
-    "contracts/tests",
-    "platform_host/tests",
-    "msd/tests",
-    "scg/tests",
-    "frd/tests",
-    "adp/tests",
-    "csm/model_manager/tests",
-    "csm/data_binder/tests",
-    "vae/operations_panel/tests",
-    "vae/design_verifier/tests",
-    "vae/design_analyzer/tests",
-    "vae/design_evaluator/tests",
+testpaths = ["tests"]
+markers = [
+    "integration: exercises a real external system; skipped unless one is configured",
 ]

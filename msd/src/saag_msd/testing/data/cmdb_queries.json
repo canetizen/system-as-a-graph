@@ -1,8 +1,0 @@
-{
-  "queries": {
-    "projects": "SELECT code AS name FROM project ORDER BY code",
-    "platforms": "SELECT pl.code AS name FROM platform pl JOIN project pr ON pr.id = pl.project_id WHERE pr.code = :project ORDER BY pl.code",
-    "versions": "SELECT r.release_no AS version, r.in_service AS effective FROM system_release r JOIN platform pl ON pl.id = r.platform_id JOIN project pr ON pr.id = pl.project_id WHERE pr.code = :project AND pl.code = :platform ORDER BY r.release_no DESC",
-    "software_units": "SELECT c.component_name AS name, c.component_version AS version, c.repository AS source_name FROM release_component c JOIN system_release r ON r.id = c.system_release_id JOIN platform pl ON pl.id = r.platform_id JOIN project pr ON pr.id = pl.project_id WHERE pr.code = :project AND pl.code = :platform AND r.release_no = :version ORDER BY c.component_name"
-  }
-}
