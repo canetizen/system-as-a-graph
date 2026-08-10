@@ -28,7 +28,7 @@ dependencies = [
 ]
 
 [project.urls]
-Repository = "https://github.com/canetizen/saag"
+Repository = "https://github.com/canetizen/system-as-a-graph"
 
 [dependency-groups]
 dev = [
