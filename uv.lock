@@ -207,6 +207,27 @@ wheels = [
 ]
 
 [[package]]
+name = "ipopo"
+version = "3.2.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "jsonrpclib-pelix" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/b9/24/e297950bcf630ed03988f4acdb9f324f2cc7ede7861274517b0cb6d3a907/ipopo-3.2.1.tar.gz", hash = "sha256:258a186b52a1b7549cbcf907bf968c59a1b5573f15b059326d31263f15a5d2c6", size = 904187, upload-time = "2026-07-13T17:34:21.334Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/5f/8d/dcf87fd6b75d4e08222877ce1a467d7af4e9fa657e4aef9aad837771427c/ipopo-3.2.1-py3-none-any.whl", hash = "sha256:80f2ff111cf8ba931f0cdbd656d4a6bfb61ad9c65db894a1791d607b0579fd88", size = 443437, upload-time = "2026-07-13T17:34:19.305Z" },
+]
+
+[[package]]
+name = "jsonrpclib-pelix"
+version = "0.4.3.4"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/79/21/51a59adb17c2aa27ec3cef8787485df66e06c29f08e19a9d554e45b8f56d/jsonrpclib_pelix-0.4.3.4.tar.gz", hash = "sha256:e82d6f4da907a7d111ef93fd2361c8c20b79d248be4fe99678e08626aa8fcbef", size = 66438, upload-time = "2025-03-03T18:54:00.162Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a2/99/4a90dbb4c264530c4b50895836dc0bc2763945b06536008b24b4f341a58c/jsonrpclib_pelix-0.4.3.4-py3-none-any.whl", hash = "sha256:56da1fd8fdfe040811cd6f0b76a1b8f40e4144ac03a2a9d03dfeefadda76f71c", size = 42477, upload-time = "2025-03-03T18:53:58.967Z" },
+]
+
+[[package]]
 name = "packaging"
 version = "26.3"
 source = { registry = "https://pypi.org/simple" }
@@ -483,6 +504,9 @@ provides-extras = ["dev"]
 name = "saag-contracts"
 version = "0.1.0"
 source = { editable = "contracts" }
+dependencies = [
+    { name = "ipopo" },
+]
 
 [package.optional-dependencies]
 dev = [
@@ -492,6 +516,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "ipopo", specifier = ">=3.2,<4" },
     { name = "pytest", marker = "extra == 'dev'" },
     { name = "ruff", marker = "extra == 'dev'" },
 ]
