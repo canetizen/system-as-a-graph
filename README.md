@@ -61,23 +61,25 @@ Each CSU will eventually live in its own repository; the directories below are a
 
 ## Repository layout
 
-Every backend directory is one distribution and owns its own hexagonal boundary (`api/`, `use_cases/`, `model/`, `ports/`, `adapters/`) under `src/saag_*/`. `web/` and `cli/` implement the VAE-01 user-facing applications. See [Table 4 in the SDP](docs/planning/SDP.md#4-project-structure) for the full directory mapping.
+Every CSU is one distribution and owns its own hexagonal boundary (`api/`, `use_cases/`, `model/`, `ports/`, `adapters/`) under `src/saag_*/`, plus a `bundle.py` through which the framework composes it. `web/` and `cli/` are clients of the CSCI's REST surface rather than parts of it. See [Table 4 in the SDP](docs/planning/SDP.md#4-project-structure) for the full directory mapping.
 
 ```
 docs/            # SSS, SRS, SDP, SDD, UXD, CDR, STD
-web/             # VAE-01: web application
-cli/             # VAE-01: command-line application
-contracts/       # saag-contracts: shared types, error model, service specifications
-platform_host/   # saag-platform: framework host and the CSCI's external REST edge
+web/             # VAE-01 web application — a REST client, not a CSU
+cli/             # VAE-01 command-line application — likewise (EXT-IF-07)
+contracts/       # saag-contracts: shared types, error model, document and service specifications
+platform_host/   # saag-platform: framework host, REST edge, background worker
 msd/             # MSD: Model Setup Data Generation
 scg/             # SCG: Scenario Generator
 frd/             # FRD: Field Records Database
 adp/             # ADP: Analytical Data Preparation
 csm/             # CSM: Node-Relationship Based Core System Model (CSM-01 model_manager, CSM-02 data_binder)
 vae/             # VAE: Design Verification, Analysis and Evaluation (VAE-01 operations_panel, VAE-02 design_verifier, VAE-03 design_analyzer, VAE-04 design_evaluator)
-tests/           # integration and acceptance tests
+tests/           # cross-CSU integration, acceptance, and the stand-in external systems
 LICENSE          # Apache License 2.0
 ```
+
+`platform_host/` is not called `platform/`: a directory of that name at the repository root shadows Python's standard-library `platform` module for anything run from there. The distribution and import package are still `saag-platform` and `saag_platform`.
 
 ## Getting started
 

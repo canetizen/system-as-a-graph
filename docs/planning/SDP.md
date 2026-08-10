@@ -89,7 +89,7 @@ Increment 0 establishes the repository scaffolding, shared infrastructure, and d
 **Architecture rebaseline (after Increment 0, before Increment 1):** the CSCI was rebaselined onto separately installable components — SDD §1 decision 6, §2.3.1 and §2.5 — which resolved CDR-24 to CDR-28 and opened CDR-31 and CDR-32. The scaffolding delivered here became twelve distributions in a uv workspace (§4 Table 4a), and the aggregating application module was replaced by the framework host. No SRS requirement changed: this is a realization decision, and every requirement still traces to the same SDD §3 design element.
 
 **Definition of Done:**
-- [x] Repository scaffolded per §4 (per-CSU hexagonal layout, `web/`, `cli/`, `contracts/`, `platform/`)
+- [x] Repository scaffolded per §4 (per-CSU hexagonal layout, `web/`, `cli/`, `contracts/`, `platform_host/`)
 - [x] Base Docker Compose stack and CI pipeline stood up
 - [x] `docs/` skeleton populated for every planned document
 - [x] Scaffolding builds, lints, and deploys cleanly
@@ -369,47 +369,53 @@ system-as-a-graph/
 ├── README.md
 ├── pyproject.toml                     # workspace root; not a distribution
 ├── uv.lock                            # one resolution for every distribution
+├── .python-version                    # interpreter the workspace is built against
+├── Dockerfile                         # one image, every distribution installed
+├── compose.yml / compose.dev.yml      # deployment and development stacks
+├── .env.example / .env                # settings template, and the dev values
+├── .github/                           # continuous integration
 ├── docs/
-│   ├── requirements/
-│   │   ├── SSS.md
-│   │   └── SRS.md
-│   ├── planning/
-│   │   └── SDP.md
-│   ├── design/
-│   │   ├── SDD.md
-│   │   ├── UXD.md
-│   │   └── CDR.md
-│   └── test/
-│       └── STD.md
+│   ├── requirements/                  # SSS, SRS (+ .tr translations)
+│   ├── planning/                      # SDP (+ .tr)
+│   ├── design/                        # SDD, UXD, CDR
+│   └── test/                          # STD
 │
-├── web/                               # VAE-01 web application
-├── cli/                               # VAE-01 command-line application
+├── web/                               # VAE-01 web application, a REST client
+├── cli/                               # VAE-01 command-line application, a REST client
 │
 ├── contracts/                         # saag-contracts: shared across CSUs
 │   ├── pyproject.toml
 │   ├── src/saag_contracts/
 │   │   ├── types/                     # project/platform/version identifiers
 │   │   ├── errors/                    # common acquisition error model
-│   │   ├── documents/                 # file/wire schemas handed between CSUs
-│   │   ├── security/
+│   │   ├── documents/                 # file schemas handed between CSUs
 │   │   └── specs/                     # service specifications (SDD §2.3.1)
 │   └── tests/
 │
-├── platform/                          # saag-platform: framework host
+├── platform_host/                     # saag-platform: framework host
 │   ├── pyproject.toml
 │   ├── src/saag_platform/
+│   │   ├── discovery.py               # which CSUs are installed
+│   │   ├── bootstrap.py               # framework lifecycle and settings
+│   │   ├── router_gateway.py          # the CSCI's REST surface
+│   │   ├── tasks.py                   # the CSCI's background operations
+│   │   ├── app.py / cli.py            # API process entry points
+│   │   └── worker.py                  # worker process entry point
 │   └── tests/
 │
 ├── msd/                               # CSC-1: Model Setup Data Generation
 │   ├── pyproject.toml
 │   ├── src/saag_msd/
 │   │   ├── bundle.py                  # the CSU's component
-│   │   ├── api/
+│   │   ├── composition.py             # the CSU's wiring
+│   │   ├── api/                       # inbound adapters
 │   │   ├── use_cases/
 │   │   ├── model/
 │   │   ├── ports/
-│   │   └── adapters/
+│   │   ├── adapters/                  # outbound adapters
+│   │   └── testing/                   # published test support + fixture data
 │   └── tests/
+│       └── integration/               # against real external systems
 │
 ├── scg/                               # CSC-2: Scenario Generator
 ├── frd/                               # CSC-3: Field Records Database
@@ -428,7 +434,8 @@ system-as-a-graph/
 │
 └── tests/
     ├── integration/                   # cross-CSU tests, incl. CSCI composition
-    └── acceptance/                    # end-to-end increment demonstrations
+    ├── acceptance/                    # end-to-end increment demonstrations
+    └── standins/                      # stand-in external systems for development
 ```
 
 **Table 4. Project Directory Mapping**
@@ -438,7 +445,7 @@ system-as-a-graph/
 | `web/` | VAE-01 web application for operators |
 | `cli/` | VAE-01 command-line application for automation clients |
 | `contracts/` | Distribution every CSU depends on and no CSU owns: shared identifiers, the common error model, inter-CSU document schemas, and the service specifications of SDD §2.3.1 |
-| `platform/` | Framework host: starts the framework, installs the discovered CSUs, owns the CSCI's external REST application and its background worker. Not a CSU; satisfies no SRS requirement |
+| `platform_host/` | Framework host: starts the framework, installs the discovered CSUs, owns the CSCI's external REST application and its background worker. Not a CSU; satisfies no SRS requirement |
 | `msd/` | SaaG-MSD CSC; contains `MSD` |
 | `scg/` | SaaG-SCG CSC; contains `SCG` |
 | `frd/` | SaaG-FRD CSC; contains `FRD` |
@@ -447,15 +454,18 @@ system-as-a-graph/
 | `vae/` | SaaG-VAE backend CSC; contains `VAE-01`, `VAE-02`, `VAE-03`, and `VAE-04` |
 | `tests/integration/` | Cross-CSU tests, including the CSCI composition test |
 | `tests/acceptance/` | End-to-end requirement and increment demonstration tests |
+| `tests/standins/` | Stand-in external systems the CSCI is developed and demonstrated against: a configuration management database, a git server, a package registry, a network topology tree, a directory service. Deployment fixtures, not any CSU's — a CSU's own test data ships inside its distribution |
 
 `csm/` and `vae/` are grouping directories rather than distributions or Python packages; their CSUs are the distributions, and the grouping disappears when those CSUs move to their own repositories.
+
+`web/` and `cli/` sit outside the CSCI. Both are clients of its external REST surface — the CLI is on the far side of EXT-IF-07, exactly as the web application is on the far side of the operator's browser — so neither is a CSU, neither is installed as a component, and neither appears in the CSCI's composition. `platform_host/` cannot be named `platform/`: a directory of that name at the repository root shadows Python's standard-library `platform` module for anything run from there.
 
 **Table 4a. Distributions and Target Repositories**
 
 | Directory | Distribution | Import package | Target repository |
 |---|---|---|---|
 | `contracts/` | `saag-contracts` | `saag_contracts` | saag-contracts |
-| `platform/` | `saag-platform` | `saag_platform` | saag-platform |
+| `platform_host/` | `saag-platform` | `saag_platform` | saag-platform |
 | `msd/` | `saag-msd` | `saag_msd` | saag-msd |
 | `scg/` | `saag-scg` | `saag_scg` | saag-scg |
 | `frd/` | `saag-frd` | `saag_frd` | saag-frd |
@@ -473,13 +483,15 @@ Every distribution depends on `saag-contracts` and on **no other CSU**, which is
 
 | Directory | Meaning |
 |---|---|
-| `bundle.py` | The CSU's component: builds its wiring, publishes its provided service specifications, declares what it requires. The only module in a CSU that knows the framework exists (SDD §2.5) |
-| `api/` | Inbound adapters: **all** of them — REST endpoints, the implementations of the service specifications the CSU provides, CLI handlers, message handlers — each calling CSU use cases |
+| `bundle.py` | The CSU's component: supplies its wiring's configuration from declared properties, publishes its provided service specifications, declares what it requires. The only module in a CSU that names the framework (SDD §2.5) |
+| `composition.py` | The CSU's wiring: a function taking configuration as arguments and returning the wired object graph. Framework-free, so composition is testable without one |
+| `api/` | Inbound adapters: **all** of them — REST endpoints, the implementations of the service specifications the CSU provides, message handlers — each calling CSU use cases |
 | `use_cases/` | Application core: CSU workflows that implement SRS requirements |
 | `model/` | Domain core: business objects, rules, and calculations owned by the CSU |
 | `ports/` | Outbound ports: interfaces required by use cases for databases, files, queues, or external systems |
 | `adapters/` | Outbound adapters: implementations of `ports/`, such as PostgreSQL, FalkorDB, LDAP, Git, REST, or file adapters |
-| `tests/` | Test suite scoped to the CSU, runnable on its own without the rest of the repository |
+| `testing/` | Test support the CSU *publishes*: doubles, a wired stub of itself, and fixture data, shipped in the distribution so a consuming CSU's repository can test against this CSU without installing it |
+| `tests/` | Test suite scoped to the CSU, runnable on its own without the rest of the repository. `tests/integration/` holds the cases that need a real external system and skip without one |
 
 ---
 
