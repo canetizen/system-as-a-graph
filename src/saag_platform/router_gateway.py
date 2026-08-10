@@ -13,9 +13,8 @@ from fastapi import FastAPI
 from pelix.constants import SERVICE_ID
 from pelix.framework import BundleContext
 from pelix.internals.registry import ServiceEvent, ServiceReference
-from starlette.routing import BaseRoute
-
 from saag_contracts.specs.api import API_ROUTER_PROVIDER, ApiRouterProvider
+from starlette.routing import BaseRoute
 
 _LOGGER = logging.getLogger(__name__)
 

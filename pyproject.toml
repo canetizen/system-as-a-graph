@@ -7,8 +7,9 @@ name = "saag-platform"
 version = "0.1.0"
 description = "SaaG platform: component framework host and the CSCI's external REST edge"
 requires-python = ">=3.11"
+license = "Apache-2.0"
 dependencies = [
-    "saag-contracts",
+    "saag-contracts>=0.1,<1",
     "iPOPO>=3.2,<4",
     # The gateway mounts and unmounts routers at runtime, which touches two
     # pieces of FastAPI's internals; pinned to the minor series that was
@@ -23,6 +24,9 @@ dependencies = [
 [project.scripts]
 saag-api = "saag_platform.cli:serve"
 
+[project.urls]
+Repository = "https://github.com/onuralpyigit/system-as-a-graph"
+
 [project.optional-dependencies]
 dev = [
     "pytest",
@@ -35,6 +39,3 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-
-[tool.uv.sources]
-saag-contracts = { workspace = true }
