@@ -11,10 +11,11 @@ from collections.abc import Callable, Mapping
 from typing import Any
 
 from pelix.framework import BundleContext
+from pelix.internals.registry import ServiceEvent, ServiceReference
 from procrastinate import App, PsycopgConnector
 from sqlalchemy import create_engine, text
 
-from saag_contracts.specs.tasks import JobQueue, TaskProvider
+from saag_contracts.specs.tasks import TASK_PROVIDER, JobQueue, TaskProvider
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -107,11 +108,16 @@ class TaskGateway:
     and the API process and the worker process agree on the task names by
     construction, because both install the same CSUs.
 
-    Unlike the REST edge this does not follow the registry: the worker binds to a
-    fully populated application at import time, and a task appearing afterwards
-    could not be executed by a worker that has already started. Tasks are
-    therefore collected once, and a CSU installed later is picked up by the next
-    restart.
+    Publishes the deferral service **before** collecting tasks, and then follows
+    the registry. The order is not incidental: a CSU that requires the deferral
+    service is not valid until it exists, and an invalid CSU publishes no tasks —
+    so collecting first found nothing and every deferred operation failed with the
+    task missing. Registering first makes such a CSU valid, and the listener picks
+    up the tasks it then publishes.
+
+    A task added after the worker has begun consuming would still not run in that
+    worker, so a CSU installed into a running deployment is picked up at the next
+    restart. What this handles is the CSUs installed at startup.
     """
 
     def __init__(self, database_url: str | None) -> None:
@@ -125,56 +131,88 @@ class TaskGateway:
         self._app: App | None = None
         self._tasks: dict[str, Callable[..., Any]] = {}
         self._registration = None
+        self._context: BundleContext | None = None
 
     @property
     def app(self) -> App | None:
         """The background application, or None when operations run inline."""
         return self._app
 
+    @property
+    def tasks(self) -> Mapping[str, Callable[..., Any]]:
+        """The operations collected from the installed CSUs."""
+        return dict(self._tasks)
+
     def attach(self, context: BundleContext) -> None:
-        """Collect the installed CSUs' tasks and publish the deferral service.
+        """Publish the deferral service, then collect the CSUs' operations.
 
         Args:
-            context: Bundle context to collect from and register on.
+            context: Bundle context to register on and collect from.
         """
-        for reference in context.get_all_service_references(TaskProvider, None) or []:
-            provider = context.get_service(reference)
-            try:
-                published = dict(provider.tasks())
-            # A broken CSU must not deny the others their queue.
-            except Exception:
-                _LOGGER.exception("Task provider %s published nothing", reference)
-                context.unget_service(reference)
-                continue
-            for name, callable_ in published.items():
-                if name in self._tasks:
-                    _LOGGER.error("Task %s is published by more than one CSU", name)
-                self._tasks[name] = callable_
+        self._context = context
 
         if self._database_url:
-            self._app = self._build_app(self._database_url)
+            self._app = App(connector=PsycopgConnector(conninfo=_connection_info(self._database_url)))
+            _ensure_schema(self._database_url, self._app)
             queue: JobQueue = DeferredJobQueue(self._app)
         else:
             _LOGGER.warning("No queue storage configured; operations run inline")
+            # Holds the same dictionary this gateway fills, so a task collected
+            # after the service was published is still reachable through it.
             queue = InlineJobQueue(self._tasks)
 
         self._registration = context.register_service(JobQueue, queue, {})
+
+        context.add_service_listener(self, specification=TASK_PROVIDER)
+        for reference in context.get_all_service_references(TaskProvider, None) or []:
+            self._collect(reference)
+
         _LOGGER.info("Published %d task(s): %s", len(self._tasks), ", ".join(sorted(self._tasks)))
 
     def detach(self) -> None:
-        """Withdraw the deferral service."""
+        """Withdraw the deferral service and stop following the registry."""
+        if self._context is not None:
+            self._context.remove_service_listener(self)
+            self._context = None
         if self._registration is not None:
             self._registration.unregister()
             self._registration = None
         self._tasks.clear()
         self._app = None
 
-    def _build_app(self, url: str) -> App:
-        app = App(connector=PsycopgConnector(conninfo=_connection_info(url)))
-        for name, callable_ in self._tasks.items():
-            app.task(name=name)(callable_)
-        _ensure_schema(url, app)
-        return app
+    def service_changed(self, event: ServiceEvent) -> None:
+        """Collect a CSU's operations when it starts publishing them.
+
+        A CSU that goes away keeps its tasks registered: work it had already
+        accepted is recorded and must still be executable, and a task whose CSU is
+        gone fails on its own terms rather than as a missing name.
+
+        Args:
+            event: Framework service event.
+        """
+        if event.get_kind() == ServiceEvent.REGISTERED:
+            self._collect(event.get_service_reference())
+
+    def _collect(self, reference: ServiceReference) -> None:
+        if self._context is None:
+            return
+        provider = self._context.get_service(reference)
+        try:
+            published = dict(provider.tasks())
+        # A broken CSU must not deny the others their queue.
+        except Exception:
+            _LOGGER.exception("Task provider %s published nothing", reference)
+            self._context.unget_service(reference)
+            return
+
+        for name, callable_ in published.items():
+            if name in self._tasks:
+                _LOGGER.error("Task %s is published by more than one CSU", name)
+                continue
+            self._tasks[name] = callable_
+            if self._app is not None:
+                self._app.task(name=name)(callable_)
+            _LOGGER.info("Collected task %s", name)
 
 
 def _ensure_schema(url: str, app: App) -> None:

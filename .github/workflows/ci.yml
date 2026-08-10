@@ -9,8 +9,48 @@ jobs:
   api:
     name: API (lint + test)
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: saag
+          POSTGRES_PASSWORD: saag
+          POSTGRES_DB: saag
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U saag -d saag"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+      # Stand-in configuration management database, so the SQL adapter is
+      # exercised against a real server rather than only a double.
+      cmdb:
+        image: mysql:8
+        env:
+          MYSQL_ROOT_PASSWORD: saag-root
+          MYSQL_DATABASE: cmdb
+          MYSQL_USER: saag
+          MYSQL_PASSWORD: saag
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "mysqladmin ping -h 127.0.0.1 -u saag -psaag"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    env:
+      DATABASE_URL: postgresql+psycopg://saag:saag@localhost:5432/saag
+      STANDIN_CMDB_URL: mysql+pymysql://saag:saag@127.0.0.1:3306/cmdb
     steps:
       - uses: actions/checkout@v4
+
+      # Service containers cannot mount the init scripts, so the stand-in
+      # database is loaded here instead.
+      - name: Seed the stand-in configuration management database
+        run: |
+          mysql -h 127.0.0.1 -u saag -psaag cmdb < tests/standins/cmdb/01-schema.sql
+          mysql -h 127.0.0.1 -u saag -psaag cmdb < tests/standins/cmdb/02-seed.sql
 
       - uses: astral-sh/setup-uv@v5
         with:

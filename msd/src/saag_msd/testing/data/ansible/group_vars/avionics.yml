@@ -1,0 +1,15 @@
+# Variables shared by every machine of the avionics platform. The network
+# components declared here belong to the platform rather than to one machine.
+site: mission-bay
+network_components:
+  - name: switch-core-1
+    type: switch
+    ports: 24
+    vlan: 10
+  - name: switch-core-2
+    type: switch
+    ports: 24
+    vlan: 20
+  - name: segment-mission
+    type: segment
+    bandwidth_mbps: 1000

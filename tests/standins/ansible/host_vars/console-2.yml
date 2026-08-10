@@ -1,0 +1,4 @@
+cpu_cores: 4
+memory_gb: 16
+operating_system: rhel-9
+rack: A2

@@ -1,0 +1,8 @@
+{
+  "artifacts": [
+    { "name": "system_repo", "version": "1.0.0", "path": "skyline/system_repo/1.0.0/system_repo-1.0.0.tar.gz", "checksum": "sha256:0f1a" },
+    { "name": "nav_app", "version": "1.2.0", "path": "skyline/nav_app/1.2.0/nav_app-1.2.0.tar.gz", "checksum": "sha256:9c3d" },
+    { "name": "sensor_app", "version": "2.0.1", "path": "skyline/sensor_app/2.0.1/sensor_app-2.0.1.tar.gz", "checksum": "sha256:4be7" },
+    { "name": "helper_lib", "version": "1.0.0", "path": "skyline/helper_lib/1.0.0/helper_lib-1.0.0.jar", "checksum": "sha256:71aa" }
+  ]
+}

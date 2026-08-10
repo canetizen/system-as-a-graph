@@ -1,0 +1,91 @@
+{
+  "_comment": [
+    "Data sources a freshly-started stand-in deployment begins with.",
+    "Everything technology-specific is here rather than in code: the SQL a",
+    "configuration management database is read with, the URL template a package",
+    "registry is asked through, where the Ansible tree sits. Moving to the real",
+    "environment means editing this file (or the source configuration screen),",
+    "not the software."
+  ],
+  "sources": [
+    {
+      "source_type": "configuration_management_database",
+      "name": "cmdb-primary",
+      "access_method": "sql",
+      "connection_address": "mysql+pymysql://saag@cmdb:3306/cmdb",
+      "credential": {
+        "username": "saag",
+        "secret_env_var": "MSD_CMDB_PRIMARY_SECRET"
+      },
+      "priority": 0,
+      "parameters": {
+        "queries": {
+          "projects": "SELECT code AS name FROM project ORDER BY code",
+          "platforms": "SELECT pl.code AS name FROM platform pl JOIN project pr ON pr.id = pl.project_id WHERE pr.code = :project ORDER BY pl.code",
+          "versions": "SELECT r.release_no AS version, r.in_service AS effective FROM system_release r JOIN platform pl ON pl.id = r.platform_id JOIN project pr ON pr.id = pl.project_id WHERE pr.code = :project AND pl.code = :platform ORDER BY r.release_no DESC",
+          "software_units": "SELECT c.component_name AS name, c.component_version AS version, c.repository AS source_name FROM release_component c JOIN system_release r ON r.id = c.system_release_id JOIN platform pl ON pl.id = r.platform_id JOIN project pr ON pr.id = pl.project_id WHERE pr.code = :project AND pl.code = :platform AND r.release_no = :version ORDER BY c.component_name"
+        }
+      }
+    },
+    {
+      "source_type": "source_repository",
+      "name": "bitbucket-a",
+      "access_method": "git_https",
+      "connection_address": "http://gitea:3000/bitbucket-a",
+      "credential": null,
+      "priority": 0,
+      "parameters": {}
+    },
+    {
+      "source_type": "source_repository",
+      "name": "bitbucket-b",
+      "access_method": "git_https",
+      "connection_address": "http://gitea:3000/bitbucket-b",
+      "credential": null,
+      "priority": 1,
+      "parameters": {}
+    },
+    {
+      "source_type": "source_repository",
+      "name": "gitlab-main",
+      "access_method": "git_https",
+      "connection_address": "http://gitea:3000/gitlab-main",
+      "credential": null,
+      "priority": 2,
+      "parameters": {}
+    },
+    {
+      "source_type": "package_repository",
+      "name": "artifactory-main",
+      "access_method": "rest",
+      "connection_address": "http://package-registry:8100",
+      "credential": {
+        "username": "saag",
+        "secret_env_var": "MSD_ARTIFACTORY_TOKEN"
+      },
+      "priority": 0,
+      "parameters": {
+        "path_template": "/api/artifacts?name={unit}&version={version}",
+        "results_key": "artifacts",
+        "fields": {
+          "path": "path",
+          "checksum": "checksum"
+        }
+      }
+    },
+    {
+      "source_type": "network_topology",
+      "name": "ansible-tree",
+      "access_method": "ansible",
+      "connection_address": "/etc/saag/ansible",
+      "credential": null,
+      "priority": 0,
+      "parameters": {
+        "inventory": "inventory.yml",
+        "host_vars_dir": "host_vars",
+        "group_vars_dir": "group_vars",
+        "network_components_key": "network_components"
+      }
+    }
+  ]
+}
