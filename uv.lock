@@ -732,7 +732,7 @@ dependencies = [
     { name = "saag-contracts" },
 ]
 
-[package.optional-dependencies]
+[package.dev-dependencies]
 dev = [
     { name = "httpx2" },
     { name = "pytest" },
@@ -742,13 +742,16 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "fastapi" },
-    { name = "httpx2", marker = "extra == 'dev'" },
     { name = "ipopo", specifier = ">=3.2,<4" },
-    { name = "pytest", marker = "extra == 'dev'" },
-    { name = "ruff", marker = "extra == 'dev'" },
     { name = "saag-contracts", editable = "contracts" },
 ]
-provides-extras = ["dev"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "httpx2" },
+    { name = "pytest" },
+    { name = "ruff" },
+]
 
 [[package]]
 name = "saag-contracts"
@@ -758,19 +761,20 @@ dependencies = [
     { name = "ipopo" },
 ]
 
-[package.optional-dependencies]
+[package.dev-dependencies]
 dev = [
     { name = "pytest" },
     { name = "ruff" },
 ]
 
 [package.metadata]
-requires-dist = [
-    { name = "ipopo", specifier = ">=3.2,<4" },
-    { name = "pytest", marker = "extra == 'dev'" },
-    { name = "ruff", marker = "extra == 'dev'" },
+requires-dist = [{ name = "ipopo", specifier = ">=3.2,<4" }]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "pytest" },
+    { name = "ruff" },
 ]
-provides-extras = ["dev"]
 
 [[package]]
 name = "saag-csm-data-binder"
@@ -782,7 +786,7 @@ dependencies = [
     { name = "saag-contracts" },
 ]
 
-[package.optional-dependencies]
+[package.dev-dependencies]
 dev = [
     { name = "httpx2" },
     { name = "pytest" },
@@ -792,13 +796,16 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "fastapi" },
-    { name = "httpx2", marker = "extra == 'dev'" },
     { name = "ipopo", specifier = ">=3.2,<4" },
-    { name = "pytest", marker = "extra == 'dev'" },
-    { name = "ruff", marker = "extra == 'dev'" },
     { name = "saag-contracts", editable = "contracts" },
 ]
-provides-extras = ["dev"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "httpx2" },
+    { name = "pytest" },
+    { name = "ruff" },
+]
 
 [[package]]
 name = "saag-csm-model-manager"
@@ -810,7 +817,7 @@ dependencies = [
     { name = "saag-contracts" },
 ]
 
-[package.optional-dependencies]
+[package.dev-dependencies]
 dev = [
     { name = "httpx2" },
     { name = "pytest" },
@@ -820,13 +827,16 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "fastapi" },
-    { name = "httpx2", marker = "extra == 'dev'" },
     { name = "ipopo", specifier = ">=3.2,<4" },
-    { name = "pytest", marker = "extra == 'dev'" },
-    { name = "ruff", marker = "extra == 'dev'" },
     { name = "saag-contracts", editable = "contracts" },
 ]
-provides-extras = ["dev"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "httpx2" },
+    { name = "pytest" },
+    { name = "ruff" },
+]
 
 [[package]]
 name = "saag-frd"
@@ -838,7 +848,7 @@ dependencies = [
     { name = "saag-contracts" },
 ]
 
-[package.optional-dependencies]
+[package.dev-dependencies]
 dev = [
     { name = "httpx2" },
     { name = "pytest" },
@@ -848,13 +858,16 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "fastapi" },
-    { name = "httpx2", marker = "extra == 'dev'" },
     { name = "ipopo", specifier = ">=3.2,<4" },
-    { name = "pytest", marker = "extra == 'dev'" },
-    { name = "ruff", marker = "extra == 'dev'" },
     { name = "saag-contracts", editable = "contracts" },
 ]
-provides-extras = ["dev"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "httpx2" },
+    { name = "pytest" },
+    { name = "ruff" },
+]
 
 [[package]]
 name = "saag-msd"
@@ -870,7 +883,7 @@ dependencies = [
     { name = "sqlalchemy" },
 ]
 
-[package.optional-dependencies]
+[package.dev-dependencies]
 dev = [
     { name = "httpx2" },
     { name = "pytest" },
@@ -880,17 +893,20 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "fastapi" },
-    { name = "httpx2", marker = "extra == 'dev'" },
     { name = "ipopo", specifier = ">=3.2,<4" },
     { name = "psycopg", extras = ["binary"] },
     { name = "pymysql" },
-    { name = "pytest", marker = "extra == 'dev'" },
     { name = "pyyaml" },
-    { name = "ruff", marker = "extra == 'dev'" },
     { name = "saag-contracts", editable = "contracts" },
     { name = "sqlalchemy" },
 ]
-provides-extras = ["dev"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "httpx2" },
+    { name = "pytest" },
+    { name = "ruff" },
+]
 
 [[package]]
 name = "saag-platform"
@@ -906,7 +922,7 @@ dependencies = [
     { name = "uvicorn", extra = ["standard"] },
 ]
 
-[package.optional-dependencies]
+[package.dev-dependencies]
 dev = [
     { name = "httpx2" },
     { name = "pytest" },
@@ -916,17 +932,20 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "fastapi", specifier = "~=0.141" },
-    { name = "httpx2", marker = "extra == 'dev'" },
     { name = "ipopo", specifier = ">=3.2,<4" },
     { name = "procrastinate" },
     { name = "psycopg", extras = ["binary"] },
-    { name = "pytest", marker = "extra == 'dev'" },
-    { name = "ruff", marker = "extra == 'dev'" },
     { name = "saag-contracts", editable = "contracts" },
     { name = "sqlalchemy" },
     { name = "uvicorn", extras = ["standard"] },
 ]
-provides-extras = ["dev"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "httpx2" },
+    { name = "pytest" },
+    { name = "ruff" },
+]
 
 [[package]]
 name = "saag-scg"
@@ -938,7 +957,7 @@ dependencies = [
     { name = "saag-contracts" },
 ]
 
-[package.optional-dependencies]
+[package.dev-dependencies]
 dev = [
     { name = "httpx2" },
     { name = "pytest" },
@@ -948,13 +967,16 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "fastapi" },
-    { name = "httpx2", marker = "extra == 'dev'" },
     { name = "ipopo", specifier = ">=3.2,<4" },
-    { name = "pytest", marker = "extra == 'dev'" },
-    { name = "ruff", marker = "extra == 'dev'" },
     { name = "saag-contracts", editable = "contracts" },
 ]
-provides-extras = ["dev"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "httpx2" },
+    { name = "pytest" },
+    { name = "ruff" },
+]
 
 [[package]]
 name = "saag-vae-design-analyzer"
@@ -966,7 +988,7 @@ dependencies = [
     { name = "saag-contracts" },
 ]
 
-[package.optional-dependencies]
+[package.dev-dependencies]
 dev = [
     { name = "httpx2" },
     { name = "pytest" },
@@ -976,13 +998,16 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "fastapi" },
-    { name = "httpx2", marker = "extra == 'dev'" },
     { name = "ipopo", specifier = ">=3.2,<4" },
-    { name = "pytest", marker = "extra == 'dev'" },
-    { name = "ruff", marker = "extra == 'dev'" },
     { name = "saag-contracts", editable = "contracts" },
 ]
-provides-extras = ["dev"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "httpx2" },
+    { name = "pytest" },
+    { name = "ruff" },
+]
 
 [[package]]
 name = "saag-vae-design-evaluator"
@@ -994,7 +1019,7 @@ dependencies = [
     { name = "saag-contracts" },
 ]
 
-[package.optional-dependencies]
+[package.dev-dependencies]
 dev = [
     { name = "httpx2" },
     { name = "pytest" },
@@ -1004,13 +1029,16 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "fastapi" },
-    { name = "httpx2", marker = "extra == 'dev'" },
     { name = "ipopo", specifier = ">=3.2,<4" },
-    { name = "pytest", marker = "extra == 'dev'" },
-    { name = "ruff", marker = "extra == 'dev'" },
     { name = "saag-contracts", editable = "contracts" },
 ]
-provides-extras = ["dev"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "httpx2" },
+    { name = "pytest" },
+    { name = "ruff" },
+]
 
 [[package]]
 name = "saag-vae-design-verifier"
@@ -1022,7 +1050,7 @@ dependencies = [
     { name = "saag-contracts" },
 ]
 
-[package.optional-dependencies]
+[package.dev-dependencies]
 dev = [
     { name = "httpx2" },
     { name = "pytest" },
@@ -1032,13 +1060,16 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "fastapi" },
-    { name = "httpx2", marker = "extra == 'dev'" },
     { name = "ipopo", specifier = ">=3.2,<4" },
-    { name = "pytest", marker = "extra == 'dev'" },
-    { name = "ruff", marker = "extra == 'dev'" },
     { name = "saag-contracts", editable = "contracts" },
 ]
-provides-extras = ["dev"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "httpx2" },
+    { name = "pytest" },
+    { name = "ruff" },
+]
 
 [[package]]
 name = "saag-vae-operations-panel"
@@ -1054,7 +1085,7 @@ dependencies = [
     { name = "sqlalchemy" },
 ]
 
-[package.optional-dependencies]
+[package.dev-dependencies]
 dev = [
     { name = "httpx2" },
     { name = "pytest" },
@@ -1064,17 +1095,20 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "fastapi" },
-    { name = "httpx2", marker = "extra == 'dev'" },
     { name = "ipopo", specifier = ">=3.2,<4" },
     { name = "ldap3" },
     { name = "psycopg", extras = ["binary"] },
     { name = "pyjwt" },
-    { name = "pytest", marker = "extra == 'dev'" },
-    { name = "ruff", marker = "extra == 'dev'" },
     { name = "saag-contracts", editable = "contracts" },
     { name = "sqlalchemy" },
 ]
-provides-extras = ["dev"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "httpx2" },
+    { name = "pytest" },
+    { name = "ruff" },
+]
 
 [[package]]
 name = "six"

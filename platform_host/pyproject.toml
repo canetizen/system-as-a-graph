@@ -27,7 +27,8 @@ saag-api = "saag_platform.cli:serve"
 [project.urls]
 Repository = "https://github.com/onuralpyigit/system-as-a-graph"
 
-[project.optional-dependencies]
+
+[dependency-groups]
 dev = [
     "pytest",
     "httpx2",

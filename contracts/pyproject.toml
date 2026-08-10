@@ -15,7 +15,8 @@ dependencies = [
 [project.urls]
 Repository = "https://github.com/onuralpyigit/system-as-a-graph"
 
-[project.optional-dependencies]
+
+[dependency-groups]
 dev = [
     "pytest",
     "ruff",

@@ -21,15 +21,16 @@ dependencies = [
 [project.urls]
 Repository = "https://github.com/onuralpyigit/system-as-a-graph"
 
-[project.optional-dependencies]
+
+[project.entry-points."saag.bundles"]
+vae-01 = "saag_vae_operations_panel.bundle"
+
+[dependency-groups]
 dev = [
     "pytest",
     "httpx2",
     "ruff",
 ]
-
-[project.entry-points."saag.bundles"]
-vae-01 = "saag_vae_operations_panel.bundle"
 
 [tool.setuptools.packages.find]
 where = ["src"]

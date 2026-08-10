@@ -119,7 +119,8 @@ jobs:
       - name: Install only this member
         run: |
           uv venv --python 3.11
-          uv pip install -e ./contracts -e "./${{ matrix.member }}[dev]"
+          uv pip install -e ./contracts -e "./${{ matrix.member }}" \
+            --group "./${{ matrix.member }}/pyproject.toml:dev"
 
       # A member's own file must state only what is true of it in any repository,
       # so that moving it to one needs no edit. A workspace source is the usual

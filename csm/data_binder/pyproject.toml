@@ -17,15 +17,16 @@ dependencies = [
 [project.urls]
 Repository = "https://github.com/onuralpyigit/system-as-a-graph"
 
-[project.optional-dependencies]
+
+[project.entry-points."saag.bundles"]
+csm-02 = "saag_csm_data_binder.bundle"
+
+[dependency-groups]
 dev = [
     "pytest",
     "httpx2",
     "ruff",
 ]
-
-[project.entry-points."saag.bundles"]
-csm-02 = "saag_csm_data_binder.bundle"
 
 [tool.setuptools.packages.find]
 where = ["src"]
