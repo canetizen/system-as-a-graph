@@ -139,12 +139,38 @@ services:
     volumes:
       - gitea-data-dev:/data
 
+  # The unit trees the git stand-in serves are MSD's published test data, so they
+  # come from the distribution that publishes them. Copied into a volume because
+  # only the CSCI image has that distribution installed, and the seeder is an
+  # ordinary git client.
+  standin-units:
+    build:
+      context: .
+      target: dev
+      secrets:
+        - github_token
+    image: saag-api:dev
+    container_name: saag-standin-units-dev
+    command:
+      - "python"
+      - "-c"
+      - |
+        import os, shutil
+        import saag_msd.testing as testing
+        trees = os.path.join(os.path.dirname(testing.__file__), "data", "source_repository")
+        shutil.copytree(trees, "/units", dirs_exist_ok=True)
+        print("unit trees:", sorted(os.listdir("/units")))
+    volumes:
+      - standin-units:/units
+
   gitea-seed:
     image: alpine/git:latest
     container_name: saag-gitea-seed-dev
     depends_on:
       gitea:
         condition: service_healthy
+      standin-units:
+        condition: service_completed_successfully
     environment:
       GITEA_URL: http://gitea:3000
       GITEA_ADMIN_USER: ${GITEA_ADMIN_USER:-saag}
@@ -155,11 +181,7 @@ services:
       GITEA_TOKEN_FILE: /tmp/gitea-token
     volumes:
       - ./tests/standins:/standins:ro
-      # The unit trees are MSD's published test data, so the seeder reads them
-      # from that distribution rather than from a copy beside itself. Mounted
-      # outside /standins because that mount is read-only and Docker cannot
-      # create a mountpoint inside it.
-      - ./msd/src/saag_msd/testing/data/source_repository:/units:ro
+      - standin-units:/units:ro
     entrypoint: ["/bin/sh", "-c", "apk add --no-cache curl >/dev/null && sh /standins/git/seed.sh"]
 
   openldap:
@@ -215,6 +237,7 @@ services:
       - /app/node_modules
 
 volumes:
+  standin-units:
   postgres-data-dev:
   msd-output-dev:
   msd-workspace-dev:

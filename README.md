@@ -149,6 +149,13 @@ docker compose -f compose.dev.yml up gitea-seed          # one-time repository s
 docker compose -f compose.dev.yml exec api python -m pytest tests/acceptance
 ```
 
+The seeding step takes the unit trees it serves from `saag-msd`'s published test
+data rather than from this repository, since that is where they live; `up
+gitea-seed` brings up the step that extracts them.
+
+```bash
+```
+
 To run a reduced CSCI — the state every SDP increment before the last is in — name
 the bundles to install or the CSUs to leave out:
 

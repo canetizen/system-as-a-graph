@@ -53,6 +53,8 @@ jobs:
       - name: Bring up the stand-in stack
         run: docker compose -f compose.dev.yml up -d --wait api worker postgres cmdb gitea openldap package-registry
 
+      # Takes the unit trees from saag-msd's published test data, so the step
+      # depends on the CSCI image rather than on anything in this repository.
       - name: Seed the stand-in git server
         run: docker compose -f compose.dev.yml up gitea-seed
 
