@@ -111,16 +111,27 @@ Increment 0 establishes the repository scaffolding, shared infrastructure, and d
 
 **Test:** Verify MSD's five jobs (source connections, config pull, version tracking, file transfer, validation/assembly) and the login/production screens, then run an end-to-end MSD-file production.
 
-**Packaging:** Stand up MSD and web services with a metadata database, a settings template for the four sources plus LDAP, and stand-in external systems for demoing.
+**Packaging:** Stand up the MSD and VAE-01 distributions and the web service with a metadata database, a background worker, a settings template for the four sources plus LDAP, and stand-in external systems for demoing.
 
 **Demo:** An operator authenticates via LDAP, selects a project/platform/system version, configures and connects to all four external data sources, triggers Model Setup Data production end-to-end, and observes accessibility status and any errors, producing a valid, verified Model Setup Data file.
 
 **Definition of Done:**
-- [ ] MSD (MSD.1–23) and login/MSD-control (VAE-01.1–8) built and working
+- [x] MSD (MSD.1–23) and login/MSD-control (VAE-01.1–8) built and working
 - [ ] CDR-09, CDR-10, CDR-17, CDR-18, CDR-19, CDR-20, CDR-22 resolved or deferred
-- [ ] MSD and login/workflow tests pass
-- [ ] MSD/web services deploy together
-- [ ] Demo run end-to-end
+- [x] MSD and login/workflow tests pass
+- [x] Both distributions install on their own alongside `saag-contracts`, and their bundles reach a valid state in the framework
+- [x] MSD/VAE-01/web services deploy together
+- [x] Demo run end-to-end, automated as `tests/acceptance/`
+
+The CDR items remain open, which is what keeps this increment from being Done. The
+adapters shipped here *imply* answers to several — SQL over SQLAlchemy for the
+configuration management database, git over HTTPS for the source repository, REST
+for the package repository, an Ansible inventory for the topology, and LDAP direct
+bind for the directory — so closing CDR-17 to CDR-20 and CDR-22 is now recording a
+decision already made in code rather than making a new one. CDR-09 (automatic
+versus manual topology acquisition) and CDR-10 (the mandatory file list) are
+genuine choices: both paths are implemented and the shipped rules file carries a
+provisional list.
 
 ### Increment 2: Model Manager
 

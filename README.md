@@ -29,7 +29,9 @@ Per the SRS, SaaG is organized into six Computer Software Components (CSCs) and 
 
 ## Current status
 
-Implementation has begun. The repository has the full documentation set, the component platform that hosts the CSUs, and a scaffolded Next.js frontend ([`web/`](web/)). All ten CSUs are installed and served as components, but their internals — use cases, domain model, adapters — are still empty; each currently publishes only a health endpoint.
+Implementation has begun. The repository has the full documentation set, the component platform that hosts the CSUs, and a scaffolded Next.js frontend ([`web/`](web/)). All ten CSUs are installed and served as components.
+
+**MSD** and **VAE-01** are implemented, which is SDP Increment 1: an operator authenticates against a directory service, selects a project, platform and system version, reaches the four external data sources, and produces a Model Setup Data file through a background worker. `tests/acceptance/` runs that scenario end to end against the stand-in external systems. The remaining eight CSUs publish only a health endpoint so far.
 
 ## Documentation
 
@@ -101,6 +103,14 @@ Each distribution is also testable on its own — the property that lets it move
 
 ```bash
 cd msd && uv run pytest
+```
+
+To run the CSCI against the stand-in external systems, and the Increment 1 demo against it:
+
+```bash
+docker compose -f compose.dev.yml up -d --wait
+docker compose -f compose.dev.yml up gitea-seed          # one-time repository seeding
+docker compose -f compose.dev.yml exec api python -m pytest tests/acceptance
 ```
 
 To run a reduced CSCI, name the bundles to install or the CSUs to leave out:

@@ -105,7 +105,7 @@ Artım 0, depo iskeletini, paylaşılan altyapıyı ve dokümantasyon iskeletini
 
 **Tamamlar:** SaaG-MKV
 
-**Tasarım:** MKV (SRS MKV.1–23) ve oturum açma/MKV kontrol ekranı (DAD-01.1–8) tam olarak tasarlanmıştır. Hâlâ açık olan konular: her dış bağlantı ve LDAP için kesin protokol, topoloji alım yöntemi ve zorunlu dosya listesi (CDR-09, CDR-10, CDR-17, CDR-18, CDR-19, CDR-20, CDR-22, CDR-24).
+**Tasarım:** MKV (SRS MKV.1–23) ve oturum açma/MKV kontrol ekranı (DAD-01.1–8) tam olarak tasarlanmıştır. Hâlâ açık olan konular: her dış bağlantı ve LDAP için kesin protokol, topoloji alım yöntemi ve zorunlu dosya listesi (CDR-09, CDR-10, CDR-17, CDR-18, CDR-19, CDR-20, CDR-22). MKV → CSM-01 aktarımı çözümlenmiştir (CDR-24, SDD §2.3.1).
 
 **Geliştirme:** MKV arka ucu inşa edilir — dört dış kaynaktan veriye bağlanma, doğrulama ve derleme — ayrıca oturum açma/oturum yönetimi eklenir. Ön yüzde: oturum açma, proje/platform/sürüm seçimi, kaynak yapılandırması ve bir MKV üretim/durum ekranı.
 
@@ -116,11 +116,22 @@ Artım 0, depo iskeletini, paylaşılan altyapıyı ve dokümantasyon iskeletini
 **Demo:** Bir operatör LDAP üzerinden kimlik doğrular, bir proje/platform/sistem sürümü seçer, dört dış veri kaynağının tamamını yapılandırır ve bunlara bağlanır, Model Kurulum Verisi üretimini uçtan uca tetikler ve erişilebilirlik durumunu ve olası hataları gözlemler; sonuçta geçerli ve doğrulanmış bir Model Kurulum Verisi dosyası üretilir.
 
 **Tamamlanma Tanımı:**
-- [ ] MKV (MKV.1–23) ve oturum açma/MKV kontrolü (DAD-01.1–8) inşa edildi ve çalışıyor
-- [ ] CDR-09, CDR-10, CDR-17, CDR-18, CDR-19, CDR-20, CDR-22, CDR-24 çözümlendi veya ertelendi
-- [ ] MKV ve oturum açma/iş akışı testleri geçiyor
-- [ ] MKV/web servisleri birlikte dağıtılıyor
-- [ ] Demo uçtan uca çalıştırıldı
+- [x] MKV (MKV.1–23) ve oturum açma/MKV kontrolü (DAD-01.1–8) inşa edildi ve çalışıyor
+- [ ] CDR-09, CDR-10, CDR-17, CDR-18, CDR-19, CDR-20, CDR-22 çözümlendi veya ertelendi
+- [x] MKV ve oturum açma/iş akışı testleri geçiyor
+- [x] Her iki dağıtım da `saag-contracts` ile birlikte tek başına kuruluyor ve bundle'ları çerçevede geçerli duruma ulaşıyor
+- [x] MKV/DAD-01/web servisleri birlikte dağıtılıyor
+- [x] Demo uçtan uca çalıştırıldı, `tests/acceptance/` olarak otomatikleştirildi
+
+CDR maddeleri açık kaldığı için bu artım Tamamlanmış sayılmıyor. Burada teslim
+edilen adaptörler birkaçının cevabını *ima ediyor* — yapılandırma yönetimi
+veritabanı için SQLAlchemy üzerinden SQL, kaynak kodu deposu için HTTPS üzerinden
+git, paket deposu için REST, topoloji için bir Ansible envanteri, dizin servisi
+için LDAP doğrudan bind — dolayısıyla CDR-17 ile CDR-20 ve CDR-22'yi kapatmak artık
+yeni bir karar vermek değil, kodda verilmiş bir kararı kayda geçirmek. CDR-09
+(otomatik mi manuel mi topoloji edinimi) ve CDR-10 (zorunlu dosya listesi) gerçek
+seçimler: iki yol da gerçekleştirilmiş durumda ve paketlenen kurallar dosyası
+geçici bir liste taşıyor.
 
 ### Artım 2: Model Yöneticisi
 
@@ -129,7 +140,7 @@ Artım 0, depo iskeletini, paylaşılan altyapıyı ve dokümantasyon iskeletini
 | CSM-01 *(tamamlandı)* | Model Yöneticisi (CSM-01.1–31) |
 | DAD-01 *(devam ediyor)* | Modelin Oluşturulması ve Görüntülenmesi (DAD-01.9, 19–20) |
 
-**Tasarım:** Model Yöneticisi (SRS CSM-01.1–31) ve model inşa/gezinme ekranı (DAD-01.9, 19–20) tam olarak tasarlanmıştır. En büyük açık: modelin depolama teknolojisi ve şeması henüz kararlaştırılmamıştır (CDR-29–30); eşzamanlılık sınırları ve DAD okuma protokolü de açıktır (CDR-16, CDR-28).
+**Tasarım:** Model Yöneticisi (SRS CSM-01.1–31) ve model inşa/gezinme ekranı (DAD-01.9, 19–20) tam olarak tasarlanmıştır. En büyük açık: modelin depolama teknolojisi ve şeması henüz kararlaştırılmamıştır (CDR-29–30); eşzamanlılık sınırları da açıktır (CDR-16). CSM → DAD erişim mekanizması çözümlenmiştir (CDR-28, SDD §2.3.1); CSM-01'in bu mekanizma üzerinden neyi sunduğu bu CSU ile birlikte tasarlanır.
 
 **Geliştirme:** Model Yöneticisi arka ucu bir graf veritabanı üzerinde inşa edilir — Model Kurulum Verisini bir grafa dönüştürme, eşzamanlı erişim altında güvende tutma, izole değerlendirme kopyalarını destekleme. Ön yüzde: model gezinme (arama/süzme/yakınlaştırma/kaydırma/öznitelikler).
 
@@ -141,7 +152,7 @@ Artım 0, depo iskeletini, paylaşılan altyapıyı ve dokümantasyon iskeletini
 
 **Tamamlanma Tanımı:**
 - [ ] Model Yöneticisi (CSM-01.1–31) ve gezinme ekranı (DAD-01.9, 19–20) inşa edildi ve çalışıyor
-- [ ] CDR-16, CDR-28, CDR-29–30 çözümlendi veya ertelendi
+- [ ] CDR-16, CDR-29–30 çözümlendi veya ertelendi
 - [ ] Model Yöneticisi ve gezinme testleri, Artım 1'inkini tamamlayacak şekilde geçiyor
 - [ ] Model Yöneticisi servisi ve graf veritabanı birlikte dağıtılıyor
 - [ ] Demo uçtan uca çalıştırıldı
@@ -180,7 +191,7 @@ Artım 0, depo iskeletini, paylaşılan altyapıyı ve dokümantasyon iskeletini
 
 **Tamamlar:** SaaG-SUR
 
-**Tasarım:** Senaryo Üreteci (SRS SUR.1–7) ve sentetik veri kurulum ekranı (DAD-01.11, 13–15) tam olarak tasarlanmıştır. Hâlâ açık olan konular: sentetik verinin neyi simüle edeceği, Analitik Değerlendirme Verisi biçimi ve SUR→AVH devir teslimi (CDR-11, CDR-12, CDR-25).
+**Tasarım:** Senaryo Üreteci (SRS SUR.1–7) ve sentetik veri kurulum ekranı (DAD-01.11, 13–15) tam olarak tasarlanmıştır. Hâlâ açık olan konular: sentetik verinin neyi simüle edeceği ve Analitik Değerlendirme Verisi biçimi (CDR-11, CDR-12). SUR → AVH devir teslim mekanizması çözümlenmiştir (CDR-25, SDD §2.3.1); çağrı arayüzü, CDR-11 ve CDR-12 elverdiğinde bu CSU ile birlikte tanımlanır.
 
 **Geliştirme:** Senaryo Üreteci inşa edilir (girdileri alma, izlenebilir sentetik veri üretme ve kayıt altına alma) ve Analitik Veri Hazırlamanın sentetik-alım yarısı geliştirilir. Ön yüzde: senaryo girdisi ve üretim/durum ekranları.
 
@@ -192,7 +203,7 @@ Artım 0, depo iskeletini, paylaşılan altyapıyı ve dokümantasyon iskeletini
 
 **Tamamlanma Tanımı:**
 - [ ] Senaryo Üreteci (SUR.1–7) ve kurulum ekranı (DAD-01.11, 13–15) inşa edildi ve çalışıyor
-- [ ] CDR-11, CDR-12, CDR-25 çözümlendi veya ertelendi
+- [ ] CDR-11, CDR-12 çözümlendi veya ertelendi
 - [ ] Senaryo Üreteci ve sentetik veri yolu testleri geçiyor
 - [ ] Her iki servis birlikte dağıtılıyor
 - [ ] Demo uçtan uca çalıştırıldı
@@ -208,7 +219,7 @@ Artım 0, depo iskeletini, paylaşılan altyapıyı ve dokümantasyon iskeletini
 
 **Tamamlar:** SaaG-SKV, SaaG-AVH, SaaG-CSM
 
-**Tasarım:** Analitik Veri Bağlayıcısı (SRS CSM-02.1–6) ve Saha Kayıtları Veri Tabanı (SKV.1–5), saha kaydı kaynak seçimi ve bağlama durumu ekranlarıyla (DAD-01.10, 12, 16) birlikte tam olarak tasarlanmıştır. Hâlâ açık olan konular: saha kaydı depolama kapasitesi, SKV dış arayüz protokolü, SKV→AVH ve AVH→CSM-02 devir teslimleri ve bir önceki artımdan devreden Analitik Değerlendirme Verisi format kararı (CDR-15, CDR-21, CDR-26, CDR-27, CDR-12).
+**Tasarım:** Analitik Veri Bağlayıcısı (SRS CSM-02.1–6) ve Saha Kayıtları Veri Tabanı (SKV.1–5), saha kaydı kaynak seçimi ve bağlama durumu ekranlarıyla (DAD-01.10, 12, 16) birlikte tam olarak tasarlanmıştır. Hâlâ açık olan konular: saha kaydı depolama kapasitesi, SKV dış arayüz protokolü ve bir önceki artımdan devreden Analitik Değerlendirme Verisi format kararı (CDR-15, CDR-21, CDR-12). SKV → AVH ve AVH → CSM-02 devir teslim mekanizmaları çözümlenmiştir (CDR-26, CDR-27, SDD §2.3.1); çağrı arayüzleri bu CSU'larla birlikte tanımlanır.
 
 **Geliştirme:** Saha Kayıtları Veri Tabanı (yükleme/kataloglama/arama), Analitik Veri Hazırlamanın saha-alım yarısı ve Veri Bağlayıcısı (davranışsal veriyi modeli değiştirmeden bağlama) inşa edilir. Ön yüzde: saha kaydı kaynak seçimi, yükleme/kataloglama ve bağlama durumu ekranları.
 
@@ -220,7 +231,7 @@ Artım 0, depo iskeletini, paylaşılan altyapıyı ve dokümantasyon iskeletini
 
 **Tamamlanma Tanımı:**
 - [ ] Veri Bağlayıcısı (CSM-02.1–6), SKV (SKV.1–5) ve saha seçimi/bağlama durumu ekranları (DAD-01.10, 12, 16) inşa edildi ve çalışıyor
-- [ ] CDR-15, CDR-21, CDR-26, CDR-27, CDR-12 çözümlendi veya ertelendi
+- [ ] CDR-15, CDR-21, CDR-12 çözümlendi veya ertelendi
 - [ ] Saha kaydı, bağlayıcı ve saha veri yolu testleri, Artım 4'ünkini tamamlayacak şekilde geçiyor
 - [ ] Yeni servisler ve telemetri veritabanı birlikte dağıtılıyor
 - [ ] Demo uçtan uca çalıştırıldı
@@ -232,7 +243,7 @@ Artım 0, depo iskeletini, paylaşılan altyapıyı ve dokümantasyon iskeletini
 | DAD-03 *(tamamlandı)* | Tasarım Analizcisi (DAD-03.1–21) |
 | DAD-01 *(devam ediyor)* | Simülasyon Senaryolarının Kaydedilmesi (DAD-01.25) |
 
-**Tasarım:** Tasarım Analizcisi (SRS DAD-03.1–21) ve simülasyon kayıt ekranı (DAD-01.25) tam olarak tasarlanmıştır. Hiçbir madde bunu doğrudan adlandırmasa da, iki devreden karara bağımlıdır: DAD okuma protokolü ve modelin depolama/şeması (CDR-28, CDR-29–30).
+**Tasarım:** Tasarım Analizcisi (SRS DAD-03.1–21) ve simülasyon kayıt ekranı (DAD-01.25) tam olarak tasarlanmıştır. Hiçbir madde bunu doğrudan adlandırmasa da, devreden bir karara bağımlıdır: modelin depolaması ve şeması (CDR-29–30).
 
 **Geliştirme:** Tasarım Analizcisinin üç motoru inşa edilir (sentetik veri simülasyonu, saha verisi analizi, sapma tespiti). Ön yüzde: simülasyon senaryosu kaydı ve yüksek hacimli saha izi grafikleri.
 
@@ -244,7 +255,7 @@ Artım 0, depo iskeletini, paylaşılan altyapıyı ve dokümantasyon iskeletini
 
 **Tamamlanma Tanımı:**
 - [ ] Tasarım Analizcisi (DAD-03.1–21) ve kayıt ekranı (DAD-01.25) inşa edildi ve çalışıyor
-- [ ] Devreden CDR-28, CDR-29–30 çözümlendi veya ertelendi
+- [ ] Devreden CDR-29–30 çözümlendi veya ertelendi
 - [ ] Tasarım Analizcisi testleri geçiyor
 - [ ] Tasarım Analizcisi servisi dağıtılıyor ve çalışıyor
 - [ ] Demo uçtan uca çalıştırıldı
