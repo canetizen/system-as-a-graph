@@ -12,9 +12,9 @@ from fastapi.testclient import TestClient
 from saag_vae_operations_panel.api.routes import build_router
 
 
-def test_health_is_served_by_the_csu_router():
+def test_health_is_served_by_the_csu_router(panel):
     app = FastAPI()
-    app.include_router(build_router())
+    app.include_router(build_router(panel))
 
     response = TestClient(app).get("/vae/operations-panel/health")
 
