@@ -7,20 +7,25 @@ __pycache__/
 *.so
 
 # Distribution / packaging
+# Anchored to the repository root: these are names setuptools writes there, and
+# several of them — `build`, `lib`, `var`, `parts` — are also ordinary names for a
+# package directory. Unanchored, `build/` hid a real source directory from every
+# clone while leaving it present in the working tree that ignored it.
 .Python
-build/
-develop-eggs/
+/build/
+/develop-eggs/
+/downloads/
+/eggs/
+/.eggs/
+/lib/
+/lib64/
+/parts/
+/sdist/
+/var/
+/wheels/
+/share/python-wheels/
+# Not anchored: a build writes these inside whichever distribution is being built.
 dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
