@@ -1,0 +1,168 @@
+"""
+Description: Verifies MSD's PostgreSQL repositories against a real database.
+Created by: Mustafa Can Caliskan
+Date: 2026-07-31
+"""
+
+from __future__ import annotations
+
+import os
+from datetime import UTC, datetime
+from pathlib import Path
+
+import pytest
+
+from saag_contracts.errors.acquisition import AcquisitionError, AcquisitionStatus
+from saag_contracts.types.identifiers import system_version
+from saag_msd.adapters.file.model_setup_data_store import FileModelSetupDataStore
+from saag_msd.adapters.postgres.repositories import (
+    PostgresAcquisitionErrorRepository,
+    PostgresDataSourceConfigurationRepository,
+    PostgresModelSetupDataRepository,
+    PostgresVersionInventoryRepository,
+)
+from saag_msd.adapters.postgres.tables import (
+    acquisition_errors,
+    build_engine,
+    create_schema,
+    data_sources,
+    model_setup_data_records,
+    version_inventory_entries,
+)
+from saag_msd.model.data_source import (
+    AccessMethod,
+    CredentialReference,
+    DataSourceConfiguration,
+    DataSourceType,
+)
+from saag_msd.model.version_inventory import (
+    SoftwareUnitVersion,
+    SoftwareUnitVersionInventory,
+)
+from saag_msd.ports.repositories import ModelSetupDataRecord
+
+#: The connection string this suite runs against. Read here rather than inside
+#: the CSU: the deployment supplies it as a component property, and a test is its
+#: own deployment.
+DATABASE_URL_VARIABLE = "DATABASE_URL"
+
+pytestmark = pytest.mark.skipif(
+    os.getenv(DATABASE_URL_VARIABLE) is None,
+    reason=f"{DATABASE_URL_VARIABLE} is not set; PostgreSQL repositories are not exercised",
+)
+
+SCOPE = system_version("skyline", "avionics", "1.0.0")
+
+
+@pytest.fixture
+def engine():
+    """An engine against a freshly-created, empty MSD schema."""
+    from sqlalchemy import delete
+
+    engine = build_engine(os.environ[DATABASE_URL_VARIABLE])
+    create_schema(engine)
+
+    with engine.begin() as connection:
+        for table in (
+            acquisition_errors,
+            model_setup_data_records,
+            version_inventory_entries,
+            data_sources,
+        ):
+            connection.execute(delete(table))
+
+    return engine
+
+
+def test_data_source_configuration_round_trips(engine):
+    """A configuration survives a write/read cycle, secret reference included."""
+    repository = PostgresDataSourceConfigurationRepository(engine)
+    configuration = DataSourceConfiguration(
+        source_type=DataSourceType.SOURCE_REPOSITORY,
+        name="bitbucket-a",
+        access_method=AccessMethod.GIT_HTTPS,
+        connection_address="https://bitbucket.example/scm/saag",
+        credential=CredentialReference(username="ops", secret_env_var="BB_A_TOKEN"),
+        priority=2,
+    )
+
+    repository.save(configuration)
+
+    assert repository.get(DataSourceType.SOURCE_REPOSITORY, "bitbucket-a") == configuration
+    assert repository.list_all() == [configuration]
+    assert repository.delete(DataSourceType.SOURCE_REPOSITORY, "bitbucket-a") is True
+    assert repository.list_all() == []
+
+
+def test_inventory_keeps_baseline_and_candidate_side_by_side(engine):
+    """Both rows for one unit persist, distinguished by the candidate flag."""
+    repository = PostgresVersionInventoryRepository(engine)
+    inventory = SoftwareUnitVersionInventory(system_version=SCOPE)
+    inventory.record(SoftwareUnitVersion(unit_name="nav_app", version="1.2.0"))
+    inventory.add_candidate(SoftwareUnitVersion(unit_name="nav_app", version="1.3.0"))
+
+    repository.save(inventory)
+
+    stored = repository.get(SCOPE)
+    assert [entry.version for entry in stored.baseline] == ["1.2.0"]
+    assert [entry.version for entry in stored.candidates] == ["1.3.0"]
+
+
+def test_acquisition_errors_are_queryable_by_run_and_platform(engine):
+    """A recorded failure comes back with its full attribution intact."""
+    repository = PostgresAcquisitionErrorRepository(engine)
+    error = AcquisitionError(
+        status=AcquisitionStatus.ACCESS_ERROR,
+        reason="repository unreachable",
+        source_name="bitbucket-b",
+        source_type=DataSourceType.SOURCE_REPOSITORY.value,
+        platform=SCOPE.platform,
+        occurred_at=datetime(2026, 7, 31, 9, 30, tzinfo=UTC),
+        detail="timeout",
+    )
+
+    repository.record("run-1", error)
+
+    assert repository.list_for_run("run-1") == [error]
+    assert repository.list_for_platform(SCOPE.platform) == [error]
+
+
+def test_documents_are_written_to_disk_and_indexed_in_the_database(engine, tmp_path: Path):
+    """The document lands on disk; the row points at it and lists by scope."""
+    store = FileModelSetupDataStore(tmp_path)
+    repository = PostgresModelSetupDataRepository(engine, store)
+    produced_at = datetime(2026, 7, 31, 9, 30, tzinfo=UTC)
+    document = {
+        "schema_version": "1.0",
+        "project": "skyline",
+        "platform": "avionics",
+        "system_version": "1.0.0",
+        "entities": [],
+        "relations": [],
+        "source_files": [],
+        "provenance": {
+            "produced_at": produced_at.isoformat(),
+            "run_id": "run-1",
+            "sources": [],
+            "excluded_units": {},
+            "not_supplied": [],
+        },
+    }
+
+    path = repository.save(
+        ModelSetupDataRecord(
+            run_id="run-1",
+            system_version=SCOPE,
+            file_path="",
+            produced_at=produced_at,
+            entity_count=0,
+            relation_count=0,
+            failure_count=0,
+        ),
+        document,
+    )
+
+    assert Path(path).name == "msd_2026-07-31_avionics.json"
+    assert [record.run_id for record in repository.list_for(SCOPE)] == ["run-1"]
+    assert repository.load("run-1") == document
+    assert repository.load("missing-run") is None

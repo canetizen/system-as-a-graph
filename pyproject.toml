@@ -38,6 +38,9 @@ saag_msd = [
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = [
+    "integration: exercises a real external system; skipped unless one is configured",
+]
 
 [tool.uv.sources]
 saag-contracts = { workspace = true }
