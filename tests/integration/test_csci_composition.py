@@ -7,6 +7,7 @@ Date: 2026-08-10
 from __future__ import annotations
 
 from collections.abc import Iterator
+from datetime import UTC, datetime, timedelta
 
 import pytest
 from fastapi.testclient import TestClient
@@ -21,6 +22,8 @@ from saag_platform.discovery import (
     CORE_BUNDLE,
     discover_bundles,
 )
+from saag_vae_operations_panel.adapters.jwt_tokens import JwtTokenService
+from saag_vae_operations_panel.model.session import AuthenticatedUser, Authorization
 
 # Cross-CSU by nature: these assert what the CSCI becomes once its CSUs are
 # installed, which is why they live here rather than with the platform, whose own
@@ -41,17 +44,49 @@ def _deployment_settings(monkeypatch: pytest.MonkeyPatch) -> None:
     reaches a real external system — the directory adapter only needs to know
     where the directory would be in order to be constructible.
     """
-    monkeypatch.setenv("VAE_JWT_SECRET", "an-integration-secret-long-enough-for-hmac")
+    monkeypatch.setenv("VAE_JWT_SECRET", JWT_SECRET)
     monkeypatch.setenv("LDAP_URL", "ldap://directory.invalid:389")
     monkeypatch.setenv(
         "LDAP_BIND_DN_TEMPLATE", "uid={username},ou=people,dc=saag,dc=local"
     )
 
 
+#: Signing secret the deployment these tests describe is configured with.
+JWT_SECRET = "an-integration-secret-long-enough-for-hmac"
+
+
+class _Now:
+    """The clock the token below is issued against."""
+
+    def now(self) -> datetime:
+        return datetime.now(UTC)
+
+
+def _operator_token() -> str:
+    """Issue a session token the CSCI will accept.
+
+    Signed with the deployment's own secret by the panel's own token service, so
+    it is the same credential a login would hand back — the CSCI's edge
+    authenticates every request now (SRS VAE-01.3) and these tests describe a
+    configured deployment being used, not an unauthenticated caller probing it.
+    Logging in properly is not available here: it would reach the directory
+    service, which no test may.
+    """
+    token, _ = JwtTokenService(_Now(), timedelta(hours=8), JWT_SECRET).issue(
+        AuthenticatedUser(
+            username="integration",
+            display_name="Integration",
+            authorizations=frozenset(Authorization),
+        )
+    )
+    return token
+
+
 @pytest.fixture
 def client() -> Iterator[TestClient]:
     """Serve the application with its framework started, then shut both down."""
     with TestClient(app) as running:
+        running.headers["Authorization"] = f"Bearer {_operator_token()}"
         yield running
 
 
@@ -183,20 +218,42 @@ def test_stopping_one_csu_withdraws_only_its_endpoints(client: TestClient) -> No
 def test_the_csci_serves_with_a_single_csu_installed(monkeypatch: pytest.MonkeyPatch) -> None:
     """SDP §2 delivers the CSUs one increment at a time, so a reduced composition
     is a supported configuration and not a broken installation."""
-    monkeypatch.setenv(BUNDLES_ENV_VAR, "saag_scg.bundle")
+    monkeypatch.setenv(BUNDLES_ENV_VAR, "saag_scg.bundle,saag_vae_operations_panel.bundle")
 
     with TestClient(app) as reduced:
+        reduced.headers["Authorization"] = f"Bearer {_operator_token()}"
         installed = [
             entry["name"]
             for entry in reduced.get("/platform/bundles").json()["bundles"]
             if entry["name"].startswith("saag_")
         ]
 
-        assert installed == ["saag_scg.bundle"]
+        assert installed == [
+            "saag_scg.bundle",
+            "saag_vae_operations_panel.bundle",
+        ]
         assert reduced.get("/health").status_code == 200
         assert reduced.get("/scg/health").status_code == 200
         assert reduced.get("/msd/health").status_code == 404
         assert reduced.get("/openapi.json").status_code == 200
+
+
+def test_without_the_panel_the_csci_admits_nobody(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The CSCI's edge authenticates through the CSU that owns the directory
+    integration (SRS VAE-01.3), so a composition without it has no way to admit an
+    operator. It boots and reports liveness — refusing to start would make an
+    installation decision an outage — but serves nothing else, which is the safe
+    direction: a CSCI that cannot authenticate anyone is not one with open access.
+    """
+    monkeypatch.setenv(BUNDLES_ENV_VAR, "saag_scg.bundle")
+
+    with TestClient(app) as unauthenticated:
+        unauthenticated.headers["Authorization"] = f"Bearer {_operator_token()}"
+
+        assert unauthenticated.get("/health").status_code == 200
+        assert unauthenticated.get("/scg/health").status_code == 200
+        assert unauthenticated.get("/platform/bundles").status_code == 503
+        assert unauthenticated.get("/openapi.json").status_code == 503
 
 
 def test_a_consumer_keeps_serving_while_its_provider_is_away(client: TestClient) -> None:
@@ -240,9 +297,13 @@ def test_one_unusable_csu_does_not_take_the_csci_down(monkeypatch: pytest.Monkey
     without the recorded failure a CSCI missing a CSU would look exactly like one
     that never declared it.
     """
-    monkeypatch.setenv(BUNDLES_ENV_VAR, "saag_scg.bundle,saag_nonexistent.bundle")
+    monkeypatch.setenv(
+        BUNDLES_ENV_VAR,
+        "saag_scg.bundle,saag_nonexistent.bundle,saag_vae_operations_panel.bundle",
+    )
 
     with TestClient(app) as degraded:
+        degraded.headers["Authorization"] = f"Bearer {_operator_token()}"
         reported = {
             entry["name"]: entry["state"]
             for entry in degraded.get("/platform/bundles").json()["bundles"]
