@@ -148,7 +148,8 @@ activemq-data/
 *.sage.py
 
 # Environments
-.env
+# .env is tracked in this repository: it carries the stand-in stack's values, not
+# credentials. A deployment replaces it — see the warning at the top of the file.
 .envrc
 .venv
 env/

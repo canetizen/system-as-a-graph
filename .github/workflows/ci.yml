@@ -180,11 +180,6 @@ jobs:
   docker:
     name: Docker (compose build)
     runs-on: ubuntu-latest
-    env:
-      # The production stack refuses to start without a signing secret, and
-      # compose interpolates the whole file before building, so a throwaway value
-      # is needed to build it. Nothing here is deployed.
-      VAE_JWT_SECRET: build-only-not-a-deployment-secret
     steps:
       - uses: actions/checkout@v4
 
