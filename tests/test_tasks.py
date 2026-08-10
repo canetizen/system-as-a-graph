@@ -11,7 +11,8 @@ from typing import Any
 
 import pytest
 from pelix.constants import OBJECTCLASS
-from pelix.framework import FrameworkFactory, create_framework
+from pelix.framework import BundleContext, FrameworkFactory, create_framework
+from pelix.internals.registry import ServiceEvent
 
 from saag_contracts.specs.tasks import JOB_QUEUE, TaskProvider
 from saag_platform.tasks import InlineJobQueue, TaskGateway
@@ -32,6 +33,28 @@ class _Provider:
 class _BrokenProvider:
     def tasks(self) -> Mapping[str, Callable[..., Any]]:
         raise RuntimeError("this CSU cannot say what it publishes")
+
+
+class _QueueDependentProvider:
+    """A CSU that publishes its operations only once a queue exists.
+
+    Stands in for the real shape of the problem: a CSU requires the deferral
+    service, so the component container keeps it invalid — publishing nothing —
+    until that service is registered.
+    """
+
+    def __init__(self, context: BundleContext, tasks: Mapping[str, Callable[..., Any]]) -> None:
+        self._context = context
+        self._tasks = tasks
+        self._registration = None
+        context.add_service_listener(self, specification=JOB_QUEUE)
+
+    def service_changed(self, event) -> None:
+        if event.get_kind() == ServiceEvent.REGISTERED and self._registration is None:
+            self._registration = self._context.register_service(TaskProvider, self, {})
+
+    def tasks(self) -> Mapping[str, Callable[..., Any]]:
+        return self._tasks
 
 
 @pytest.fixture
@@ -115,3 +138,25 @@ def test_the_inline_queue_calls_the_task_it_was_given() -> None:
     queue.defer("demo.task", job_id="j1")
 
     assert calls == [("demo.task", {"job_id": "j1"})]
+
+
+def test_a_csu_that_needs_the_queue_still_gets_its_tasks_collected(context) -> None:
+    """The ordering bug this exists to prevent, and the reason an end-to-end run
+    found what the unit tests did not.
+
+    A CSU requiring the deferral service is invalid until that service exists, so
+    it publishes no tasks. Collecting before publishing therefore found nothing,
+    the operation was deferred under a name the worker could not resolve, and every
+    production run failed with the task missing.
+    """
+    ran: list[dict[str, Any]] = []
+    _QueueDependentProvider(context, {"vae01.demo": lambda **kw: ran.append(kw)})
+
+    gateway = TaskGateway(database_url=None)
+    gateway.attach(context)
+
+    assert "vae01.demo" in gateway.tasks
+
+    context.get_service(context.get_service_reference(JOB_QUEUE)).defer("vae01.demo", job_id="j1")
+
+    assert ran == [{"job_id": "j1"}]
