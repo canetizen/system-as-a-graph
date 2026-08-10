@@ -10,6 +10,7 @@ from typing import Protocol, runtime_checkable
 
 from pelix.constants import Specification
 
+from saag_contracts.documents.model_setup_data import SCHEMA_VERSION
 from saag_contracts.specs.dto import (
     AvailableSystemVersion,
     ModelSetupDataFileRecord,
@@ -23,9 +24,13 @@ from saag_contracts.types.identifiers import PlatformRef, ProjectRef, SystemVers
 MODEL_SETUP_DATA_PROVISIONING = "saag.int-if-01.model-setup-data-provisioning"
 
 #: Contract version advertised by providers as the ``saag.contract.version``
-#: service property, and pinnable by consumers through a service filter. Tracks
-#: the Model Setup Data document schema version it hands over.
-CONTRACT_VERSION = "1.0"
+#: service property, and pinnable by consumers through a service filter.
+#:
+#: It *is* the document schema version rather than a number of its own: what a
+#: consumer needs to decide from the property is whether it can read the
+#: documents this provider produces. Two versions would let the interface claim
+#: compatibility while handing over a document the consumer cannot parse.
+CONTRACT_VERSION = SCHEMA_VERSION
 
 
 @Specification(MODEL_SETUP_DATA_PROVISIONING)
