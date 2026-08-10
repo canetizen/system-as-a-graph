@@ -6,10 +6,10 @@ Date: 2026-07-31
 
 from __future__ import annotations
 
+from saag_contracts.types.identifiers import SystemVersionRef, system_version
 from sqlalchemy import delete, insert, select
 from sqlalchemy.engine import Engine
 
-from saag_contracts.types.identifiers import SystemVersionRef, system_version
 from saag_vae_operations_panel.adapters.postgres.tables import (
     production_jobs,
     source_status_entries,

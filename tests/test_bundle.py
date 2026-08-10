@@ -11,10 +11,10 @@ from pelix.ipopo.constants import (
     HANDLER_REQUIRES,
     IPOPO_FACTORY_CONTEXT,
 )
-
 from saag_contracts.specs.api import API_ROUTER_PROVIDER
 from saag_contracts.specs.model_setup_data import MODEL_SETUP_DATA_PROVISIONING
 from saag_contracts.specs.tasks import JOB_QUEUE, TASK_PROVIDER
+
 from saag_vae_operations_panel.adapters.job_queue import PRODUCTION_TASK_NAME
 from saag_vae_operations_panel.bundle import VaeOperationsPanelBundle
 

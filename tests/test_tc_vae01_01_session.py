@@ -9,8 +9,8 @@ from __future__ import annotations
 from datetime import timedelta
 
 import pytest
-
 from saag_contracts.types.identifiers import system_version
+
 from saag_vae_operations_panel.adapters.jwt_tokens import JwtTokenService
 from saag_vae_operations_panel.model.session import Authorization
 from saag_vae_operations_panel.ports.directory_service import AuthenticationFailed

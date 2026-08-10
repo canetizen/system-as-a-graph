@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from typing import Protocol, runtime_checkable
 
 from saag_contracts.types.identifiers import PlatformRef, ProjectRef, SystemVersionRef
+
 from saag_vae_operations_panel.model.production_job import (
     AvailableSystemVersion,
     ModelSetupDataFile,

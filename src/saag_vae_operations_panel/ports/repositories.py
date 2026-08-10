@@ -9,6 +9,7 @@ from __future__ import annotations
 from typing import Protocol, runtime_checkable
 
 from saag_contracts.types.identifiers import SystemVersionRef
+
 from saag_vae_operations_panel.model.production_job import (
     ProductionJob,
     ProductionJobRequest,
