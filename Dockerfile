@@ -13,7 +13,6 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 # Each member is installed as a separate distribution, so this list is the only
 # place the image knows which CSUs exist.
 COPY pyproject.toml uv.lock .python-version ./
-COPY main.py ./
 COPY contracts ./contracts
 COPY platform ./platform
 COPY msd ./msd
@@ -31,7 +30,7 @@ RUN uv sync --frozen --inexact
 
 COPY tests ./tests
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+CMD ["uvicorn", "saag_platform.app:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
 
 FROM base AS prod
 
@@ -40,4 +39,4 @@ RUN uv sync --frozen --inexact --no-dev --no-editable
 RUN useradd --create-home appuser
 USER appuser
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["saag-api"]

@@ -482,6 +482,8 @@ version = "0.1.0"
 source = { editable = "adp" }
 dependencies = [
     { name = "fastapi" },
+    { name = "ipopo" },
+    { name = "saag-contracts" },
 ]
 
 [package.optional-dependencies]
@@ -495,8 +497,10 @@ dev = [
 requires-dist = [
     { name = "fastapi" },
     { name = "httpx2", marker = "extra == 'dev'" },
+    { name = "ipopo", specifier = ">=3.2,<4" },
     { name = "pytest", marker = "extra == 'dev'" },
     { name = "ruff", marker = "extra == 'dev'" },
+    { name = "saag-contracts", editable = "contracts" },
 ]
 provides-extras = ["dev"]
 
@@ -528,6 +532,8 @@ version = "0.1.0"
 source = { editable = "csm/data_binder" }
 dependencies = [
     { name = "fastapi" },
+    { name = "ipopo" },
+    { name = "saag-contracts" },
 ]
 
 [package.optional-dependencies]
@@ -541,8 +547,10 @@ dev = [
 requires-dist = [
     { name = "fastapi" },
     { name = "httpx2", marker = "extra == 'dev'" },
+    { name = "ipopo", specifier = ">=3.2,<4" },
     { name = "pytest", marker = "extra == 'dev'" },
     { name = "ruff", marker = "extra == 'dev'" },
+    { name = "saag-contracts", editable = "contracts" },
 ]
 provides-extras = ["dev"]
 
@@ -552,6 +560,8 @@ version = "0.1.0"
 source = { editable = "csm/model_manager" }
 dependencies = [
     { name = "fastapi" },
+    { name = "ipopo" },
+    { name = "saag-contracts" },
 ]
 
 [package.optional-dependencies]
@@ -565,8 +575,10 @@ dev = [
 requires-dist = [
     { name = "fastapi" },
     { name = "httpx2", marker = "extra == 'dev'" },
+    { name = "ipopo", specifier = ">=3.2,<4" },
     { name = "pytest", marker = "extra == 'dev'" },
     { name = "ruff", marker = "extra == 'dev'" },
+    { name = "saag-contracts", editable = "contracts" },
 ]
 provides-extras = ["dev"]
 
@@ -576,6 +588,8 @@ version = "0.1.0"
 source = { editable = "frd" }
 dependencies = [
     { name = "fastapi" },
+    { name = "ipopo" },
+    { name = "saag-contracts" },
 ]
 
 [package.optional-dependencies]
@@ -589,8 +603,10 @@ dev = [
 requires-dist = [
     { name = "fastapi" },
     { name = "httpx2", marker = "extra == 'dev'" },
+    { name = "ipopo", specifier = ">=3.2,<4" },
     { name = "pytest", marker = "extra == 'dev'" },
     { name = "ruff", marker = "extra == 'dev'" },
+    { name = "saag-contracts", editable = "contracts" },
 ]
 provides-extras = ["dev"]
 
@@ -600,6 +616,8 @@ version = "0.1.0"
 source = { editable = "msd" }
 dependencies = [
     { name = "fastapi" },
+    { name = "ipopo" },
+    { name = "saag-contracts" },
 ]
 
 [package.optional-dependencies]
@@ -613,8 +631,10 @@ dev = [
 requires-dist = [
     { name = "fastapi" },
     { name = "httpx2", marker = "extra == 'dev'" },
+    { name = "ipopo", specifier = ">=3.2,<4" },
     { name = "pytest", marker = "extra == 'dev'" },
     { name = "ruff", marker = "extra == 'dev'" },
+    { name = "saag-contracts", editable = "contracts" },
 ]
 provides-extras = ["dev"]
 
@@ -624,6 +644,7 @@ version = "0.1.0"
 source = { editable = "platform" }
 dependencies = [
     { name = "fastapi" },
+    { name = "ipopo" },
     { name = "saag-contracts" },
     { name = "uvicorn", extra = ["standard"] },
 ]
@@ -637,8 +658,9 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "fastapi" },
+    { name = "fastapi", specifier = "~=0.141" },
     { name = "httpx2", marker = "extra == 'dev'" },
+    { name = "ipopo", specifier = ">=3.2,<4" },
     { name = "pytest", marker = "extra == 'dev'" },
     { name = "ruff", marker = "extra == 'dev'" },
     { name = "saag-contracts", editable = "contracts" },
@@ -652,6 +674,8 @@ version = "0.1.0"
 source = { editable = "scg" }
 dependencies = [
     { name = "fastapi" },
+    { name = "ipopo" },
+    { name = "saag-contracts" },
 ]
 
 [package.optional-dependencies]
@@ -665,8 +689,10 @@ dev = [
 requires-dist = [
     { name = "fastapi" },
     { name = "httpx2", marker = "extra == 'dev'" },
+    { name = "ipopo", specifier = ">=3.2,<4" },
     { name = "pytest", marker = "extra == 'dev'" },
     { name = "ruff", marker = "extra == 'dev'" },
+    { name = "saag-contracts", editable = "contracts" },
 ]
 provides-extras = ["dev"]
 
@@ -676,6 +702,8 @@ version = "0.1.0"
 source = { editable = "vae/design_analyzer" }
 dependencies = [
     { name = "fastapi" },
+    { name = "ipopo" },
+    { name = "saag-contracts" },
 ]
 
 [package.optional-dependencies]
@@ -689,8 +717,10 @@ dev = [
 requires-dist = [
     { name = "fastapi" },
     { name = "httpx2", marker = "extra == 'dev'" },
+    { name = "ipopo", specifier = ">=3.2,<4" },
     { name = "pytest", marker = "extra == 'dev'" },
     { name = "ruff", marker = "extra == 'dev'" },
+    { name = "saag-contracts", editable = "contracts" },
 ]
 provides-extras = ["dev"]
 
@@ -700,6 +730,8 @@ version = "0.1.0"
 source = { editable = "vae/design_evaluator" }
 dependencies = [
     { name = "fastapi" },
+    { name = "ipopo" },
+    { name = "saag-contracts" },
 ]
 
 [package.optional-dependencies]
@@ -713,8 +745,10 @@ dev = [
 requires-dist = [
     { name = "fastapi" },
     { name = "httpx2", marker = "extra == 'dev'" },
+    { name = "ipopo", specifier = ">=3.2,<4" },
     { name = "pytest", marker = "extra == 'dev'" },
     { name = "ruff", marker = "extra == 'dev'" },
+    { name = "saag-contracts", editable = "contracts" },
 ]
 provides-extras = ["dev"]
 
@@ -724,6 +758,8 @@ version = "0.1.0"
 source = { editable = "vae/design_verifier" }
 dependencies = [
     { name = "fastapi" },
+    { name = "ipopo" },
+    { name = "saag-contracts" },
 ]
 
 [package.optional-dependencies]
@@ -737,8 +773,10 @@ dev = [
 requires-dist = [
     { name = "fastapi" },
     { name = "httpx2", marker = "extra == 'dev'" },
+    { name = "ipopo", specifier = ">=3.2,<4" },
     { name = "pytest", marker = "extra == 'dev'" },
     { name = "ruff", marker = "extra == 'dev'" },
+    { name = "saag-contracts", editable = "contracts" },
 ]
 provides-extras = ["dev"]
 
@@ -748,6 +786,8 @@ version = "0.1.0"
 source = { editable = "vae/operations_panel" }
 dependencies = [
     { name = "fastapi" },
+    { name = "ipopo" },
+    { name = "saag-contracts" },
 ]
 
 [package.optional-dependencies]
@@ -761,8 +801,10 @@ dev = [
 requires-dist = [
     { name = "fastapi" },
     { name = "httpx2", marker = "extra == 'dev'" },
+    { name = "ipopo", specifier = ">=3.2,<4" },
     { name = "pytest", marker = "extra == 'dev'" },
     { name = "ruff", marker = "extra == 'dev'" },
+    { name = "saag-contracts", editable = "contracts" },
 ]
 provides-extras = ["dev"]
 

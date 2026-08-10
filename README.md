@@ -29,7 +29,7 @@ Per the SRS, SaaG is organized into six Computer Software Components (CSCs) and 
 
 ## Current status
 
-Implementation has begun. The repository has the full documentation set, a scaffolded FastAPI backend ([`main.py`](main.py)), and a scaffolded Next.js frontend ([`web/`](web/)). Each CSU's internals — use cases, domain model, adapters — are still empty; only the folder structure is in place.
+Implementation has begun. The repository has the full documentation set, the component platform that hosts the CSUs, and a scaffolded Next.js frontend ([`web/`](web/)). All ten CSUs are installed and served as components, but their internals — use cases, domain model, adapters — are still empty; each currently publishes only a health endpoint.
 
 ## Documentation
 
@@ -45,23 +45,35 @@ Implementation has begun. The repository has the full documentation set, a scaff
 
 The document set is fully traceable across documents.
 
+## One framework, many components
+
+Each CSU is a **separately built and separately installable distribution**, loaded at startup as a component into a single framework process (SDD §1 decision 6). A CSU reaches its peers only by looking up a published service specification in the framework's registry — never by importing another CSU — so no CSU depends on another and the installed set is a deployment decision.
+
+Three things follow, and they are the point of the arrangement:
+
+- Adding a CSU to the CSCI is `pip install`; removing it is `pip uninstall`. The platform names no CSU: it discovers them through the `saag.bundles` entry point each distribution declares.
+- The CSCI runs with any subset installed, which is what makes the SDP's partially built CSCI a supported configuration rather than a temporary state. `GET /platform/bundles` and `GET /platform/services` report what is actually running.
+- The external REST surface is assembled at runtime from the endpoints the installed CSUs publish, so it follows a CSU appearing or going away rather than being fixed at import time.
+
+Each CSU will eventually live in its own repository; the directories below are already independent distributions, so that move changes no code.
+
 ## Repository layout
 
-Every top-level backend directory maps to exactly one CSC and owns its own hexagonal boundary (`api/`, `use_cases/`, `model/`, `ports/`, `adapters/`). `web/` and `cli/` implement the VAE-01 user-facing applications. See [Table 4 in the SDP](docs/planning/SDP.md#4-project-structure) for the full directory mapping.
+Every backend directory is one distribution and owns its own hexagonal boundary (`api/`, `use_cases/`, `model/`, `ports/`, `adapters/`) under `src/saag_*/`. `web/` and `cli/` implement the VAE-01 user-facing applications. See [Table 4 in the SDP](docs/planning/SDP.md#4-project-structure) for the full directory mapping.
 
 ```
 docs/            # SSS, SRS, SDP, SDD, UXD, CDR, STD
 web/             # VAE-01: web application
 cli/             # VAE-01: command-line application
+contracts/       # saag-contracts: shared types, error model, service specifications
+platform/        # saag-platform: framework host and the CSCI's external REST edge
 msd/             # MSD: Model Setup Data Generation
 scg/             # SCG: Scenario Generator
 frd/             # FRD: Field Records Database
 adp/             # ADP: Analytical Data Preparation
 csm/             # CSM: Node-Relationship Based Core System Model (CSM-01 model_manager, CSM-02 data_binder)
-vae/             # VAE: Design Verification, Analysis and Evaluation (VAE-02 design_verifier, VAE-03 design_analyzer, VAE-04 design_evaluator)
-shared/          # contracts, types, errors, security shared across CSCs
+vae/             # VAE: Design Verification, Analysis and Evaluation (VAE-01 operations_panel, VAE-02 design_verifier, VAE-03 design_analyzer, VAE-04 design_evaluator)
 tests/           # integration and acceptance tests
-main.py          # FastAPI app aggregating each CSC's router
 LICENSE          # Apache License 2.0
 ```
 
@@ -71,19 +83,34 @@ The API runs on http://localhost:8000 and the web app on http://localhost:3000, 
 
 ### Backend (Python 3.11+)
 
+The twelve distributions form a [uv](https://docs.astral.sh/uv/) workspace, so one command installs them all editable into one environment:
+
 ```bash
-python3.11 -m venv .venv
-source .venv/bin/activate
-pip install .
-uvicorn main:app --reload
+uv sync
+uv run uvicorn saag_platform.app:app --reload
 ```
 
 Run tests and linting:
 
 ```bash
-pytest
-ruff check .
+uv run pytest
+uv run ruff check .
 ```
+
+Each distribution is also testable on its own — the property that lets it move to its own repository:
+
+```bash
+cd msd && uv run pytest
+```
+
+To run a reduced CSCI, name the bundles to install or the CSUs to leave out:
+
+```bash
+SAAG_BUNDLES="saag_msd.bundle" uv run uvicorn saag_platform.app:app
+SAAG_BUNDLES_EXCLUDE="vae-02,vae-03,vae-04" uv run uvicorn saag_platform.app:app
+```
+
+Bundles are discovered from *installed* distribution metadata, so a newly added CSU appears only after `uv sync`, not on saving a file.
 
 ### Web app (Next.js)
 

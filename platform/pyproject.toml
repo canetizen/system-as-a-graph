@@ -9,9 +9,16 @@ description = "SaaG platform: component framework host and the CSCI's external R
 requires-python = ">=3.11"
 dependencies = [
     "saag-contracts",
-    "fastapi",
+    "iPOPO>=3.2,<4",
+    # The gateway mounts and unmounts routers at runtime, which touches two
+    # pieces of FastAPI's internals; pinned to the minor series that was
+    # verified rather than left open.
+    "fastapi~=0.141",
     "uvicorn[standard]",
 ]
+
+[project.scripts]
+saag-api = "saag_platform.cli:serve"
 
 [project.optional-dependencies]
 dev = [

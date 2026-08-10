@@ -8,6 +8,8 @@ version = "0.1.0"
 description = "SaaG-CSM: Model Manager (CSU CSM-01)"
 requires-python = ">=3.11"
 dependencies = [
+    "saag-contracts",
+    "iPOPO>=3.2,<4",
     "fastapi",
 ]
 
@@ -18,8 +20,14 @@ dev = [
     "ruff",
 ]
 
+[project.entry-points."saag.bundles"]
+csm-01 = "saag_csm_model_manager.bundle"
+
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.uv.sources]
+saag-contracts = { workspace = true }

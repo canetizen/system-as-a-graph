@@ -1,8 +1,20 @@
 from fastapi import APIRouter
 
-router = APIRouter(prefix="/csm/model-manager", tags=["csm-model-manager"])
 
+def build_router() -> APIRouter:
+    """Build this CSU's inbound REST adapter.
 
-@router.get("/health")
-def health():
-    return {"status": "ok", "csc": "csm", "csu": "model_manager"}
+    A factory rather than a module-level router: the router is owned by the CSU's
+    component and lives exactly as long as it does, so the CSCI's REST surface
+    cannot outlast the wiring behind it.
+
+    Returns:
+        The router to contribute to the CSCI's external API.
+    """
+    router = APIRouter(prefix="/csm/model-manager", tags=["csm-model-manager"])
+
+    @router.get("/health")
+    def health():
+        return {"status": "ok", "csc": "csm", "csu": "model_manager"}
+
+    return router
