@@ -2,6 +2,12 @@ FROM python:3.11-slim AS base
 
 COPY --from=ghcr.io/astral-sh/uv:0.12.3 /uv /uvx /bin/
 
+# MSD's source repository adapter drives the real git client, so the image
+# carries it. Everything else the CSUs need is a Python package.
+RUN apt-get update \
+    && apt-get install --no-install-recommends -y git \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \

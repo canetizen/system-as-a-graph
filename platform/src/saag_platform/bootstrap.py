@@ -7,6 +7,7 @@ Date: 2026-08-10
 from __future__ import annotations
 
 import logging
+import os
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -16,6 +17,9 @@ from pelix.framework import Bundle, Framework, FrameworkFactory, create_framewor
 #: that wire themselves differently per process read it; the introspection
 #: endpoints report it.
 PROFILE_PROPERTY = "saag.profile"
+
+#: Prefix under which an environment variable is offered to components.
+ENVIRONMENT_PROPERTY_PREFIX = "saag.env."
 
 #: Bundle lifecycle states, for reporting a composition in words.
 _STATE_NAMES = {
@@ -63,16 +67,39 @@ class Composition:
     failures: dict[str, str] = field(default_factory=dict)
 
 
+def environment_property(variable: str) -> str:
+    """Return the framework property an environment variable is offered under.
+
+    Args:
+        variable: Environment variable name, conventionally upper case.
+
+    Returns:
+        The property name a component declares to receive that variable, e.g.
+        ``DATABASE_URL`` becomes ``saag.env.database_url``.
+    """
+    return f"{ENVIRONMENT_PROPERTY_PREFIX}{variable.lower()}"
+
+
 def framework_properties(profile: str) -> dict[str, Any]:
     """Build the framework properties the installed components configure from.
 
-    The environment is read here, once, and handed to components as framework
-    properties instead of each component reading it where it happens to be
-    needed. A CSU therefore declares which settings it takes and cannot silently
-    acquire a dependency on an environment variable.
+    The environment is read here, once, and offered to components as framework
+    properties instead of each component reading it wherever it happens to be
+    needed. The point is that a CSU must *declare* what configures it: what a CSU
+    is configurable by becomes visible in its component, and a setting cannot be
+    acquired silently deep inside an adapter.
 
-    Settings belonging to individual CSUs join this table as those CSUs are
-    built; today only the profile is CSCI-wide.
+    The mapping is mechanical rather than a table of known settings, and
+    deliberately so: a table would have to name every CSU's variables, which
+    would mean adding a CSU requires editing the framework host — the coupling
+    this architecture exists to remove. The host names no CSU and no setting; it
+    offers the environment under one naming rule and each CSU takes what it
+    declares.
+
+    Every variable is offered, including ones no CSU wants. That is not a
+    disclosure: framework properties stay inside the process, the introspection
+    endpoints report none of them, and a component could have read the whole
+    environment directly anyway. What changes is that now it has to say so.
 
     Args:
         profile: Which process this framework serves, e.g. "api" or "worker".
@@ -80,7 +107,11 @@ def framework_properties(profile: str) -> dict[str, Any]:
     Returns:
         Framework properties, ready to pass to ``start_framework``.
     """
-    return {PROFILE_PROPERTY: profile}
+    properties: dict[str, Any] = {
+        environment_property(name): value for name, value in os.environ.items()
+    }
+    properties[PROFILE_PROPERTY] = profile
+    return properties
 
 
 def start_framework(bundles: list[str], properties: dict[str, Any]) -> Composition:

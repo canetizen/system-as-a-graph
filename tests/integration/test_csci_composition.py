@@ -80,6 +80,30 @@ def test_each_csu_publishes_exactly_one_router(client: TestClient) -> None:
         assert API_ROUTER_PROVIDER in reference.get_property(OBJECTCLASS)
 
 
+def test_each_internal_interface_has_one_provider_at_a_stated_version(
+    client: TestClient,
+) -> None:
+    """SDD Table 2 gives each internal interface one provider, and §2.3.1 has that
+    provider state its contract version.
+
+    Two providers of one interface would make which one a consumer binds to a
+    matter of registration order; a provider without a version leaves a consumer
+    unable to tell whether it can read what it is handed.
+    """
+    published = [
+        (specification, entry["contract_version"])
+        for entry in client.get("/platform/services").json()["services"]
+        for specification in entry["specifications"]
+        if specification.startswith("saag.int-if-")
+    ]
+
+    assert published, "no internal interface is provided yet"
+    names = [specification for specification, _ in published]
+    assert len(names) == len(set(names)), names
+    for specification, version in published:
+        assert version, specification
+
+
 def test_every_registered_router_is_reachable_and_documented(client: TestClient) -> None:
     """The REST surface is assembled from the registry, so the registry and the
     served surface must agree — asserted without naming a single CSU."""

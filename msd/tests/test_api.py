@@ -4,11 +4,12 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from saag_msd.api.routes import build_router
+from saag_msd.composition import build_container
 
 
 def test_health_is_served_by_the_csu_router():
     app = FastAPI()
-    app.include_router(build_router())
+    app.include_router(build_router(build_container()))
 
     response = TestClient(app).get("/msd/health")
 

@@ -11,6 +11,10 @@ dependencies = [
     "saag-contracts",
     "iPOPO>=3.2,<4",
     "fastapi",
+    "sqlalchemy",
+    "psycopg[binary]",
+    "pymysql",
+    "pyyaml",
 ]
 
 [project.optional-dependencies]
@@ -25,6 +29,12 @@ msd = "saag_msd.bundle"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+saag_msd = [
+    "adapters/*.json",
+    "testing/data/**/*",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
