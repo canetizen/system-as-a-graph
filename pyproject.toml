@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "saag-csm-data-binder"
+version = "0.1.0"
+description = "SaaG-CSM: Analytical Data Binder (CSU CSM-02)"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "httpx2",
+    "ruff",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
