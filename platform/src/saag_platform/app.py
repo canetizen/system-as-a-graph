@@ -15,8 +15,10 @@ from pelix.constants import OBJECTCLASS, SERVICE_ID
 from starlette.concurrency import run_in_threadpool
 
 from saag_platform.bootstrap import (
+    DATABASE_URL_VARIABLE,
     FAILED_STATE,
     PROFILE_PROPERTY,
+    environment_property,
     framework_properties,
     start_framework,
     state_name,
@@ -24,6 +26,7 @@ from saag_platform.bootstrap import (
 )
 from saag_platform.discovery import discover_bundles
 from saag_platform.router_gateway import RouterGateway
+from saag_platform.tasks import TaskGateway
 
 #: Profile this process runs the framework under.
 API_PROFILE = "api"
@@ -42,15 +45,23 @@ async def _lifespan(app: FastAPI) -> AsyncIterator[None]:
     """
     properties = framework_properties(API_PROFILE)
     composition = await run_in_threadpool(start_framework, discover_bundles(), properties)
-    gateway = RouterGateway(app)
-    gateway.attach(composition.framework.get_bundle_context())
+    context = composition.framework.get_bundle_context()
+
+    # Before the REST edge: a CSU that needs the deferral service is not valid
+    # without it, and an invalid CSU has no router to mount yet.
+    tasks = TaskGateway(properties.get(environment_property(DATABASE_URL_VARIABLE)))
+    await run_in_threadpool(tasks.attach, context)
+
+    routers = RouterGateway(app)
+    routers.attach(context)
     app.state.framework = composition.framework
     app.state.failures = composition.failures
     app.state.profile = properties[PROFILE_PROPERTY]
     try:
         yield
     finally:
-        gateway.detach()
+        routers.detach()
+        tasks.detach()
         app.state.framework = None
         await run_in_threadpool(stop_framework, composition.framework)
 

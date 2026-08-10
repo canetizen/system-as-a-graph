@@ -21,6 +21,11 @@ PROFILE_PROPERTY = "saag.profile"
 #: Prefix under which an environment variable is offered to components.
 ENVIRONMENT_PROPERTY_PREFIX = "saag.env."
 
+#: Connection string for the CSCI's shared store (SDD §2.4). Owned by the host
+#: rather than by a CSU because the queue's storage and the CSUs' metadata are
+#: one deployment decision.
+DATABASE_URL_VARIABLE = "DATABASE_URL"
+
 #: Bundle lifecycle states, for reporting a composition in words.
 _STATE_NAMES = {
     Bundle.UNINSTALLED: "uninstalled",

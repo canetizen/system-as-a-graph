@@ -15,6 +15,9 @@ dependencies = [
     # verified rather than left open.
     "fastapi~=0.141",
     "uvicorn[standard]",
+    "procrastinate",
+    "sqlalchemy",
+    "psycopg[binary]",
 ]
 
 [project.scripts]
