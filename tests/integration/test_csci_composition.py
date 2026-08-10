@@ -142,6 +142,27 @@ def test_the_csci_serves_with_a_single_csu_installed(monkeypatch: pytest.MonkeyP
         assert reduced.get("/openapi.json").status_code == 200
 
 
+def test_one_unusable_csu_does_not_take_the_csci_down(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Refusing to start because one CSU is broken would make that CSU's problem
+    an outage of all the others, which the design does not accept.
+
+    The unusable CSU must still be reported: it leaves no bundle behind, so
+    without the recorded failure a CSCI missing a CSU would look exactly like one
+    that never declared it.
+    """
+    monkeypatch.setenv(BUNDLES_ENV_VAR, "saag_scg.bundle,saag_nonexistent.bundle")
+
+    with TestClient(app) as degraded:
+        reported = {
+            entry["name"]: entry["state"]
+            for entry in degraded.get("/platform/bundles").json()["bundles"]
+        }
+
+        assert reported["saag_scg.bundle"] == "active"
+        assert reported["saag_nonexistent.bundle"] == "failed"
+        assert degraded.get("/scg/health").status_code == 200
+
+
 def test_discovery_honours_the_exclusion_list(monkeypatch: pytest.MonkeyPatch) -> None:
     """Leaving a CSU out is a deployment decision, expressed by entry-point name
     rather than module path so it reads as the CSU identifier the documents use."""

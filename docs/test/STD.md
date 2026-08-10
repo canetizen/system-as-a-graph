@@ -8,13 +8,34 @@
 
 | No | Component | Abbreviation | CSUs | Number of Test Cases |
 |---|---|---|---|---|
+| 0 | CSCI Composition *(no CSU; SDD §2.5)* | — | — | 1 |
 | 1 | Model Setup Data Generation | SaaG-MSD | 1 | 5 |
 | 2 | Scenario Generator | SaaG-SCG | 1 | 3 |
 | 3 | Field Records Database | SaaG-FRD | 1 | 2 |
 | 4 | Analytical Data Preparation | SaaG-ADP | 1 | 3 |
 | 5 | Node-Relationship Based Core System Model | SaaG-CSM | 2 | 8 |
 | 6 | Design Verification, Analysis and Evaluation | SaaG-VAE | 4 | 19 |
-| **TOTAL** | | | **10** | **40** |
+| **TOTAL** | | | **10** | **41** |
+
+**How internal handoffs are exercised.** The CSCI's internal interfaces are realized as service calls through the component registry (SDD §2.3.1), so wherever a test case below says a handoff occurs "via INT-IF-0N", the observable is the consuming CSU obtaining the interface from the registry under its specification name and the call returning: `saag.int-if-01.model-setup-data-provisioning`, `saag.int-if-02.synthetic-data-handoff`, `saag.int-if-03.field-records-handoff`, `saag.int-if-04.analytical-data-handoff`, `saag.int-if-05.core-system-model-access`. No test case is renumbered and no SRS trace changes; TC-PLT-01 covers the mechanism itself, once, so the CSU cases do not each re-verify it.
+
+---
+
+## 0. CSCI Composition
+
+**TC-PLT-01: CSCI Composition & Internal Interface Binding**
+Traces to: SDD §2.5 *(realization mechanism; no SRS requirement — see SDD §2.5 on why it introduces no design element)*
+
+Procedure:
+1. Start the CSCI with every CSU distribution installed. Verify each declared CSU is installed as a component and reaches an active state, and that the reported composition matches the set of installed distributions exactly — nothing missing, nothing the installation did not declare.
+2. Verify each service specification the installed CSUs provide is registered, once per providing CSU, at the contract version the provider advertises.
+3. Verify each consuming CSU has obtained the specifications it requires, and that every CSU which publishes REST endpoints has them both reachable and present in the generated API schema.
+4. Stop one CSU's component. Verify its endpoints stop being served and disappear from the API schema, that a second CSU's endpoints are unaffected, and that a CSU which requires the stopped CSU's interface reports the interface unavailable rather than failing.
+5. Start the stopped CSU's component again and verify its endpoints and schema entries return, and that its consumers become operable again.
+6. Start the CSCI with a deliberately reduced composition — a single CSU installed — and verify it serves that CSU's endpoints, reports the reduced composition, and generates a valid API schema.
+7. Install a CSU whose component cannot start, and verify the CSCI still starts, reports that CSU as not active, and continues to serve the others.
+
+Expected Result: the CSCI composes itself from whatever CSUs are installed, the internal interfaces bind through the registry, and a CSU appearing or going away at runtime affects only itself and its consumers. A reduced or partially broken composition runs and reports itself as such, which is what makes the partially delivered CSCI of SDP §2 a supported configuration.
 
 ---
 
@@ -469,6 +490,7 @@ Expected Result: Concurrent multi-unit evaluation produces correctly-isolated pe
 
 | Test Case | Design Element | SRS Req ID Range |
 |---|---|---|
+| TC-PLT-01 | SDD §2.5 Component Packaging and Composition | — *(realization mechanism)* |
 | TC-MSD-01 | Data Source Connector & Configuration Manager | MSD.2–8 |
 | TC-MSD-02 | Configuration Data Acquisition | MSD.9–13, 16 |
 | TC-MSD-03 | Software Unit Version Inventory Manager | MSD.14–15 |
@@ -510,4 +532,4 @@ Expected Result: Concurrent multi-unit evaluation produces correctly-isolated pe
 | TC-VAE04-02 | Blocking Decision Engine | VAE-04.7 |
 | TC-VAE04-03 | Concurrent Evaluation Orchestrator | VAE-04.8 |
 
-**Coverage check:** all 40 SDD §3 design elements have exactly one test case above, and all 156 SRS requirements are covered through their owning design element, consistent with SDD §4. Test cases TC-ADP-03, TC-CSM01-04, TC-VAE01-06, TC-VAE02-02, TC-VAE02-04, TC-VAE02-05, TC-VAE02-06, and TC-VAE04-01 carry acceptance criteria pending CDR-01 through CDR-08, CDR-12, CDR-14, and CDR-16 resolution (see the CDR).
+**Coverage check:** all 40 SDD §3 design elements have exactly one test case above, and all 156 SRS requirements are covered through their owning design element, consistent with SDD §4. TC-PLT-01 is the one case that traces to no design element and no SRS requirement: it verifies the composition mechanism of SDD §2.5, which realizes the design rather than adding to it. Test cases TC-ADP-03, TC-CSM01-04, TC-VAE01-06, TC-VAE02-02, TC-VAE02-04, TC-VAE02-05, TC-VAE02-06, and TC-VAE04-01 carry acceptance criteria pending CDR-01 through CDR-08, CDR-12, CDR-14, and CDR-16 resolution (see the CDR).

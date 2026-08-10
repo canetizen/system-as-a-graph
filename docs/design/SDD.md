@@ -43,6 +43,8 @@ The SaaG CSCI is decomposed into 6 Computer Software Components (CSCs) and 10 Co
 
 This sequencing matches the incremental build order already established in SDP §2.
 
+The six steps are the CSCI's **logical** data flow, not its startup order. Per §1 decision 6 the CSUs are separately installed components that bind through the registry (§2.3.1), so install order does not matter: a CSU becomes operable when the peers it needs appear, whenever that is. Two consequences follow for the execution concept. A CSCI in which some CSUs are not installed still runs, with the steps whose CSUs are present working normally and the others reported unavailable — which is precisely the state SDP §2 delivers in every increment before the last. And the flow is not a pipeline that must be traversed from step 1: VAE-02 verifies a Core System Model with no Analytical Evaluation Data anywhere in the CSCI (SRS VAE-02.3), so steps 3 to 5 are optional inputs to step 6 rather than prerequisites of it.
+
 **Figure 1. CSCI Concept of Execution**
 
 ```mermaid
@@ -165,6 +167,37 @@ SaaG persists 7 data stores:
 | Findings, Operations & Reports | Verification/analysis/evaluation findings, operation records, and generated reports | VAE-01 | VAE-01.21–26 |
 
 Database-wide design decisions: (1) every store is keyed by project/platform/system-version; (2) the Core System Model and Analytical Evaluation Data are separable stores joined only through CSM-02's binding, per §1 decision 2; (3) Analytical Evaluation Data and the Findings/Operations/Reports store both preserve upstream-source provenance (field record vs. synthetic); (4) ingestion-oriented stores (Model Setup Data file, Field Records Database) share the common validation-status attribute set from §1 decision 5. Physical storage technology per store, and the detailed entity schemas and attribute definitions for all 7 stores, are to be determined during the critical design phase (tracked in CDR §1.5).
+
+### 2.5 Component Packaging and Composition
+
+§1 decision 6 makes each CSU a separately installable component and §2.3.1 fixes how the components reach one another. This section fixes what that means for the CSUs themselves.
+
+**This section introduces no design elements.** Packaging and composition are how the design of §3 is delivered, not additional functionality: every SRS requirement is still satisfied by exactly one §3 design element, and §4's traceability is unaffected. The composition mechanism itself is verified at CSCI level by STD TC-PLT-01.
+
+**Uniform CSU structure.** Every CSU is one distribution, built and released on its own, containing exactly one bundle module. The hexagonal boundary the SDP fixes (`api/`, `use_cases/`, `model/`, `ports/`, `adapters/`) is unchanged and unaware of the framework — the bundle module is the only place a CSU mentions it, and its whole content is: build the CSU's wiring when the component is validated, publish the CSU's provided specifications, declare the specifications and configuration the CSU requires, and drop the wiring when the component is invalidated. A CSU's `api/` therefore holds *all* of its inbound adapters, the REST endpoints and the provided-service implementation alike, not only the REST ones.
+
+**Discovery.** A distribution declares its bundle module under the `saag.bundles` entry point; the framework host installs what it finds. Nothing in the host names a CSU, so installing a distribution is the entire act of adding a CSU to the CSCI and uninstalling it the entire act of removing one. A deployment may also state the composition outright, or exclude named CSUs from it, which is how a partially delivered CSCI (SDP §2) and a reduced installation are configured rather than built.
+
+**Configuration.** Settings are read once by the framework host and handed to components as framework properties, which each component declares. A CSU cannot silently acquire a dependency on an environment variable, and what a CSU is configurable by is visible in its bundle module.
+
+**Table 4. Component Composition per CSU**
+
+| CSU | Provides | Requires |
+|---|---|---|
+| MSD | `ApiRouterProvider`, `saag.int-if-01.model-setup-data-provisioning` | — |
+| SCG | `ApiRouterProvider`, `saag.int-if-02.synthetic-data-handoff` | — |
+| FRD | `ApiRouterProvider`, `saag.int-if-03.field-records-handoff` | — |
+| ADP | `ApiRouterProvider`, `saag.int-if-04.analytical-data-handoff` | INT-IF-02 and INT-IF-03 specifications |
+| CSM-01 | `ApiRouterProvider`, `saag.int-if-05.core-system-model-access` | INT-IF-01 specification |
+| CSM-02 | `ApiRouterProvider` | INT-IF-04 specification |
+| VAE-01 | `ApiRouterProvider`, `saag.platform.task-provider` | INT-IF-01 and INT-IF-05 specifications, `saag.platform.job-queue` |
+| VAE-02 | `ApiRouterProvider` | INT-IF-05 specification |
+| VAE-03 | `ApiRouterProvider` | INT-IF-05 specification |
+| VAE-04 | `ApiRouterProvider` | INT-IF-05 specification |
+
+The table is the design target; a CSU publishes and requires the entries above from the increment that builds it (SDP §2). Until then its component publishes only `ApiRouterProvider`, which is what keeps a not-yet-built CSU installable and the CSCI startable without it.
+
+**Framework host.** The host is not a CSU and satisfies no SRS requirement. It starts the framework, installs the discovered CSUs, owns the two process-wide surfaces a CSU must not own — the CSCI's single external REST application and its background-operation worker — and reports the running composition for operators and tests. A CSU that fails to start is reported and skipped rather than aborting the CSCI, since refusing to start would make one broken CSU an outage of the others.
 
 ---
 

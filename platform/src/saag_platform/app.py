@@ -15,6 +15,7 @@ from pelix.constants import OBJECTCLASS, SERVICE_ID
 from starlette.concurrency import run_in_threadpool
 
 from saag_platform.bootstrap import (
+    FAILED_STATE,
     PROFILE_PROPERTY,
     framework_properties,
     start_framework,
@@ -40,17 +41,18 @@ async def _lifespan(app: FastAPI) -> AsyncIterator[None]:
     request.
     """
     properties = framework_properties(API_PROFILE)
-    framework = await run_in_threadpool(start_framework, discover_bundles(), properties)
+    composition = await run_in_threadpool(start_framework, discover_bundles(), properties)
     gateway = RouterGateway(app)
-    gateway.attach(framework.get_bundle_context())
-    app.state.framework = framework
+    gateway.attach(composition.framework.get_bundle_context())
+    app.state.framework = composition.framework
+    app.state.failures = composition.failures
     app.state.profile = properties[PROFILE_PROPERTY]
     try:
         yield
     finally:
         gateway.detach()
         app.state.framework = None
-        await run_in_threadpool(stop_framework, framework)
+        await run_in_threadpool(stop_framework, composition.framework)
 
 
 def create_app() -> FastAPI:
@@ -82,17 +84,22 @@ def create_app() -> FastAPI:
         framework = app.state.framework
         if framework is None:
             return {"profile": None, "bundles": []}
-        return {
-            "profile": app.state.profile,
-            "bundles": [
-                {
-                    "id": bundle.get_bundle_id(),
-                    "name": bundle.get_symbolic_name(),
-                    "state": state_name(bundle.get_state()),
-                }
-                for bundle in framework.get_bundle_context().get_bundles()
-            ],
-        }
+        running = [
+            {
+                "id": bundle.get_bundle_id(),
+                "name": bundle.get_symbolic_name(),
+                "state": state_name(bundle.get_state()),
+            }
+            for bundle in framework.get_bundle_context().get_bundles()
+        ]
+        # A CSU that could not be installed left no bundle behind, so it is
+        # reported from the recorded failures instead — otherwise a CSCI missing
+        # a CSU would be indistinguishable from one that never declared it.
+        failed = [
+            {"id": None, "name": module, "state": FAILED_STATE, "reason": reason}
+            for module, reason in sorted(app.state.failures.items())
+        ]
+        return {"profile": app.state.profile, "bundles": running + failed}
 
     @app.get("/platform/services")
     def services() -> dict[str, Any]:

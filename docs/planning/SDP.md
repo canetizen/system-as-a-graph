@@ -55,7 +55,7 @@ Each leaf bullet below cites the exact SRS requirement ID range it realizes.
 
 Increment 0 establishes the repository scaffolding, shared infrastructure, and documentation skeleton. The seven functional increments that follow are built one at a time, in dependency-safe order. Each increment delivers one or more CSCs' remaining CSUs plus the matching slice of VAE-01 (Operations Panel). Each increment also states the design, development, test, and packaging work needed to deliver it, plus its demo scenario. The SDD, UXD, CDR, and STD are updated within every increment to cover that increment's CSUs.
 
-**Definition of Done (applies to every increment):** an increment is Done when (1) every deliverable in its CSU/Deliverable table is implemented and satisfies its SRS requirement(s); (2) every CDR item cited in its Design paragraph is Resolved or Deferred with a recorded reason; (3) everything in its Test paragraph passes; (4) every service in its Packaging paragraph builds and deploys cleanly; (5) its Demo scenario runs end-to-end.
+**Definition of Done (applies to every increment):** an increment is Done when (1) every deliverable in its CSU/Deliverable table is implemented and satisfies its SRS requirement(s); (2) every CDR item cited in its Design paragraph is Resolved or Deferred with a recorded reason; (3) everything in its Test paragraph passes; (4) every distribution in its Packaging paragraph builds, installs on its own alongside `saag-contracts`, and its bundle starts and reaches a valid state in the framework; (5) its Demo scenario runs end-to-end.
 
 **Table 2. Increment Overview**
 
@@ -86,11 +86,14 @@ Increment 0 establishes the repository scaffolding, shared infrastructure, and d
 
 **Demo:** A clean checkout builds, lints, and brings up the full Docker Compose stack with no application logic, and every planned document has a placeholder under `docs/`.
 
+**Architecture rebaseline (after Increment 0, before Increment 1):** the CSCI was rebaselined onto separately installable components — SDD §1 decision 6, §2.3.1 and §2.5 — which resolved CDR-24 to CDR-28 and opened CDR-31 and CDR-32. The scaffolding delivered here became twelve distributions in a uv workspace (§4 Table 4a), and the aggregating application module was replaced by the framework host. No SRS requirement changed: this is a realization decision, and every requirement still traces to the same SDD §3 design element.
+
 **Definition of Done:**
-- [x] Repository scaffolded per §4 (per-CSC hexagonal layout, `web/`, `cli/`, `shared/`)
+- [x] Repository scaffolded per §4 (per-CSU hexagonal layout, `web/`, `cli/`, `contracts/`, `platform/`)
 - [x] Base Docker Compose stack and CI pipeline stood up
 - [x] `docs/` skeleton populated for every planned document
 - [x] Scaffolding builds, lints, and deploys cleanly
+- [x] Every CSU distribution installs on its own and its bundle reaches a valid state in the framework
 - [x] Demo run end-to-end
 
 ### Increment 1: Model Setup Data Generation
@@ -102,7 +105,7 @@ Increment 0 establishes the repository scaffolding, shared infrastructure, and d
 
 **Completes:** SaaG-MSD
 
-**Design:** MSD (SRS MSD.1–23) and the login/MSD-control screen (VAE-01.1–8) are fully designed. Still open: the exact protocol for each external connection and for LDAP, the topology method, and the required file list (CDR-09, CDR-10, CDR-17, CDR-18, CDR-19, CDR-20, CDR-22, CDR-24).
+**Design:** MSD (SRS MSD.1–23) and the login/MSD-control screen (VAE-01.1–8) are fully designed. Still open: the exact protocol for each external connection and for LDAP, the topology method, and the required file list (CDR-09, CDR-10, CDR-17, CDR-18, CDR-19, CDR-20, CDR-22). The MSD → CSM-01 handoff is settled (CDR-24, SDD §2.3.1).
 
 **Development:** Build the MSD backend — connect to, validate, and assemble data from the four external sources — plus login/session handling. On the frontend: login, project/platform/version selection, source configuration, and an MSD production/status screen.
 
@@ -114,7 +117,7 @@ Increment 0 establishes the repository scaffolding, shared infrastructure, and d
 
 **Definition of Done:**
 - [ ] MSD (MSD.1–23) and login/MSD-control (VAE-01.1–8) built and working
-- [ ] CDR-09, CDR-10, CDR-17, CDR-18, CDR-19, CDR-20, CDR-22, CDR-24 resolved or deferred
+- [ ] CDR-09, CDR-10, CDR-17, CDR-18, CDR-19, CDR-20, CDR-22 resolved or deferred
 - [ ] MSD and login/workflow tests pass
 - [ ] MSD/web services deploy together
 - [ ] Demo run end-to-end
@@ -126,7 +129,7 @@ Increment 0 establishes the repository scaffolding, shared infrastructure, and d
 | CSM-01 *(complete)* | Model Manager (CSM-01.1–31) |
 | VAE-01 *(ongoing)* | Building & Viewing the Model (VAE-01.9, 19–20) |
 
-**Design:** Model Manager (SRS CSM-01.1–31) and the model-build/browsing screen (VAE-01.9, 19–20) are fully designed. Biggest gap: the model's storage technology and schema aren't decided (CDR-29–30); concurrency limits and the VAE read protocol are also open (CDR-16, CDR-28).
+**Design:** Model Manager (SRS CSM-01.1–31) and the model-build/browsing screen (VAE-01.9, 19–20) are fully designed. Biggest gap: the model's storage technology and schema aren't decided (CDR-29–30); concurrency limits are also open (CDR-16). The CSM → VAE access mechanism is settled (CDR-28, SDD §2.3.1); what CSM-01 exposes through it is designed with this CSU.
 
 **Development:** Build the Model Manager backend — turn Model Setup Data into a graph, keep it safe under concurrent access, support isolated evaluation copies — on a graph database. On the frontend: model browsing (search/filter/zoom/pan/attributes).
 
@@ -138,7 +141,7 @@ Increment 0 establishes the repository scaffolding, shared infrastructure, and d
 
 **Definition of Done:**
 - [ ] Model Manager (CSM-01.1–31) and browsing screen (VAE-01.9,19–20) built and working
-- [ ] CDR-16, CDR-28, CDR-29–30 resolved or deferred
+- [ ] CDR-16, CDR-29–30 resolved or deferred
 - [ ] Model Manager and browsing tests pass, completing Increment 1's
 - [ ] Model Manager service and graph database deploy together
 - [ ] Demo run end-to-end
@@ -177,7 +180,7 @@ Increment 0 establishes the repository scaffolding, shared infrastructure, and d
 
 **Completes:** SaaG-SCG
 
-**Design:** Scenario Generator (SRS SCG.1–7) and the synthetic-data setup screen (VAE-01.11, 13–15) are fully designed. Still open: what the synthetic data should simulate, the Analytical Evaluation Data format, and the SCG→ADP handoff (CDR-11, CDR-12, CDR-25).
+**Design:** Scenario Generator (SRS SCG.1–7) and the synthetic-data setup screen (VAE-01.11, 13–15) are fully designed. Still open: what the synthetic data should simulate and the Analytical Evaluation Data format (CDR-11, CDR-12). The SCG → ADP handoff mechanism is settled (CDR-25, SDD §2.3.1); its call interface is defined with this CSU, once CDR-11 and CDR-12 allow.
 
 **Development:** Build the Scenario Generator (capture inputs, produce and record traceable synthetic data) and the synthetic-intake half of Analytical Data Preparation. On the frontend: scenario input and production/status screens.
 
@@ -189,7 +192,7 @@ Increment 0 establishes the repository scaffolding, shared infrastructure, and d
 
 **Definition of Done:**
 - [ ] Scenario Generator (SCG.1–7) and setup screen (VAE-01.11, 13–15) built and working
-- [ ] CDR-11, CDR-12, CDR-25 resolved or deferred
+- [ ] CDR-11, CDR-12 resolved or deferred
 - [ ] Scenario Generator and synthetic-path tests pass
 - [ ] Both services deploy together
 - [ ] Demo run end-to-end
@@ -205,7 +208,7 @@ Increment 0 establishes the repository scaffolding, shared infrastructure, and d
 
 **Completes:** SaaG-FRD, SaaG-ADP, SaaG-CSM
 
-**Design:** Analytical Data Binder (SRS CSM-02.1–6) and Field Records Database (FRD.1–5) are fully designed, as are the field-record source-selection and binding-status screens (VAE-01.10, 12, 16). Still open: field-record storage capacity, the FRD external interface protocol, the FRD→ADP and ADP→CSM-02 handoffs, and the carried-over AED format decision (CDR-15, CDR-21, CDR-26, CDR-27, CDR-12).
+**Design:** Analytical Data Binder (SRS CSM-02.1–6) and Field Records Database (FRD.1–5) are fully designed, as are the field-record source-selection and binding-status screens (VAE-01.10, 12, 16). Still open: field-record storage capacity, the FRD external interface protocol, and the carried-over AED format decision (CDR-15, CDR-21, CDR-12). The FRD → ADP and ADP → CSM-02 handoff mechanisms are settled (CDR-26, CDR-27, SDD §2.3.1); their call interfaces are defined with these CSUs.
 
 **Development:** Build the Field Records Database (upload/catalog/search), the field-intake half of Analytical Data Preparation, and the Data Binder (attach behavioral data without altering the model). On the frontend: field-record source-selection, upload/catalog, and binding-status screens.
 
@@ -217,7 +220,7 @@ Increment 0 establishes the repository scaffolding, shared infrastructure, and d
 
 **Definition of Done:**
 - [ ] Data Binder (CSM-02.1–6), FRD (FRD.1–5), and field-selection/binding-status screens (VAE-01.10, 12, 16) built and working
-- [ ] CDR-15, CDR-21, CDR-26, CDR-27, CDR-12 resolved or deferred
+- [ ] CDR-15, CDR-21, CDR-12 resolved or deferred
 - [ ] Field-records, binder, and field-path tests pass, completing Increment 4's
 - [ ] New services and telemetry database deploy together
 - [ ] Demo run end-to-end
@@ -229,7 +232,7 @@ Increment 0 establishes the repository scaffolding, shared infrastructure, and d
 | VAE-03 *(complete)* | Design Analyzer (VAE-03.1–21) |
 | VAE-01 *(ongoing)* | Recording Simulation Scenarios (VAE-01.25) |
 
-**Design:** Design Analyzer (SRS VAE-03.1–21) and the simulation-recording screen (VAE-01.25) are fully designed. No item names it directly, but it depends on two carried-over decisions: the VAE read protocol and the model's storage/schema (CDR-28, CDR-29–30).
+**Design:** Design Analyzer (SRS VAE-03.1–21) and the simulation-recording screen (VAE-01.25) are fully designed. No item names it directly, but it depends on one carried-over decision: the model's storage and schema (CDR-29–30).
 
 **Development:** Build the Design Analyzer's three engines (synthetic-data simulation, field-data analysis, drift detection). On the frontend: simulation-scenario recording and high-volume field-trace charts.
 
@@ -241,7 +244,7 @@ Increment 0 establishes the repository scaffolding, shared infrastructure, and d
 
 **Definition of Done:**
 - [ ] Design Analyzer (VAE-03.1–21) and recording screen (VAE-01.25) built and working
-- [ ] Carried-over CDR-28, CDR-29–30 resolved or deferred
+- [ ] Carried-over CDR-29–30 resolved or deferred
 - [ ] Design Analyzer tests pass
 - [ ] Design Analyzer service deploys and runs
 - [ ] Demo run end-to-end
@@ -346,11 +349,15 @@ gantt
 
 ## 4. Project Structure
 
-The implementation shall use a shallow repository structure where every top-level backend directory maps to exactly one CSC. The `web/` and `cli/` directories implement the VAE-01 user-facing applications. Each CSC owns its own hexagonal boundary: inbound adapters, application use cases, domain model, outbound ports, and outbound adapters.
+The implementation shall use a shallow repository structure in which every backend directory is **one separately built distribution**: the ten CSUs, the shared contracts package, and the framework host (SDD §1 decision 6, §2.5). The `web/` and `cli/` directories implement the VAE-01 user-facing applications. Each CSU owns its own hexagonal boundary — inbound adapters, application use cases, domain model, outbound ports, outbound adapters — plus one bundle module through which the framework composes it.
+
+Each distribution carries its own `pyproject.toml`, sources under `src/saag_<csu>/`, and its own test suite runnable on its own. That is what makes the target of Table 4a reachable without code changes: a CSU moves to its own repository by moving its directory.
 
 ```text
 system-as-a-graph/
 ├── README.md
+├── pyproject.toml                     # workspace root; not a distribution
+├── uv.lock                            # one resolution for every distribution
 ├── docs/
 │   ├── requirements/
 │   │   ├── SSS.md
@@ -367,8 +374,25 @@ system-as-a-graph/
 ├── web/                               # VAE-01 web application
 ├── cli/                               # VAE-01 command-line application
 │
+├── contracts/                         # saag-contracts: shared across CSUs
+│   ├── pyproject.toml
+│   ├── src/saag_contracts/
+│   │   ├── types/                     # project/platform/version identifiers
+│   │   ├── errors/                    # common acquisition error model
+│   │   ├── documents/                 # file/wire schemas handed between CSUs
+│   │   ├── security/
+│   │   └── specs/                     # service specifications (SDD §2.3.1)
+│   └── tests/
+│
+├── platform/                          # saag-platform: framework host
+│   ├── pyproject.toml
+│   ├── src/saag_platform/
+│   └── tests/
+│
 ├── msd/                               # CSC-1: Model Setup Data Generation
-│   ├── src/
+│   ├── pyproject.toml
+│   ├── src/saag_msd/
+│   │   ├── bundle.py                  # the CSU's component
 │   │   ├── api/
 │   │   ├── use_cases/
 │   │   ├── model/
@@ -377,85 +401,23 @@ system-as-a-graph/
 │   └── tests/
 │
 ├── scg/                               # CSC-2: Scenario Generator
-│   ├── src/
-│   │   ├── api/
-│   │   ├── use_cases/
-│   │   ├── model/
-│   │   ├── ports/
-│   │   └── adapters/
-│   └── tests/
-│
 ├── frd/                               # CSC-3: Field Records Database
-│   ├── src/
-│   │   ├── api/
-│   │   ├── use_cases/
-│   │   ├── model/
-│   │   ├── ports/
-│   │   └── adapters/
-│   └── tests/
-│
 ├── adp/                               # CSC-4: Analytical Data Preparation
-│   ├── src/
-│   │   ├── api/
-│   │   ├── use_cases/
-│   │   ├── model/
-│   │   ├── ports/
-│   │   └── adapters/
-│   └── tests/
+│                                      #   (each laid out exactly as msd/)
 │
 ├── csm/                               # CSC-5: Core System Model
-│   ├── model_manager/                 # CSM-01
-│   │   ├── src/
-│   │   │   ├── api/
-│   │   │   ├── use_cases/
-│   │   │   ├── model/
-│   │   │   ├── ports/
-│   │   │   └── adapters/
-│   │   └── tests/
-│   └── data_binder/                   # CSM-02
-│       ├── src/
-│       │   ├── api/
-│       │   ├── use_cases/
-│       │   ├── model/
-│       │   ├── ports/
-│       │   └── adapters/
-│       └── tests/
+│   ├── model_manager/                 # CSM-01, laid out as msd/
+│   └── data_binder/                   # CSM-02, laid out as msd/
 │
 ├── vae/                               # CSC-6: Verification, Analysis, Evaluation
+│   ├── operations_panel/              # VAE-01, laid out as msd/
 │   ├── design_verifier/               # VAE-02
-│   │   ├── src/
-│   │   │   ├── api/
-│   │   │   ├── use_cases/
-│   │   │   ├── model/
-│   │   │   ├── ports/
-│   │   │   └── adapters/
-│   │   └── tests/
 │   ├── design_analyzer/               # VAE-03
-│   │   ├── src/
-│   │   │   ├── api/
-│   │   │   ├── use_cases/
-│   │   │   ├── model/
-│   │   │   ├── ports/
-│   │   │   └── adapters/
-│   │   └── tests/
 │   └── design_evaluator/              # VAE-04
-│       ├── src/
-│       │   ├── api/
-│       │   ├── use_cases/
-│       │   ├── model/
-│       │   ├── ports/
-│       │   └── adapters/
-│       └── tests/
-│
-├── shared/
-│   ├── contracts/
-│   ├── types/
-│   ├── errors/
-│   └── security/
 │
 └── tests/
-    ├── integration/
-    └── acceptance/
+    ├── integration/                   # cross-CSU tests, incl. CSCI composition
+    └── acceptance/                    # end-to-end increment demonstrations
 ```
 
 **Table 4. Project Directory Mapping**
@@ -464,29 +426,49 @@ system-as-a-graph/
 |---|---|
 | `web/` | VAE-01 web application for operators |
 | `cli/` | VAE-01 command-line application for automation clients |
+| `contracts/` | Distribution every CSU depends on and no CSU owns: shared identifiers, the common error model, inter-CSU document schemas, and the service specifications of SDD §2.3.1 |
+| `platform/` | Framework host: starts the framework, installs the discovered CSUs, owns the CSCI's external REST application and its background worker. Not a CSU; satisfies no SRS requirement |
 | `msd/` | SaaG-MSD CSC; contains `MSD` |
 | `scg/` | SaaG-SCG CSC; contains `SCG` |
 | `frd/` | SaaG-FRD CSC; contains `FRD` |
 | `adp/` | SaaG-ADP CSC; contains `ADP` |
 | `csm/` | SaaG-CSM CSC; contains `CSM-01` and `CSM-02` |
-| `vae/` | SaaG-VAE backend CSC; contains `VAE-02`, `VAE-03`, and `VAE-04` |
-| `shared/contracts/` | Cross-CSC request, response, event, and file schemas |
-| `shared/types/` | Cross-CSC value objects and primitive shared types |
-| `shared/errors/` | Cross-CSC error base classes and common error types |
-| `shared/security/` | Cross-CSC authentication and authorization helpers |
-| `tests/integration/` | Cross-CSC and adapter integration tests |
+| `vae/` | SaaG-VAE backend CSC; contains `VAE-01`, `VAE-02`, `VAE-03`, and `VAE-04` |
+| `tests/integration/` | Cross-CSU tests, including the CSCI composition test |
 | `tests/acceptance/` | End-to-end requirement and increment demonstration tests |
+
+`csm/` and `vae/` are grouping directories rather than distributions or Python packages; their CSUs are the distributions, and the grouping disappears when those CSUs move to their own repositories.
+
+**Table 4a. Distributions and Target Repositories**
+
+| Directory | Distribution | Import package | Target repository |
+|---|---|---|---|
+| `contracts/` | `saag-contracts` | `saag_contracts` | saag-contracts |
+| `platform/` | `saag-platform` | `saag_platform` | saag-platform |
+| `msd/` | `saag-msd` | `saag_msd` | saag-msd |
+| `scg/` | `saag-scg` | `saag_scg` | saag-scg |
+| `frd/` | `saag-frd` | `saag_frd` | saag-frd |
+| `adp/` | `saag-adp` | `saag_adp` | saag-adp |
+| `csm/model_manager/` | `saag-csm-model-manager` | `saag_csm_model_manager` | saag-csm-model-manager |
+| `csm/data_binder/` | `saag-csm-data-binder` | `saag_csm_data_binder` | saag-csm-data-binder |
+| `vae/operations_panel/` | `saag-vae-operations-panel` | `saag_vae_operations_panel` | saag-vae-operations-panel |
+| `vae/design_verifier/` | `saag-vae-design-verifier` | `saag_vae_design_verifier` | saag-vae-design-verifier |
+| `vae/design_analyzer/` | `saag-vae-design-analyzer` | `saag_vae_design_analyzer` | saag-vae-design-analyzer |
+| `vae/design_evaluator/` | `saag-vae-design-evaluator` | `saag_vae_design_evaluator` | saag-vae-design-evaluator |
+
+Every distribution depends on `saag-contracts` and on **no other CSU**, which is the property that makes the repository column a move rather than a rewrite. It is enforced mechanically: each distribution is installed alone with the contracts in continuous integration and its tests run there, so a dependency on a sibling CSU fails as a missing module. Publishing the distributions and selecting their versions once they are split is CDR-31.
 
 **Table 5. Standard Hexagonal Directory Meaning**
 
 | Directory | Meaning |
 |---|---|
-| `api/` | Inbound adapters: REST endpoints, CLI handlers, or message handlers that call CSU use cases |
+| `bundle.py` | The CSU's component: builds its wiring, publishes its provided service specifications, declares what it requires. The only module in a CSU that knows the framework exists (SDD §2.5) |
+| `api/` | Inbound adapters: **all** of them — REST endpoints, the implementations of the service specifications the CSU provides, CLI handlers, message handlers — each calling CSU use cases |
 | `use_cases/` | Application core: CSU workflows that implement SRS requirements |
 | `model/` | Domain core: business objects, rules, and calculations owned by the CSU |
 | `ports/` | Outbound ports: interfaces required by use cases for databases, files, queues, or external systems |
 | `adapters/` | Outbound adapters: implementations of `ports/`, such as PostgreSQL, FalkorDB, LDAP, Git, REST, or file adapters |
-| `tests/` | Test suite scoped to the CSU (or the CSC directly, for CSCs not divided into CSUs) |
+| `tests/` | Test suite scoped to the CSU, runnable on its own without the rest of the repository |
 
 ---
 
@@ -498,9 +480,14 @@ The technology choices below implement the WBS deliverables (§1) and are tracea
 
 | Area | Technology | Usage |
 |---|---|---|
+| **Composition & Packaging** | | |
+| Component framework | Pelix / iPOPO ~3.2 | Installs the CSUs as components in one process and mediates the internal interfaces INT-IF-01–05 through its service registry (SDD §1 decision 6, §2.3.1) |
+| Distribution format | One wheel per CSU, discovered through a `saag.bundles` entry point | Installing a distribution is the whole act of adding a CSU (SDD §2.5) |
+| Dependency management | uv workspace, single lock file | Twelve distributions built from one repository today, each releasable on its own (SDP §4 Table 4a, CDR-31) |
 | **Backend & API** | | |
-| Backend language/runtime | Python (FastAPI) | Backend services (MSD/SCG/FRD/ADP/CSM/VAE) |
-| API style | REST (JSON over HTTP) | Operations Panel and CLI/Jenkins integration (VAE-01.27) |
+| Backend language/runtime | Python | The CSUs and the framework host |
+| External API | FastAPI (REST, JSON over HTTP) | The CSCI's single external surface, assembled at runtime from the endpoints the installed CSUs publish; Operations Panel and CLI/Jenkins integration (VAE-01.27) |
+| Internal integration | Pelix service registry, in-process | The five internal interfaces; a remote transport is deliberately not used and not required (SDD §2.3.1, CDR-32) |
 | CLI framework | Python (Click/Typer) | Automation-client interface (VAE-01.27) |
 | **Data Storage** | | |
 | Graph storage | FalkorDB | Core System Model with isolated model sets (CSM-01) |
@@ -523,7 +510,7 @@ The technology choices below implement the WBS deliverables (§1) and are tracea
 | Background task execution | Procrastinate (PostgreSQL) | Long-running/concurrent operations with status, retries, chaining, and isolation (VAE-01.27, VAE-04.7, CSM-01.30, VAE-04.8) |
 | Status delivery | SSE (UI) + REST polling (CLI) | Operation status delivery (VAE-01.15/16/27) |
 | **External Integrations** | | |
-| External-integration architecture | Ports and Adapters (Hexagonal) | Real adapters in production; fake adapters in development, DI-selected |
+| External-integration architecture | Ports and Adapters (Hexagonal) | Real adapters in production; fake adapters in development. Selected by the CSU's own composition, which the framework drives when it validates the CSU's component |
 | Source code repository adapter | Git over HTTPS (token auth) | Source code, scripts, and config files (MSD.3, 17–20) |
 | Package repository adapter | REST API (Artifactory/Nexus-style) | System Software Units Package Repository (MSD.4) |
 | Configuration management DB adapter | Generic SQL adapter (SQLAlchemy) | External configuration management database (MSD.2, 8, 10–13) |
