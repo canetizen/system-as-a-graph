@@ -9,13 +9,13 @@ from __future__ import annotations
 import inspect
 
 from pelix.ipopo.constants import HANDLER_PROVIDES, IPOPO_FACTORY_CONTEXT
-
 from saag_contracts.specs.api import API_ROUTER_PROVIDER
 from saag_contracts.specs.model_setup_data import (
     CONTRACT_VERSION,
     MODEL_SETUP_DATA_PROVISIONING,
     ModelSetupDataProvisioning,
 )
+
 from saag_msd.api.provisioning import ModelSetupDataProvisioningService
 from saag_msd.bundle import CONTRACT_VERSION_PROPERTY, MsdBundle
 

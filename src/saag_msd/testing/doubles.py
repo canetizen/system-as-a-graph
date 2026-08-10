@@ -10,6 +10,7 @@ from dataclasses import dataclass, field
 
 from saag_contracts.errors.acquisition import AcquisitionFailure, AcquisitionStatus
 from saag_contracts.types.identifiers import PlatformRef, ProjectRef, SystemVersionRef
+
 from saag_msd.model.configuration_data import Platform, Project, SystemVersion
 from saag_msd.model.data_source import DataSourceConfiguration
 from saag_msd.model.network_topology import (

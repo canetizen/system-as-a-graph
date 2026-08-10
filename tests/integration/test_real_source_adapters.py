@@ -16,9 +16,9 @@ from importlib import resources
 from pathlib import Path
 
 import pytest
-
 from saag_contracts.errors.acquisition import AcquisitionFailure, AcquisitionStatus
 from saag_contracts.types.identifiers import PlatformRef, ProjectRef
+
 from saag_msd.adapters.ansible.network_topology_source import (
     AnsibleNetworkTopologySource,
 )

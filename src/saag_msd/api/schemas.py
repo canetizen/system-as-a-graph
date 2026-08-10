@@ -9,8 +9,8 @@ from __future__ import annotations
 from datetime import datetime
 
 from pydantic import BaseModel, Field
-
 from saag_contracts.errors.acquisition import AcquisitionStatus
+
 from saag_msd.model.data_source import AccessMethod, DataSourceType
 
 

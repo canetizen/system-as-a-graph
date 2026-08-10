@@ -7,8 +7,9 @@ name = "saag-msd"
 version = "0.1.0"
 description = "SaaG-MSD: Model Setup Data Generation (CSU MSD)"
 requires-python = ">=3.11"
+license = "Apache-2.0"
 dependencies = [
-    "saag-contracts",
+    "saag-contracts>=0.1,<1",
     "iPOPO>=3.2,<4",
     "fastapi",
     "sqlalchemy",
@@ -16,6 +17,9 @@ dependencies = [
     "pymysql",
     "pyyaml",
 ]
+
+[project.urls]
+Repository = "https://github.com/onuralpyigit/system-as-a-graph"
 
 [project.optional-dependencies]
 dev = [
@@ -41,6 +45,3 @@ testpaths = ["tests"]
 markers = [
     "integration: exercises a real external system; skipped unless one is configured",
 ]
-
-[tool.uv.sources]
-saag-contracts = { workspace = true }

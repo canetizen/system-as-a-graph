@@ -16,6 +16,7 @@ from saag_contracts.documents.model_setup_data import (
 )
 from saag_contracts.errors.acquisition import AcquisitionError, AcquisitionStatus
 from saag_contracts.types.identifiers import SystemVersionRef
+
 from saag_msd.model.extraction import (
     ExtractedEntity,
     ExtractedRelation,

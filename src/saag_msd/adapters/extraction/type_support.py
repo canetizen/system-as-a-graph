@@ -12,6 +12,7 @@ from typing import Any
 
 from saag_contracts.documents.model_setup_data import NodeType
 from saag_contracts.errors.acquisition import AcquisitionFailure, AcquisitionStatus
+
 from saag_msd.model.extraction import ExtractedEntity, ExtractionResult
 from saag_msd.model.source_files import SourceFileKind, SourceFileRecord
 from saag_msd.model.version_inventory import SoftwareUnitVersion

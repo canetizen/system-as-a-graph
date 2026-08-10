@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Any
 
 from saag_contracts.errors.acquisition import AcquisitionFailure, AcquisitionStatus
+
 from saag_msd.model.data_source import DataSourceConfiguration
 from saag_msd.model.source_files import FileClassifier, SourceFileRecord
 from saag_msd.model.version_inventory import SoftwareUnitVersion

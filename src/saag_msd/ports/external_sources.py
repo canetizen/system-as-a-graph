@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Protocol, runtime_checkable
 
 from saag_contracts.types.identifiers import PlatformRef, ProjectRef
+
 from saag_msd.model.configuration_data import Platform, Project, SystemVersion
 from saag_msd.model.network_topology import NetworkTopology
 from saag_msd.model.source_files import SourceFileRecord

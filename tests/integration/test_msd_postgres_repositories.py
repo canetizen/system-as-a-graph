@@ -11,9 +11,9 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
-
 from saag_contracts.errors.acquisition import AcquisitionError, AcquisitionStatus
 from saag_contracts.types.identifiers import system_version
+
 from saag_msd.adapters.file.model_setup_data_store import FileModelSetupDataStore
 from saag_msd.adapters.postgres.repositories import (
     PostgresAcquisitionErrorRepository,

@@ -16,6 +16,7 @@ from saag_contracts.documents.model_setup_data import (
     RelationType,
 )
 from saag_contracts.errors.acquisition import AcquisitionStatus
+
 from saag_msd.adapters.build.code_generation import (
     GmakeCodeGenerator,
     PrebuiltCodeGenerator,

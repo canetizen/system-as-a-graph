@@ -7,8 +7,8 @@ Date: 2026-07-31
 from __future__ import annotations
 
 import pytest
-
 from saag_contracts.errors.acquisition import AcquisitionStatus
+
 from saag_msd.model.data_source import DataSourceType
 from saag_msd.use_cases._recording import RunRecorder
 

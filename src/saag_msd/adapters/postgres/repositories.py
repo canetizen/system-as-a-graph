@@ -9,11 +9,11 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from saag_contracts.errors.acquisition import AcquisitionError, AcquisitionStatus
+from saag_contracts.types.identifiers import PlatformRef, ProjectRef, SystemVersionRef
 from sqlalchemy import delete, insert, select
 from sqlalchemy.engine import Engine
 
-from saag_contracts.errors.acquisition import AcquisitionError, AcquisitionStatus
-from saag_contracts.types.identifiers import PlatformRef, ProjectRef, SystemVersionRef
 from saag_msd.adapters.file.model_setup_data_store import FileModelSetupDataStore
 from saag_msd.adapters.postgres.tables import (
     acquisition_errors,

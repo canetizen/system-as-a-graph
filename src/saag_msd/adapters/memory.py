@@ -12,6 +12,7 @@ from pathlib import Path
 
 from saag_contracts.errors.acquisition import AcquisitionError
 from saag_contracts.types.identifiers import PlatformRef, SystemVersionRef
+
 from saag_msd.adapters.file.model_setup_data_store import FileModelSetupDataStore
 from saag_msd.model.data_source import DataSourceConfiguration, DataSourceType
 from saag_msd.model.version_inventory import SoftwareUnitVersionInventory

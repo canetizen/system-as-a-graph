@@ -16,7 +16,6 @@ from pelix.ipopo.decorators import (
     Provides,
     Validate,
 )
-
 from saag_contracts.specs.api import ApiRouterProvider
 from saag_contracts.specs.dto import (
     ModelSetupDataFileRecord,
@@ -30,6 +29,7 @@ from saag_contracts.specs.model_setup_data import (
     ModelSetupDataProvisioning,
 )
 from saag_contracts.types.identifiers import PlatformRef, ProjectRef, SystemVersionRef
+
 from saag_msd.api.provisioning import ModelSetupDataProvisioningService
 from saag_msd.api.routes import build_router
 from saag_msd.composition import build_container

@@ -9,7 +9,6 @@ from __future__ import annotations
 from uuid import uuid4
 
 from fastapi import APIRouter, HTTPException, Query
-
 from saag_contracts.errors.acquisition import AcquisitionError, AcquisitionStatus
 from saag_contracts.types.identifiers import (
     PlatformRef,
@@ -17,6 +16,7 @@ from saag_contracts.types.identifiers import (
     SystemVersionRef,
     system_version,
 )
+
 from saag_msd.adapters.support import SystemClock
 from saag_msd.api.schemas import (
     AcquisitionResponse,

@@ -11,6 +11,7 @@ from dataclasses import dataclass, field
 from saag_contracts.documents.model_setup_data import ModelSetupDataDocument
 from saag_contracts.errors.acquisition import AcquisitionError, AcquisitionFailure
 from saag_contracts.types.identifiers import SystemVersionRef
+
 from saag_msd.model.data_source import DataSourceType
 from saag_msd.model.version_inventory import SoftwareUnitVersion
 from saag_msd.ports.external_sources import PackageRepositoryPort

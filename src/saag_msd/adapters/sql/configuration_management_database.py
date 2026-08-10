@@ -9,12 +9,12 @@ from __future__ import annotations
 from functools import lru_cache
 from typing import Any
 
+from saag_contracts.errors.acquisition import AcquisitionFailure, AcquisitionStatus
+from saag_contracts.types.identifiers import PlatformRef, ProjectRef, SystemVersionRef
 from sqlalchemy import create_engine, text
 from sqlalchemy.engine import Engine, make_url
 from sqlalchemy.exc import SQLAlchemyError
 
-from saag_contracts.errors.acquisition import AcquisitionFailure, AcquisitionStatus
-from saag_contracts.types.identifiers import PlatformRef, ProjectRef, SystemVersionRef
 from saag_msd.model.configuration_data import Platform, Project, SystemVersion
 from saag_msd.model.data_source import DataSourceConfiguration
 from saag_msd.model.version_inventory import SoftwareUnitVersion

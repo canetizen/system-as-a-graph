@@ -12,8 +12,8 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
-
 from saag_contracts.types.identifiers import system_version
+
 from saag_msd.adapters.build.code_generation import PrebuiltCodeGenerator
 from saag_msd.adapters.extraction.java_imports import JavaImportExtractor
 from saag_msd.adapters.extraction.system_descriptor import SystemDescriptorExtractor

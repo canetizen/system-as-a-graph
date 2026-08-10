@@ -17,6 +17,7 @@ from saag_contracts.specs.dto import (
     SourceProbeResult,
 )
 from saag_contracts.types.identifiers import PlatformRef, ProjectRef, SystemVersionRef
+
 from saag_msd.adapters.support import SystemClock
 from saag_msd.composition import Container
 from saag_msd.model.data_source import DataSourceType

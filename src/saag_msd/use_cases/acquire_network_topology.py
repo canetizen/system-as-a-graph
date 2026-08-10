@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from saag_contracts.errors.acquisition import AcquisitionFailure
 from saag_contracts.types.identifiers import PlatformRef
+
 from saag_msd.model.data_source import (
     AccessMethod,
     DataSourceConfiguration,

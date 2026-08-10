@@ -11,6 +11,7 @@ from xml.etree import ElementTree
 
 from saag_contracts.documents.model_setup_data import NodeType, RelationType
 from saag_contracts.errors.acquisition import AcquisitionFailure, AcquisitionStatus
+
 from saag_msd.model.extraction import (
     ExtractedEntity,
     ExtractedRelation,
