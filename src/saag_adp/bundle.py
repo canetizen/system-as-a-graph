@@ -15,9 +15,9 @@ from pelix.ipopo.decorators import (
     Provides,
     Validate,
 )
+from saag_contracts.specs.api import ApiRouterProvider
 
 from saag_adp.api.routes import build_router
-from saag_contracts.specs.api import ApiRouterProvider
 
 
 @ComponentFactory("saag-adp-factory")
