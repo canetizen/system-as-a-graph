@@ -188,3 +188,41 @@ jobs:
 
       - name: Build dev images
         run: docker compose -f compose.dev.yml build
+
+  acceptance:
+    name: Acceptance (Increment 1 demo)
+    runs-on: ubuntu-latest
+    # The demo needs all four external systems and the directory, so it runs
+    # against the stand-in stack rather than against service containers: the point
+    # is to exercise the assembled CSCI the way an operator meets it.
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Bring up the stand-in stack
+        run: docker compose -f compose.dev.yml up -d --wait api worker postgres cmdb gitea openldap package-registry
+
+      - name: Seed the stand-in git server
+        run: docker compose -f compose.dev.yml up gitea-seed
+
+      - name: Run the demo
+        env:
+          # Addresses inside the compose network, where this runs.
+          STANDIN_CMDB_URL: mysql+pymysql://saag:saag@cmdb:3306/cmdb
+          STANDIN_GIT_URL: http://gitea:3000
+          STANDIN_PACKAGE_REGISTRY_URL: http://package-registry:8100
+        run: |
+          docker compose -f compose.dev.yml exec -T \
+            -e STANDIN_CMDB_URL \
+            -e STANDIN_GIT_URL \
+            -e STANDIN_PACKAGE_REGISTRY_URL \
+            api python -m pytest tests/acceptance -v
+
+      - name: Report the composition on failure
+        if: failure()
+        run: |
+          curl -s http://localhost:8000/platform/components || true
+          docker compose -f compose.dev.yml logs --tail=80 api worker
+
+      - name: Tear down
+        if: always()
+        run: docker compose -f compose.dev.yml down -v
