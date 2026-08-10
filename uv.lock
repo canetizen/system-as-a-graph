@@ -761,7 +761,7 @@ dependencies = [
 [[package]]
 name = "saag-contracts"
 version = "0.1.0"
-source = { git = "https://github.com/canetizen/saag_contracts.git?branch=main#8880efcd7e2e60e14ef5a899152504f33c154444" }
+source = { git = "https://github.com/canetizen/saag_contracts.git?branch=main#4a0e0498425f557a7c3bc7e1aba4d507348bf88a" }
 dependencies = [
     { name = "ipopo" },
 ]
@@ -799,7 +799,7 @@ dependencies = [
 [[package]]
 name = "saag-msd"
 version = "0.1.0"
-source = { git = "https://github.com/canetizen/saag_msd.git?branch=main#add63cb50e4d14b61f5a224bdf6f0407f59aade0" }
+source = { git = "https://github.com/canetizen/saag_msd.git?branch=main#17dd5033e1f29897d0b69eedfa2536b4689d9d86" }
 dependencies = [
     { name = "fastapi" },
     { name = "ipopo" },
@@ -813,7 +813,7 @@ dependencies = [
 [[package]]
 name = "saag-platform"
 version = "0.1.0"
-source = { git = "https://github.com/canetizen/saag_platform.git?branch=main#2d4222ff1d465f552bca2676f9bc88a0a7a8f73c" }
+source = { git = "https://github.com/canetizen/saag_platform.git?branch=main#cb7058cdaec47f0a3d173d32cec0d3db34f8bf48" }
 dependencies = [
     { name = "fastapi" },
     { name = "ipopo" },
@@ -867,7 +867,7 @@ dependencies = [
 [[package]]
 name = "saag-vae-operations-panel"
 version = "0.1.0"
-source = { git = "https://github.com/canetizen/saag_vae_operations_panel.git?branch=main#d6f743d58ceb00fa7800bc6187f77301d557e1b6" }
+source = { git = "https://github.com/canetizen/saag_vae_operations_panel.git?branch=main#ca0d45dff95f242faff53741558a6f24b300f038" }
 dependencies = [
     { name = "fastapi" },
     { name = "ipopo" },

@@ -53,6 +53,19 @@ jobs:
       - name: Run the demo
         run: docker compose -f compose.dev.yml exec -T api python -m pytest tests/acceptance -v
 
+      # The same demo as an operator performs it. Run from the web image, which
+      # carries the browser, against the published ports rather than inside the
+      # compose network: the page's own origin has to be the one the CSCI was told
+      # to answer, and the browser has to reach the API at the address the page
+      # was built with.
+      - name: Run the demo through the browser
+        run: |
+          docker compose -f compose.dev.yml up -d --wait web
+          docker run --rm --network host \
+            -e PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium-browser \
+            -e SAAG_CSCI_URL=http://localhost:8000 \
+            saag-web:dev npx playwright test
+
       - name: Report the composition on failure
         if: failure()
         run: |
