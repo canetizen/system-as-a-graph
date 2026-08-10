@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<system name="skyline" platform="avionics" version="1.0.0">
+  <unit name="nav_app" runs_on="console-1" criticality="high">
+    <role name="publisher"/>
+    <role name="monitor"/>
+  </unit>
+  <unit name="sensor_app" runs_on="console-2" criticality="medium">
+    <role name="publisher"/>
+  </unit>
+  <unit name="helper_lib" runs_on="console-2" criticality="low"/>
+</system>
