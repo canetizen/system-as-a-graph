@@ -373,7 +373,7 @@ names a version of anything.
 
 | Repository | Distribution | Import package | What it is |
 |---|---|---|---|
-| `saag` | — | — | Integration: the composition, the documents, the deployment stack, and the tests that need the CSCI assembled |
+| `system-as-a-graph` | — | — | Integration: the composition, the documents, the deployment stack, and the tests that need the CSCI assembled |
 | `saag_contracts` | `saag-contracts` | `saag_contracts` | Shared types, error model, document schemas, service specifications |
 | `saag_platform` | `saag-platform` | `saag_platform` | Framework host, REST edge, background worker. Not a CSU |
 | `saag_msd` | `saag-msd` | `saag_msd` | MSD |

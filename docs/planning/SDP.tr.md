@@ -373,7 +373,7 @@ hiçbir yeri hiçbir şeyin sürümünü adlandırmaz.
 
 | Depo | Dağıtım | İçe alma paketi | Nedir |
 |---|---|---|---|
-| `saag` | — | — | Entegrasyon: kompozisyon, dokümanlar, dağıtım yığını ve CSCI'ın birleşmiş olmasını gerektiren testler |
+| `system-as-a-graph` | — | — | Entegrasyon: kompozisyon, dokümanlar, dağıtım yığını ve CSCI'ın birleşmiş olmasını gerektiren testler |
 | `saag_contracts` | `saag-contracts` | `saag_contracts` | Paylaşılan tipler, hata modeli, doküman şemaları, servis belirtimleri |
 | `saag_platform` | `saag-platform` | `saag_platform` | Çerçeve barındırıcısı, REST kenarı, arka plan işçisi. CSU değildir |
 | `saag_msd` | `saag-msd` | `saag_msd` | MKV |
