@@ -403,7 +403,7 @@ component and neither appears in the CSCI's composition.
 ### 4.1 The integration repository
 
 ```text
-saag/
+system-as-a-graph/
 ├── README.md
 ├── pyproject.toml                     # the composition: which distributions, which versions
 ├── uv.lock                            # the exact commits a deployment was built from
@@ -510,8 +510,8 @@ The technology choices below implement the WBS deliverables (§1) and are tracea
 | Frontend framework | Next.js ^14.2 (React ^18.3) | Operations Panel (VAE-01) |
 | Graph visualization | React Flow ^12.11 | Model browsing, search/filter, and non-destructive structural editing (VAE-01.17, VAE-01.19–20) |
 | Charting / analytics visualization | Recharts ^3.9 + shadcn/ui Chart + ECharts ^6.1 | Findings, status, and KPI charts, plus high-volume field-trace charts (VAE-01.23, VAE-01.26, VAE-02/03/04) |
-| UI component library | Refine ^5.0 + shadcn/ui (Radix UI) + Tailwind CSS ~3.4 | Login, CRUD/editing, findings, and report screens; LDAP-aware access-control provider (VAE-01, VAE-01.3) |
-| Data/table/form layer | TanStack Query ^5.101 + TanStack Table ^8.21 + React Hook Form ^7.81 | Server-state caching, findings/report table state, and editing/login form state under Refine's hooks (VAE-01.17,21–23,26) |
+| UI component library | shadcn/ui (Radix UI) + Tailwind CSS ~3.4 | Login, source configuration, findings, and report screens. Route guarding and authorization-aware rendering are the application's own, against the session the CSCI grants (VAE-01, VAE-01.3): an admin framework was not adopted for Increment 1 because what it would provide — auth redirects and resource bindings — is a few dozen lines against one REST surface, and it would own the routing the shell already defines. Reconsider when the CRUD-heavy findings and report screens arrive |
+| Data/table/form layer | React state + shadcn/ui primitives now; TanStack Query ^5.101 + TanStack Table ^8.21 + React Hook Form ^7.81 from the increment that needs them | Increment 1's lists are short and its forms have a handful of fields each, so they are held in component state and validated by the CSCI, which is the only authority on what it accepts. Sorting, filtering, pagination and server-state caching are what the findings, report and field-record screens need (VAE-01.17, 21–23, 26); those libraries land with them rather than ahead of them |
 | **Security & Authentication** | | |
 | Authentication | LDAP direct bind (python-ldap/ldap3) | Operator authentication (VAE-01.3) |
 | Session/token strategy | JWT (stateless) | REST session across UI and CLI (VAE-01.3) |

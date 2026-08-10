@@ -403,7 +403,7 @@ ve hiçbiri CSCI'ın kompozisyonunda görünmez.
 ### 4.1 Entegrasyon deposu
 
 ```text
-saag/
+system-as-a-graph/
 ├── README.md
 ├── pyproject.toml                     # kompozisyon: hangi dağıtımlar, hangi sürümler
 ├── uv.lock                            # bir dağıtımın derlendiği tam commit'ler
@@ -510,8 +510,8 @@ Aşağıdaki teknoloji seçimleri, WBS teslimatlarını (§1) gerçekleştirir v
 | Ön yüz çerçevesi | Next.js ^14.2 (React ^18.3) | İşlem Paneli (DAD-01) |
 | Graf görselleştirme | React Flow ^12.11 | Model gezinme, arama/süzme ve yıkıcı olmayan yapısal düzenleme (DAD-01.17, DAD-01.19–20) |
 | Grafik / analitik görselleştirme | Recharts ^3.9 + shadcn/ui Chart + ECharts ^6.1 | Bulgu, durum ve KPI grafikleri, ayrıca yüksek hacimli saha izi grafikleri (DAD-01.23, DAD-01.26, DAD-02/03/04) |
-| Arayüz bileşen kütüphanesi | Refine ^5.0 + shadcn/ui (Radix UI) + Tailwind CSS ~3.4 | Oturum açma, CRUD/düzenleme, bulgu ve rapor ekranları; LDAP farkında erişim kontrolü sağlayıcısı (DAD-01, DAD-01.3) |
-| Veri/tablo/form katmanı | TanStack Query ^5.101 + TanStack Table ^8.21 + React Hook Form ^7.81 | Sunucu durumu önbellekleme, bulgu/rapor tablo durumu ve Refine kancaları (hooks) altında düzenleme/oturum açma form durumu (DAD-01.17,21–23,26) |
+| Arayüz bileşen kütüphanesi | shadcn/ui (Radix UI) + Tailwind CSS ~3.4 | Oturum açma, kaynak yapılandırma, bulgu ve rapor ekranları. Rota koruması ve yetkiye duyarlı gösterim uygulamanın kendisine ait olup YBK'nin verdiği oturuma karşı yapılır (DAD-01, DAD-01.3): 1. artırım için bir yönetim çerçevesi benimsenmedi, çünkü sağlayacağı şey — kimlik yönlendirmeleri ve kaynak bağlamaları — tek bir REST yüzeyine karşı birkaç düzine satırdır ve kabuğun hâlihazırda tanımladığı yönlendirmeyi devralırdı. CRUD ağırlıklı bulgu ve rapor ekranları geldiğinde yeniden değerlendirilecek |
+| Veri/tablo/form katmanı | Şimdilik React durumu + shadcn/ui bileşenleri; ihtiyaç duyan artırımdan itibaren TanStack Query ^5.101 + TanStack Table ^8.21 + React Hook Form ^7.81 | 1. artırımın listeleri kısa, formları da birkaç alanlıdır; bu yüzden bileşen durumunda tutulur ve neyi kabul ettiğinin tek yetkilisi olan YBK tarafından doğrulanır. Sıralama, süzme, sayfalama ve sunucu durumu önbellekleme bulgu, rapor ve saha kaydı ekranlarının ihtiyacıdır (DAD-01.17, 21–23, 26); o kütüphaneler onlardan önce değil onlarla birlikte gelir |
 | **Güvenlik ve Kimlik Doğrulama** | | |
 | Kimlik doğrulama | LDAP direct bind (python-ldap/ldap3) | Operatör kimlik doğrulaması (DAD-01.3) |
 | Oturum/token stratejisi | JWT (stateless) | Arayüz ve CLI genelinde REST oturumu (DAD-01.3) |
