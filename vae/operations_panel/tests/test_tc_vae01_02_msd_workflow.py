@@ -56,6 +56,7 @@ def test_selecting_a_file_that_was_not_produced_is_refused(panel):
 def test_changing_the_selected_version_clears_the_selected_file(panel):
     """A file belongs to the version it was produced for."""
     from saag_contracts.types.identifiers import system_version
+
     from saag_vae_operations_panel.testing.panel import OLDER_VERSION, PLATFORM, PROJECT
 
     panel.select_effective_scope()

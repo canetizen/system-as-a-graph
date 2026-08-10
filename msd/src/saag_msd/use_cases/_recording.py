@@ -12,6 +12,7 @@ from saag_contracts.errors.acquisition import (
     AcquisitionStatus,
 )
 from saag_contracts.types.identifiers import PlatformRef
+
 from saag_msd.ports.repositories import AcquisitionErrorRepository
 from saag_msd.ports.support import ClockPort
 

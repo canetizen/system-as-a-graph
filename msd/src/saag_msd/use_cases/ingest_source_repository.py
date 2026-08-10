@@ -10,6 +10,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from saag_contracts.errors.acquisition import AcquisitionFailure
+
 from saag_msd.model.data_source import DataSourceConfiguration, DataSourceType
 from saag_msd.model.source_files import MandatoryFilePolicy, SourceFileRecord
 from saag_msd.model.source_routing import SourceRouter

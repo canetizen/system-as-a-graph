@@ -7,6 +7,7 @@ Date: 2026-07-31
 from __future__ import annotations
 
 from saag_contracts.types.identifiers import PlatformRef, ProjectRef
+
 from saag_msd.model.data_source import (
     AccessMethod,
     CredentialReference,

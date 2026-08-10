@@ -15,8 +15,8 @@ from pelix.ipopo.decorators import (
     Provides,
     Validate,
 )
-
 from saag_contracts.specs.api import ApiRouterProvider
+
 from saag_frd.api.routes import build_router
 
 

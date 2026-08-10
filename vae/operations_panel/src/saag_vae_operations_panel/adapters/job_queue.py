@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from saag_contracts.specs.tasks import JobQueue
 from saag_contracts.types.identifiers import system_version
+
 from saag_vae_operations_panel.model.production_job import ProductionJobRequest
 
 #: Name this CSU publishes its production operation under. Recorded in queued

@@ -10,9 +10,9 @@ from pathlib import Path
 from typing import Any
 
 import yaml
-
 from saag_contracts.errors.acquisition import AcquisitionFailure, AcquisitionStatus
 from saag_contracts.types.identifiers import PlatformRef
+
 from saag_msd.model.data_source import DataSourceConfiguration
 from saag_msd.model.network_topology import (
     Machine,

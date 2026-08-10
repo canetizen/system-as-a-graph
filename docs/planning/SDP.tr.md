@@ -477,7 +477,15 @@ system-as-a-graph/
 | `vae/design_analyzer/` | `saag-vae-design-analyzer` | `saag_vae_design_analyzer` | saag-vae-design-analyzer |
 | `vae/design_evaluator/` | `saag-vae-design-evaluator` | `saag_vae_design_evaluator` | saag-vae-design-evaluator |
 
-Her dağıtım `saag-contracts`'a ve **başka hiçbir CSU'ya** bağımlı değildir; depo kolonunu bir yeniden yazım değil bir taşıma yapan özellik budur. Bu, mekanik olarak zorlanır: sürekli entegrasyonda her dağıtım yalnızca sözleşmelerle birlikte kurulup testleri orada koşturulur, dolayısıyla kardeş bir CSU'ya bağımlılık eksik modül olarak başarısız olur. Dağıtımların yayımlanması ve bölündükten sonra sürümlerinin seçilmesi CDR-31'dir.
+Her dağıtım `saag-contracts`'a ve **başka hiçbir CSU'ya** bağımlı değildir; depo kolonunu bir yeniden yazım değil bir taşıma yapan özellik budur. Bu, mekanik olarak zorlanır: sürekli entegrasyonda her dağıtım yalnızca sözleşmelerle birlikte kurulup testleri orada koşturulur, dolayısıyla kardeş bir CSU'ya bağımlılık eksik modül olarak başarısız olur.
+
+Bir üyenin `pyproject.toml`'u yalnızca **her** depoda kendisi için doğru olanı bildirir: kendi meta verisi ve sözleşmelere sürüm sınırlı bir bağımlılık. Aksi hâlde bölünme anında düzenlenmesi gerekecek üç şey böylece dosyanın dışında tutulur:
+
+- Bu bağımlılığın çalışma alanı içindeki yerel çözümü, üye başına değil çalışma alanı kökünde bir kez bildirilir; böylece üyenin dosyası, içinde olmayacağı bir çalışma alanından söz etmez.
+- Sözleşmeler her CSU için üçüncü taraf bağımlılık olarak sıralanır — burada da bölünmeden sonra da — çünkü gerçekten öyledir. `contracts/` kendi lint yapılandırmasını tam tersi nedenle taşır: kendi içinde, kendi paketi birinci taraftır.
+- Her üye kendi lisansını ve deposunu bildirir; böylece derlenen dağıtım, ek düzenleme olmadan bir index tarafından kabul edilir.
+
+Bölünmenin hâlâ ihtiyaç duyduğu şeyler üyenin içinde değildir: dağıtımların yayımlanacağı bir yer ve sürümlerinin seçilmesi için bir kural — bu CDR-31'dir — ve yeni depoda lisans metninin bir kopyası; o, dağıtıma değil depoya aittir.
 
 **Tablo 5. Standart Altıgen Dizin Anlamları**
 

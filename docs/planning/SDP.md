@@ -477,7 +477,15 @@ system-as-a-graph/
 | `vae/design_analyzer/` | `saag-vae-design-analyzer` | `saag_vae_design_analyzer` | saag-vae-design-analyzer |
 | `vae/design_evaluator/` | `saag-vae-design-evaluator` | `saag_vae_design_evaluator` | saag-vae-design-evaluator |
 
-Every distribution depends on `saag-contracts` and on **no other CSU**, which is the property that makes the repository column a move rather than a rewrite. It is enforced mechanically: each distribution is installed alone with the contracts in continuous integration and its tests run there, so a dependency on a sibling CSU fails as a missing module. Publishing the distributions and selecting their versions once they are split is CDR-31.
+Every distribution depends on `saag-contracts` and on **no other CSU**, which is the property that makes the repository column a move rather than a rewrite. It is enforced mechanically: each distribution is installed alone with the contracts in continuous integration and its tests run there, so a dependency on a sibling CSU fails as a missing module.
+
+A member's `pyproject.toml` states only what is true of it in **any** repository — its own metadata and a versioned dependency on the contracts. Three things that would otherwise have to be edited at split time are therefore kept out of it:
+
+- The workspace-local resolution of that dependency is declared once at the workspace root, not per member, so a member's file does not mention a workspace it will not be in.
+- The contracts sort as a third-party dependency of every CSU, here as well as after the split, because they *are* one. `contracts/` carries its own lint configuration for the converse reason: inside it, its package is first-party.
+- Each member declares its own licence and repository, so a built distribution is acceptable to an index without further edits.
+
+What a split still needs is not in the member: somewhere to publish the distributions and a rule for choosing their versions, which is CDR-31, and a copy of the licence text in the new repository, which belongs to the repository rather than to the distribution.
 
 **Table 5. Standard Hexagonal Directory Meaning**
 

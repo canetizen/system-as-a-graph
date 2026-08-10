@@ -11,6 +11,7 @@ from collections.abc import Callable
 from saag_contracts.specs.dto import ProductionErrorRecord, SourceProbeResult
 from saag_contracts.specs.model_setup_data import ModelSetupDataProvisioning
 from saag_contracts.types.identifiers import PlatformRef, ProjectRef, SystemVersionRef
+
 from saag_vae_operations_panel.model.production_job import (
     AvailableSystemVersion,
     ModelSetupDataFile,

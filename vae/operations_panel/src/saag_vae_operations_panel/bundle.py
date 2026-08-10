@@ -20,10 +20,10 @@ from pelix.ipopo.decorators import (
     Requires,
     Validate,
 )
-
 from saag_contracts.specs.api import ApiRouterProvider
 from saag_contracts.specs.model_setup_data import ModelSetupDataProvisioning
 from saag_contracts.specs.tasks import JobQueue, TaskProvider
+
 from saag_vae_operations_panel.adapters.job_queue import (
     PRODUCTION_TASK_NAME,
     to_request,

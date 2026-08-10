@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Any
 
 from saag_contracts.documents.model_setup_data import NodeType
+
 from saag_msd.model.model_setup_data import MandatoryFieldPolicy, MandatoryFieldRule
 from saag_msd.model.source_files import (
     ClassificationRule,

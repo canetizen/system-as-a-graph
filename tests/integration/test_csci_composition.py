@@ -12,9 +12,9 @@ import pytest
 from fastapi.testclient import TestClient
 from pelix.constants import OBJECTCLASS
 from pelix.framework import Bundle, BundleContext
-
 from saag_contracts.specs.api import API_ROUTER_PROVIDER, ApiRouterProvider
 from saag_contracts.specs.model_setup_data import MODEL_SETUP_DATA_PROVISIONING
+
 from saag_platform.app import app
 from saag_platform.discovery import (
     BUNDLES_ENV_VAR,

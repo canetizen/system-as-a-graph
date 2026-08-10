@@ -121,6 +121,36 @@ jobs:
           uv venv --python 3.11
           uv pip install -e ./contracts -e "./${{ matrix.member }}[dev]"
 
+      # A member's own file must state only what is true of it in any repository,
+      # so that moving it to one needs no edit. A workspace source is the usual
+      # way that breaks: it makes the member uninstallable outside this tree.
+      - name: Verify the member does not depend on being in a workspace
+        run: |
+          python - <<'PY'
+          import pathlib, tomllib
+          member = pathlib.Path("${{ matrix.member }}")
+          declared = tomllib.loads((member / "pyproject.toml").read_text())
+          sources = declared.get("tool", {}).get("uv", {}).get("sources", {})
+          assert not sources, f"{member} declares tool.uv.sources: {sources}"
+          project = declared["project"]
+          for field in ("license", "urls"):
+              assert field in project, f"{member} declares no {field}"
+          for requirement in project.get("dependencies", []):
+              if requirement.startswith("saag-"):
+                  assert any(c in requirement for c in "<>=~"), (
+                      f"{member} depends on {requirement!r} with no version bound"
+                  )
+          PY
+
+      # Building the wheel outside the workspace is the actual property: a member
+      # that only installs from this tree is not ready to be its own repository.
+      - name: Build the member outside the workspace
+        run: |
+          cp -r "${{ matrix.member }}" "$RUNNER_TEMP/standalone"
+          rm -rf "$RUNNER_TEMP/standalone"/src/*.egg-info
+          cd "$RUNNER_TEMP/standalone"
+          uv build --wheel -o dist
+
       # The install above should be able to satisfy itself from the shared
       # contracts alone. A third saag- distribution means this member declares a
       # dependency on a sibling CSU.

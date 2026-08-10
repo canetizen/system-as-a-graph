@@ -17,6 +17,12 @@ members = [
     "vae/design_evaluator",
 ]
 
+# Resolves the members' dependency on the shared contracts locally. Declared here
+# rather than in each member so a member's own file states only what is true of it
+# in any repository — which is what lets it move to one unchanged.
+[tool.uv.sources]
+saag-contracts = { workspace = true }
+
 [dependency-groups]
 dev = [
     "pytest",
@@ -27,11 +33,14 @@ dev = [
 [tool.ruff]
 target-version = "py311"
 # Members use a src layout, so first-party packages are not directly under the
-# repository root. Without this, import sorting treats every saag_* package as a
-# third-party dependency. Members deliberately carry no [tool.ruff] table of
-# their own, so ruff resolves this one for the whole workspace.
+# repository root; without this, import sorting would treat a member's own package
+# as a third-party dependency.
+#
+# `contracts/src` is deliberately absent: the shared contracts are a dependency of
+# every CSU rather than part of one, so they must sort as third-party here exactly
+# as they will once a CSU is a repository of its own. `contracts/` carries its own
+# [tool.ruff] table for the same reason — inside it, they are first-party.
 src = [
-    "contracts/src",
     "platform_host/src",
     "msd/src",
     "scg/src",

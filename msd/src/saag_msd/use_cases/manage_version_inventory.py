@@ -7,6 +7,7 @@ Date: 2026-07-31
 from __future__ import annotations
 
 from saag_contracts.types.identifiers import SystemVersionRef
+
 from saag_msd.model.version_inventory import (
     SoftwareUnitVersion,
     SoftwareUnitVersionInventory,

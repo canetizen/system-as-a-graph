@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from saag_contracts.errors.acquisition import AcquisitionFailure, AcquisitionStatus
+
 from saag_msd.adapters.ansible.network_topology_source import (
     AnsibleNetworkTopologySource,
 )

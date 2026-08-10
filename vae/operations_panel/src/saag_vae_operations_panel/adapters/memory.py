@@ -9,6 +9,7 @@ from __future__ import annotations
 from copy import deepcopy
 
 from saag_contracts.types.identifiers import SystemVersionRef
+
 from saag_vae_operations_panel.model.production_job import ProductionJob
 from saag_vae_operations_panel.model.source_status import SourceStatusSnapshot
 from saag_vae_operations_panel.model.working_scope import WorkingScope

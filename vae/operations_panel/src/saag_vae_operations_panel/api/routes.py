@@ -13,11 +13,11 @@ from collections.abc import AsyncIterator, Awaitable, Callable
 from fastapi import APIRouter, Header, HTTPException, Query, Request
 from fastapi.responses import StreamingResponse
 from fastapi.routing import APIRoute
+from saag_contracts.types.identifiers import PlatformRef, ProjectRef, system_version
 from starlette.concurrency import run_in_threadpool
 from starlette.requests import Request as StarletteRequest
 from starlette.responses import Response
 
-from saag_contracts.types.identifiers import PlatformRef, ProjectRef, system_version
 from saag_vae_operations_panel.adapters.msd_gateway import ModelSetupDataUnavailable
 from saag_vae_operations_panel.api.schemas import (
     LoginRequest,

@@ -10,6 +10,7 @@ from dataclasses import replace
 from uuid import uuid4
 
 from saag_contracts.types.identifiers import PlatformRef, SystemVersionRef
+
 from saag_vae_operations_panel.model.production_job import (
     JobStatus,
     ModelSetupDataFile,

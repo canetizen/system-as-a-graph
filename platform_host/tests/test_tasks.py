@@ -13,8 +13,8 @@ import pytest
 from pelix.constants import OBJECTCLASS
 from pelix.framework import BundleContext, FrameworkFactory, create_framework
 from pelix.internals.registry import ServiceEvent
-
 from saag_contracts.specs.tasks import JOB_QUEUE, TaskProvider
+
 from saag_platform.tasks import InlineJobQueue, TaskGateway
 
 # A process holds one framework, so these tests build and tear down their own.

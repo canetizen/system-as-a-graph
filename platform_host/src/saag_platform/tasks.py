@@ -13,9 +13,8 @@ from typing import Any
 from pelix.framework import BundleContext
 from pelix.internals.registry import ServiceEvent, ServiceReference
 from procrastinate import App, PsycopgConnector
-from sqlalchemy import create_engine, text
-
 from saag_contracts.specs.tasks import TASK_PROVIDER, JobQueue, TaskProvider
+from sqlalchemy import create_engine, text
 
 _LOGGER = logging.getLogger(__name__)
 

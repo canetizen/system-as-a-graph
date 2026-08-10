@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any
 
 from saag_contracts.documents.model_setup_data import NodeType, RelationType
+
 from saag_msd.model.extraction import ExtractedRelation, ExtractionResult
 from saag_msd.model.source_files import SourceFileKind, SourceFileRecord
 from saag_msd.model.version_inventory import SoftwareUnitVersion

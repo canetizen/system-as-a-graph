@@ -14,6 +14,7 @@ from saag_contracts.errors.acquisition import (
     AcquisitionStatus,
 )
 from saag_contracts.types.identifiers import PlatformRef, ProjectRef
+
 from saag_msd.model.configuration_data import (
     ConfigurationDataSet,
     Platform,

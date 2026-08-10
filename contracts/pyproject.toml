@@ -7,9 +7,13 @@ name = "saag-contracts"
 version = "0.1.0"
 description = "SaaG cross-CSU contracts: shared types, error model, and service specifications"
 requires-python = ">=3.11"
+license = "Apache-2.0"
 dependencies = [
     "iPOPO>=3.2,<4",
 ]
+
+[project.urls]
+Repository = "https://github.com/onuralpyigit/system-as-a-graph"
 
 [project.optional-dependencies]
 dev = [
@@ -19,6 +23,11 @@ dev = [
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+# Inside this distribution its own package is first-party; for every CSU that
+# depends on it, it is not (see the workspace root's table).
+[tool.ruff]
+target-version = "py311"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

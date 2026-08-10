@@ -9,6 +9,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from saag_contracts.types.identifiers import PlatformRef, ProjectRef, SystemVersionRef
+
 from saag_vae_operations_panel.model.production_job import SelectableScope
 from saag_vae_operations_panel.model.session import Authorization, Session
 from saag_vae_operations_panel.model.working_scope import WorkingScope
