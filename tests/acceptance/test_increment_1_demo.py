@@ -178,16 +178,7 @@ def test_an_operator_produces_model_setup_data_end_to_end(csci: TestClient) -> N
 
     # The inventory has to exist before there is anything to produce from
     # (SRS MSD.14); production reports its absence rather than inventing one.
-    recorded = csci.post(
-        "/msd/version-inventory",
-        json={
-            "scope": {
-                "project": PROJECT,
-                "platform": PLATFORM,
-                "system_version": EFFECTIVE_VERSION,
-            }
-        },
-    )
+    recorded = csci.post("/vae/operations-panel/version-inventory", headers=headers)
     assert recorded.status_code == 200, recorded.text
     assert recorded.json()["baseline"], "the configuration database named no software unit"
 
