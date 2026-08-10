@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from scg.src.api.routes import router
+from saag_scg.api.routes import router
 
 app = FastAPI()
 app.include_router(router)

@@ -1,25 +1,68 @@
-[build-system]
-requires = ["setuptools>=61"]
-build-backend = "setuptools.build_meta"
+# Workspace root. This is deliberately not a distribution: every CSU, the shared
+# contracts package and the platform host are separate distributions, listed as
+# workspace members below, so each one can move to its own repository unchanged.
+[tool.uv.workspace]
+members = [
+    "contracts",
+    "platform",
+    "msd",
+    "scg",
+    "frd",
+    "adp",
+    "csm/model_manager",
+    "csm/data_binder",
+    "vae/operations_panel",
+    "vae/design_verifier",
+    "vae/design_analyzer",
+    "vae/design_evaluator",
+]
 
-[project]
-name = "system-as-a-graph"
-version = "0.1.0"
-requires-python = ">=3.11"
-# Shared dependencies for all CSCs (msd, scg, frd, adp, csm, vae) and shared/.
-dependencies = [
-    "fastapi",
-    "uvicorn",
-    "httpx2",
+[dependency-groups]
+dev = [
     "pytest",
+    "httpx2",
     "ruff",
 ]
 
-[tool.setuptools.packages.find]
-where = ["."]
-
 [tool.ruff]
 target-version = "py311"
+# Members use a src layout, so first-party packages are not directly under the
+# repository root. Without this, import sorting treats every saag_* package as a
+# third-party dependency. Members deliberately carry no [tool.ruff] table of
+# their own, so ruff resolves this one for the whole workspace.
+src = [
+    "contracts/src",
+    "platform/src",
+    "msd/src",
+    "scg/src",
+    "frd/src",
+    "adp/src",
+    "csm/model_manager/src",
+    "csm/data_binder/src",
+    "vae/operations_panel/src",
+    "vae/design_verifier/src",
+    "vae/design_analyzer/src",
+    "vae/design_evaluator/src",
+]
 
+# Members carry their own testpaths so `cd <member> && pytest` works standalone;
+# this root list is the whole-repository run. importlib import mode keeps the
+# identically named per-member test modules from colliding.
 [tool.pytest.ini_options]
-testpaths = ["tests", "msd", "scg", "frd", "adp", "csm", "vae"]
+addopts = "--import-mode=importlib"
+consider_namespace_packages = true
+testpaths = [
+    "tests",
+    "contracts/tests",
+    "platform/tests",
+    "msd/tests",
+    "scg/tests",
+    "frd/tests",
+    "adp/tests",
+    "csm/model_manager/tests",
+    "csm/data_binder/tests",
+    "vae/operations_panel/tests",
+    "vae/design_verifier/tests",
+    "vae/design_analyzer/tests",
+    "vae/design_evaluator/tests",
+]

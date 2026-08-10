@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from adp.src.api.routes import router
+from saag_adp.api.routes import router
 
 app = FastAPI()
 app.include_router(router)

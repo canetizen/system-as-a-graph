@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "saag-platform"
+version = "0.1.0"
+description = "SaaG platform: component framework host and the CSCI's external REST edge"
+requires-python = ">=3.11"
+dependencies = [
+    "saag-contracts",
+    "fastapi",
+    "uvicorn[standard]",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "httpx2",
+    "ruff",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.uv.sources]
+saag-contracts = { workspace = true }

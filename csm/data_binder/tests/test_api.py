@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from csm.data_binder.src.api.routes import router
+from saag_csm_data_binder.api.routes import router
 
 app = FastAPI()
 app.include_router(router)

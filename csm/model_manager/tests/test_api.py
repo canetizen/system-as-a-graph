@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from csm.model_manager.src.api.routes import router
+from saag_csm_model_manager.api.routes import router
 
 app = FastAPI()
 app.include_router(router)

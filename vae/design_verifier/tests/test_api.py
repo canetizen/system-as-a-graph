@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from vae.design_verifier.src.api.routes import router
+from saag_vae_design_verifier.api.routes import router
 
 app = FastAPI()
 app.include_router(router)
