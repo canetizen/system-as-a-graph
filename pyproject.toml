@@ -7,7 +7,9 @@ name = "saag-contracts"
 version = "0.1.0"
 description = "SaaG cross-CSU contracts: shared types, error model, and service specifications"
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+    "iPOPO>=3.2,<4",
+]
 
 [project.optional-dependencies]
 dev = [
