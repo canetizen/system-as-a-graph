@@ -4,7 +4,7 @@
 [tool.uv.workspace]
 members = [
     "contracts",
-    "platform",
+    "platform_host",
     "msd",
     "scg",
     "frd",
@@ -32,7 +32,7 @@ target-version = "py311"
 # their own, so ruff resolves this one for the whole workspace.
 src = [
     "contracts/src",
-    "platform/src",
+    "platform_host/src",
     "msd/src",
     "scg/src",
     "frd/src",
@@ -54,7 +54,7 @@ consider_namespace_packages = true
 testpaths = [
     "tests",
     "contracts/tests",
-    "platform/tests",
+    "platform_host/tests",
     "msd/tests",
     "scg/tests",
     "frd/tests",

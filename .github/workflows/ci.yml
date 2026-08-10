@@ -58,7 +58,7 @@ jobs:
       matrix:
         member:
           - contracts
-          - platform
+          - platform_host
           - msd
           - scg
           - frd

@@ -14,6 +14,7 @@ from pelix.constants import OBJECTCLASS
 from pelix.framework import Bundle, BundleContext
 
 from saag_contracts.specs.api import API_ROUTER_PROVIDER, ApiRouterProvider
+from saag_contracts.specs.model_setup_data import MODEL_SETUP_DATA_PROVISIONING
 from saag_platform.app import app
 from saag_platform.discovery import (
     BUNDLES_ENV_VAR,
@@ -30,6 +31,22 @@ from saag_platform.discovery import (
 # one at a time and each must leave the factory empty. Entering the application's
 # lifespan starts a framework and leaving it stops and deletes one, which is why
 # every test below owns its client rather than sharing a session-wide one.
+
+
+@pytest.fixture(autouse=True)
+def _deployment_settings(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The minimum configuration a deployment supplies.
+
+    Not test scaffolding: a CSU whose required settings are absent is not
+    operable, and the CSCI these tests describe is a configured one. Nothing here
+    reaches a real external system — the directory adapter only needs to know
+    where the directory would be in order to be constructible.
+    """
+    monkeypatch.setenv("VAE_JWT_SECRET", "an-integration-secret-long-enough-for-hmac")
+    monkeypatch.setenv("LDAP_URL", "ldap://directory.invalid:389")
+    monkeypatch.setenv(
+        "LDAP_BIND_DN_TEMPLATE", "uid={username},ou=people,dc=saag,dc=local"
+    )
 
 
 @pytest.fixture
@@ -67,6 +84,23 @@ def test_the_platform_names_no_csu(client: TestClient) -> None:
     }
 
     assert running == {module for module in discover_bundles() if module != CORE_BUNDLE}
+
+
+def test_every_installed_csu_is_operable(client: TestClient) -> None:
+    """A bundle being active is not the same as the CSU working.
+
+    A component whose settings are missing, or whose required service is absent,
+    stays invalid and publishes nothing — the CSU is then indistinguishable from
+    one that was never installed. Asserting bundle state alone hid exactly that
+    once, so validity is asserted here directly.
+    """
+    reported = {
+        entry["name"]: entry["state"]
+        for entry in client.get("/platform/components").json()["components"]
+    }
+
+    assert reported, "no CSU declared a component"
+    assert {state for state in reported.values()} == {"valid"}, reported
 
 
 def test_each_csu_publishes_exactly_one_router(client: TestClient) -> None:
@@ -164,6 +198,39 @@ def test_the_csci_serves_with_a_single_csu_installed(monkeypatch: pytest.MonkeyP
         assert reduced.get("/scg/health").status_code == 200
         assert reduced.get("/msd/health").status_code == 404
         assert reduced.get("/openapi.json").status_code == 200
+
+
+def test_a_consumer_keeps_serving_while_its_provider_is_away(client: TestClient) -> None:
+    """The reason the panel requires its provider optionally, asserted across the
+    CSU boundary rather than inside either CSU.
+
+    A mandatory requirement would invalidate the consumer whenever the provider
+    restarted, withdrawing every one of its endpoints — including the ones that
+    have nothing to do with the provider. Here the consumer stays valid and keeps
+    serving throughout, and both CSUs are operable again afterwards. What the
+    consumer answers on the affected capability is its own business and is
+    asserted in its own suite.
+    """
+    context = _context()
+    reference = context.get_service_reference(MODEL_SETUP_DATA_PROVISIONING)
+    assert reference is not None, "needs the provider installed"
+    provider: Bundle = reference.get_bundle()
+    consumer_prefix = "/vae/operations-panel"
+
+    assert client.get(f"{consumer_prefix}/health").status_code == 200
+
+    provider.stop()
+
+    assert client.get(f"{consumer_prefix}/health").status_code == 200
+    assert context.get_service_reference(MODEL_SETUP_DATA_PROVISIONING) is None
+
+    provider.start()
+
+    assert context.get_service_reference(MODEL_SETUP_DATA_PROVISIONING) is not None
+    assert client.get(f"{consumer_prefix}/health").status_code == 200
+    assert {
+        entry["state"] for entry in client.get("/platform/components").json()["components"]
+    } == {"valid"}
 
 
 def test_one_unusable_csu_does_not_take_the_csci_down(monkeypatch: pytest.MonkeyPatch) -> None:

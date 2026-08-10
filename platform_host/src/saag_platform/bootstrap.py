@@ -12,6 +12,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from pelix.framework import Bundle, Framework, FrameworkFactory, create_framework
+from pelix.ipopo.instance import StoredInstance
 
 #: Framework property naming which process this framework belongs to. Components
 #: that wire themselves differently per process read it; the introspection
@@ -39,6 +40,16 @@ _STATE_NAMES = {
 #: State reported for a CSU that never became a bundle at all.
 FAILED_STATE = "failed"
 
+#: Component lifecycle states, as the container reports them. A CSU whose
+#: component is not valid serves nothing, however healthy its bundle looks.
+_COMPONENT_STATE_NAMES = {
+    StoredInstance.INVALID: "invalid",
+    StoredInstance.VALID: "valid",
+    StoredInstance.KILLED: "killed",
+    StoredInstance.VALIDATING: "validating",
+    StoredInstance.ERRONEOUS: "erroneous",
+}
+
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -52,6 +63,18 @@ def state_name(state: int) -> str:
         The state's name, or its number as text if unrecognised.
     """
     return _STATE_NAMES.get(state, str(state))
+
+
+def component_state_name(state: int) -> str:
+    """Return the readable name of a component lifecycle state.
+
+    Args:
+        state: State as the component container reports it.
+
+    Returns:
+        The state's name, or its number as text if unrecognised.
+    """
+    return _COMPONENT_STATE_NAMES.get(state, str(state))
 
 
 @dataclass

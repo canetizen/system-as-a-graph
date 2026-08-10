@@ -12,12 +12,14 @@ from typing import Any
 
 from fastapi import FastAPI
 from pelix.constants import OBJECTCLASS, SERVICE_ID
+from pelix.ipopo.constants import SERVICE_IPOPO
 from starlette.concurrency import run_in_threadpool
 
 from saag_platform.bootstrap import (
     DATABASE_URL_VARIABLE,
     FAILED_STATE,
     PROFILE_PROPERTY,
+    component_state_name,
     environment_property,
     framework_properties,
     start_framework,
@@ -111,6 +113,31 @@ def create_app() -> FastAPI:
             for module, reason in sorted(app.state.failures.items())
         ]
         return {"profile": app.state.profile, "bundles": running + failed}
+
+    @app.get("/platform/components")
+    def components() -> dict[str, Any]:
+        """Report each installed CSU's component and whether it is operable.
+
+        A bundle being active says only that the CSU was loaded; its component may
+        still be invalid because a setting is missing or a service it requires is
+        absent. Without this, such a CSU is indistinguishable from one that was
+        never installed — its endpoints simply are not there, and the reason is
+        only in the log.
+        """
+        framework = app.state.framework
+        if framework is None:
+            return {"components": []}
+        context = framework.get_bundle_context()
+        reference = context.get_service_reference(SERVICE_IPOPO)
+        if reference is None:  # pragma: no cover - the container is always installed
+            return {"components": []}
+        service = context.get_service(reference)
+        return {
+            "components": [
+                {"name": name, "factory": factory, "state": component_state_name(state)}
+                for name, factory, state in service.get_instances()
+            ]
+        }
 
     @app.get("/platform/services")
     def services() -> dict[str, Any]:

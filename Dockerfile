@@ -20,7 +20,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 # place the image knows which CSUs exist.
 COPY pyproject.toml uv.lock .python-version ./
 COPY contracts ./contracts
-COPY platform ./platform
+COPY platform_host ./platform_host
 COPY msd ./msd
 COPY scg ./scg
 COPY frd ./frd
