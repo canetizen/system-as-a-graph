@@ -216,17 +216,16 @@ services:
       - "--port"
       - "8100"
 
+  # Built from its own repository, so there is nothing here to bind-mount: the web
+  # application is developed in that repository, against this stack's API.
   web:
     build:
-      context: ./web
+      context: https://github.com/canetizen/saag_web.git
       target: dev
     image: saag-web:dev
     container_name: saag-web-dev
     ports:
       - "3001:3000"
-    volumes:
-      - ./web:/app
-      - /app/node_modules
 
 volumes:
   standin-units:

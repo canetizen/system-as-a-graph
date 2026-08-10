@@ -79,9 +79,11 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
+  # The web application is a repository of its own, like every distribution this
+  # stack composes, so its build context is that repository rather than a directory.
   web:
     build:
-      context: ./web
+      context: https://github.com/canetizen/saag_web.git
       target: prod
     image: saag-web
     container_name: saag-web
