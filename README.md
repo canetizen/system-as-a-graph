@@ -68,7 +68,7 @@ docs/            # SSS, SRS, SDP, SDD, UXD, CDR, STD
 web/             # VAE-01: web application
 cli/             # VAE-01: command-line application
 contracts/       # saag-contracts: shared types, error model, service specifications
-platform/        # saag-platform: framework host and the CSCI's external REST edge
+platform_host/   # saag-platform: framework host and the CSCI's external REST edge
 msd/             # MSD: Model Setup Data Generation
 scg/             # SCG: Scenario Generator
 frd/             # FRD: Field Records Database

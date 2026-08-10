@@ -204,18 +204,10 @@ jobs:
       - name: Seed the stand-in git server
         run: docker compose -f compose.dev.yml up gitea-seed
 
+      # The stand-in addresses come from the service's own environment, so this
+      # is the command the README documents, unchanged.
       - name: Run the demo
-        env:
-          # Addresses inside the compose network, where this runs.
-          STANDIN_CMDB_URL: mysql+pymysql://saag:saag@cmdb:3306/cmdb
-          STANDIN_GIT_URL: http://gitea:3000
-          STANDIN_PACKAGE_REGISTRY_URL: http://package-registry:8100
-        run: |
-          docker compose -f compose.dev.yml exec -T \
-            -e STANDIN_CMDB_URL \
-            -e STANDIN_GIT_URL \
-            -e STANDIN_PACKAGE_REGISTRY_URL \
-            api python -m pytest tests/acceptance -v
+        run: docker compose -f compose.dev.yml exec -T api python -m pytest tests/acceptance -v
 
       - name: Report the composition on failure
         if: failure()

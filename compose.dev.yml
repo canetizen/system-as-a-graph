@@ -28,6 +28,11 @@ services:
       LDAP_GROUP_AUTHORIZATIONS: view=saag-viewers,configure_sources=saag-operators,produce_model_setup_data=saag-operators
       MSD_CMDB_PRIMARY_SECRET: ${MSD_CMDB_PRIMARY_SECRET:-saag}
       MSD_ARTIFACTORY_TOKEN: ${MSD_ARTIFACTORY_TOKEN:-standin-registry-token}
+      # Where the stand-in external systems answer inside this network. Read by
+      # the acceptance test, which rewrites the seeded addresses to them.
+      STANDIN_CMDB_URL: mysql+pymysql://saag:saag@cmdb:3306/cmdb
+      STANDIN_GIT_URL: http://gitea:3000
+      STANDIN_PACKAGE_REGISTRY_URL: http://package-registry:8100
     ports:
       - "8000:8000"
     volumes:
