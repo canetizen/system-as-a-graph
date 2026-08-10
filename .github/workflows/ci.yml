@@ -5,10 +5,8 @@ on:
     branches: [main]
   pull_request:
 
-# The CSU distributions live in their own private repositories, so every job that
-# resolves them needs a credential that may read those repositories. Each CSU's own
-# lint, test and build run in its own repository's workflow; what runs here is only
-# what needs the CSUs assembled.
+# Each CSU's own lint, test and build run in its own repository's workflow; what
+# runs here is only what needs the CSUs assembled.
 env:
   UV_GIT_LFS: "0"
 
@@ -23,10 +21,6 @@ jobs:
         with:
           enable-cache: true
           cache-dependency-glob: uv.lock
-
-      - name: Allow the CSU repositories to be read
-        run: |
-          git config --global url."https://x-access-token:${{ secrets.CSU_READ_TOKEN }}@github.com/".insteadOf "https://github.com/"
 
       - name: Assemble the CSCI
         run: uv sync --frozen
@@ -45,8 +39,6 @@ jobs:
     # The demo needs all four external systems and the directory, so it runs
     # against the stand-in stack rather than against service containers: the point
     # is to exercise the assembled CSCI the way an operator meets it.
-    env:
-      GITHUB_TOKEN: ${{ secrets.CSU_READ_TOKEN }}
     steps:
       - uses: actions/checkout@v4
 
@@ -74,8 +66,6 @@ jobs:
   images:
     name: Images (compose build)
     runs-on: ubuntu-latest
-    env:
-      GITHUB_TOKEN: ${{ secrets.CSU_READ_TOKEN }}
     steps:
       - uses: actions/checkout@v4
 

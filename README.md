@@ -119,8 +119,8 @@ The API runs on http://localhost:8000 and the web app on http://localhost:3000, 
 
 ### The CSCI (Python 3.11+)
 
-The CSU distributions are resolved from their repositories, which are private, so
-git needs a credential that may read them — `gh auth login` is enough:
+The CSU distributions are resolved from their own repositories, so this needs
+nothing but git and network access:
 
 ```bash
 uv sync
@@ -143,7 +143,6 @@ To run the whole stack against the stand-in external systems, and the Increment 
 demo against it:
 
 ```bash
-export GITHUB_TOKEN=$(gh auth token)     # the image build resolves the CSU repositories
 docker compose -f compose.dev.yml up -d --wait
 docker compose -f compose.dev.yml up gitea-seed          # one-time repository seeding
 docker compose -f compose.dev.yml exec api python -m pytest tests/acceptance
@@ -184,12 +183,7 @@ The dev stack below brings it up alongside the CSCI.
 ### Docker
 
 Run the CSCI, the worker and the web application in containers, without installing
-Python or Node locally. The image resolves the CSU repositories, so the build needs
-a credential that may read them:
-
-```bash
-export GITHUB_TOKEN=$(gh auth token)
-```
+Python or Node locally.
 
 **Development** — hot reload, the stand-in external systems, and the tests
 bind-mounted in:

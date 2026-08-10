@@ -3,8 +3,6 @@ services:
     build:
       context: .
       target: prod
-      secrets:
-        - github_token
     image: saag-api
     container_name: saag-api
     depends_on:
@@ -41,8 +39,6 @@ services:
     build:
       context: .
       target: prod
-      secrets:
-        - github_token
     image: saag-api
     container_name: saag-worker
     depends_on:
@@ -96,8 +92,3 @@ volumes:
   postgres-data:
   msd-output:
   msd-workspace:
-
-secrets:
-  github_token:
-    # A token that may read the CSU repositories. Only the image build sees it.
-    environment: GITHUB_TOKEN
