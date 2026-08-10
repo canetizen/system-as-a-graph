@@ -1,0 +1,26 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[codz]
+
+# Distribution / packaging. Anchored to the repository root, because `build`,
+# `lib`, `var` and `parts` are also ordinary names for a package directory.
+/build/
+/develop-eggs/
+/downloads/
+/eggs/
+/.eggs/
+/lib/
+/lib64/
+/parts/
+/sdist/
+/var/
+/wheels/
+dist/
+*.egg-info/
+
+# Environments and tooling
+.venv/
+.env
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
