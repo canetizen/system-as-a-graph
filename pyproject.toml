@@ -7,11 +7,15 @@ name = "saag-csm-data-binder"
 version = "0.1.0"
 description = "SaaG-CSM: Analytical Data Binder (CSU CSM-02)"
 requires-python = ">=3.11"
+license = "Apache-2.0"
 dependencies = [
-    "saag-contracts",
+    "saag-contracts>=0.1,<1",
     "iPOPO>=3.2,<4",
     "fastapi",
 ]
+
+[project.urls]
+Repository = "https://github.com/onuralpyigit/system-as-a-graph"
 
 [project.optional-dependencies]
 dev = [
@@ -28,6 +32,3 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-
-[tool.uv.sources]
-saag-contracts = { workspace = true }
